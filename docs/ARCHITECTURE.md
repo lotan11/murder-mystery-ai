@@ -11,3 +11,5 @@ Future avatar pipeline: licensed character with a rig and blend shapes → anima
 The evidence stage deliberately combines a 3D host/environment with crisp HTML documents. This preserves readable clues on televisions and phones without embedding critical text in textures.
 
 Sources consulted during implementation: [FastAPI WebSockets](https://fastapi.tiangolo.com/advanced/websockets/) and [Three.js scene fundamentals](https://threejs.org/manual/pages/creating-a-scene.html).
+
+SQLite persists committed room records; live WebSocket clients and asyncio locks remain process-local. Startup restores rooms, and accepted commands save before acknowledging/broadcasting. Persistence failures roll back the candidate mutation. A single server process owns all rooms; do not use multiple workers against this design. Case/version pins protect future resumptions from incompatible canon changes. See `DECISIONS.md` for accepted tradeoffs.

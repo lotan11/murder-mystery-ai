@@ -1,31 +1,38 @@
-# Three-week part-time task board
+# Authoritative task backlog
 
-Planning assumption: 10–12 hours/week, 30–36 hours total. The current repository establishes the vertical slice; the remaining time is for integration choices, polish, and real dinner-table testing. A production avatar, microphone pipeline, and custom voice together exceed this budget unless scope is reduced.
+Updated October 27, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
 
-| Status | Workstream | Deliverable / acceptance |
-| --- | --- | --- |
-| Done | Repository | Initial GitHub application, Windows launcher, self-starting browser test and CI workflow |
-| Done | Foundation | Inspect original ZIP, preserve source, document reuse decision |
-| Done | Engine | One authored case, three gated acts, fixed culprit, spoiler-safe public state |
-| Done | Synchronization | Real room creation, organizer permissions, guests, snapshots and reconnect |
-| Done | TV | React/Three.js procedural detective, manor lighting, readable evidence and captions |
-| Done | Guests | Join, text questions, evidence review, act-three accusations |
-| Done | Organizer | Begin, reveal, advance, pause/resume, reset and share links |
-| Done | Dialogue seam | Deterministic sarcastic Wobblebottom provider; external AI explicitly absent |
-| Done | Handoff | Setup, architecture, limitations, automated tests and browser smoke flow |
-| Next | Week 1 / 4h | Play the case with two readers; fix logical ambiguities and clue pacing |
-| Next | Week 1 / 3h | Verify TV readability at 3 metres and two actual phones over Wi-Fi |
-| Next | Week 1 / 3h | Record an end-to-end rehearsal and log friction; establish a 15-minute demo script |
-| Planned | Week 2 / 4h | Add durable room storage and restore after process restart |
-| Planned | Week 2 / 4h | Choose one real integration: grounded AI dialogue OR licensed rigged avatar; keep deterministic fallback |
-| Planned | Week 2 / 2h | Add integration timeout/error tests and spoiler/adversarial dialogue checks |
-| Planned | Week 3 / 4h | Run a 4–6 guest dinner rehearsal; capture pacing and comprehension feedback |
-| Planned | Week 3 / 4h | Fix observed issues, improve transitions and evidence art within existing layout |
-| Planned | Week 3 / 2h | Package stable build, rehearse recovery and document demo operation |
-| Backlog | Audio | Consent, real microphone capture, echo handling, transcription and interruption |
-| Backlog | Character | Licensed polished model, rigged gestures, custom TTS and real viseme lip sync |
-| Backlog | Hosting | Accounts, HTTPS, rate limits, room expiry, shared store and deployment |
+## Current delivery: M1 â€” reliable Blackthorn rehearsal
 
-Parallel ownership: engine work can proceed alongside visual/character work and phone UX. Integrate against the WebSocket snapshot contract before introducing an external AI or audio provider. The release gate is a complete case across TV + organizer + two guest devices, including pause and reconnection, with no hidden solution exposed early.
+| ID | Priority | Stream / owner | Status | Deliverable / acceptance |
+| --- | --- | --- | --- | --- |
+| M1-01 | P0 | Lead | Done | Inspect main, branches, PR1 and failed CI; reuse reviewed recovery fixes |
+| M1-02 | P0 | Story | Done; local tests pass | Blackthorn canon, fair clue timeline, targeted released-fact dialogue, hints and recap |
+| M1-03 | P0 | Backend | Done; local tests pass | SQLite room recovery, durable identities/votes/progress, atomic write failure handling |
+| M1-04 | P0 | Guest/host | Done; local tests pass | Host clue gates, act instructions, guest quick questions, lighter phone rendering |
+| M1-05 | P0 | QA / lead | In progress | Full case, storage restart, WebGL failure, client validation, Windows launcher and green remote CI |
+| M1-06 | P0 | Lead | Done | Specification, decisions, game design, backlog and progress report in repo |
 
-Automated verification and its results are recorded in `VALIDATION.md`. Actual phone, television and dinner-party checks remain manual work; they are not claimed complete.
+## Next playable milestones
+
+| ID | Priority | Milestone | Status | Acceptance / dependency |
+| --- | --- | --- | --- | --- |
+| M2-01 | P1 | Private characters | Ready after M1 | Assign character cards; public identity and private goals separated server-side |
+| M2-02 | P1 | Private characters | Planned | Guest-only secret delivery and host roster; reconnect restores assignment without leaking secrets |
+| M2-03 | P1 | Participation | Planned | Introductory round, accusation rationale and final reconstruction tied to motives |
+| M2-04 | P1 | Rehearsal | Manual test pending | Four actual players, phones + TV, 20â€“30 minute rehearsal and feedback record |
+| M3-01 | P1 | Optional AI | Planned | Provider decision, released-fact context, validated structured response and deterministic fallback |
+| M3-02 | P1 | Optional AI | Planned | Spoiler/injection/timeout/cost tests before enabling model-backed dialogue |
+| M4-01 | P2 | Speech | Planned | Consent, push-to-talk transcription, pause/mute/interruption and visible audio state |
+| M4-02 | P2 | Character | Planned | Licensed rigged avatar, expressive gestures and readable captions |
+| M4-03 | P2 | Speech/avatar | Planned | Custom voice and timestamped visemes; actual lip-sync validation |
+| M5-01 | P2 | Hosted pilot | Planned | HTTPS, authentication, session expiry, rate limits, monitoring and backup/restore |
+| M5-02 | P2 | Scaling | Planned | Shared room store/pub-sub before any multi-worker deployment |
+| OPS-01 | P1 | Resilience | Backlog | Bound slow-client sends and implement room expiry/pruning |
+| OPS-02 | P1 | Data lifecycle | Backlog | Versioned case migrations/export and user-visible room deletion |
+
+## Routine decisions and user decisions
+
+The lead resolves architecture and implementation choices within the accepted scope. External model/voice spend, avatar licensing or public hosting need a concrete proposed integration before user input. No paid provider, recording, purchased asset or public deployment is enabled in M1.
+
+Planning context: earlier availability was three weeks part-time, roughly 10â€“12 hours/week. M1 creates a reliable short rehearsal; M2 is the next playable target. Production-quality voice, avatar and hosting are separate milestones, not an implied three-week promise.

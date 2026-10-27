@@ -355,3 +355,76 @@
     transition: none;
   }
 }
+
+/* Keep full long-form captions below the evidence, rather than fading over it. */
+.long-dialogue .stage-subtitles {
+  padding: 20px 5% 22px;
+}
+.long-dialogue .stage-subtitles p {
+  max-width: 1000px;
+  font-size: 20px;
+  line-height: 1.4;
+}
+.long-dialogue .evidence-spotlight {
+  top: 12%;
+  min-height: 300px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+.long-dialogue .dossier-symbol {
+  height: 48px;
+  font-size: 52px;
+  margin-bottom: 12px;
+}
+.long-dialogue .evidence-spotlight h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+.long-dialogue .evidence-spotlight p {
+  margin-bottom: 14px;
+}
+.long-dialogue .detective-caption {
+  bottom: 240px;
+}
+@media (max-width: 1100px) {
+  .cinema-stage.long-dialogue,
+  .view-tv .cinema-stage.long-dialogue {
+    height: auto;
+    min-height: 900px;
+  }
+  .long-dialogue .stage-subtitles p {
+    font-size: 19px;
+    line-height: 1.45;
+  }
+  .long-dialogue .detective-view {
+    height: 540px;
+  }
+  .long-dialogue .detective-caption {
+    bottom: 360px;
+  }
+}
+@media (max-width: 520px) {
+  .cinema-stage.long-dialogue,
+  .view-tv .cinema-stage.long-dialogue {
+    min-height: 1020px;
+  }
+  .long-dialogue .evidence-spotlight {
+    top: 100px;
+  }
+  .long-dialogue .evidence-spotlight h3 {
+    font-size: 21px;
+  }
+  .long-dialogue .stage-subtitles {
+    padding-left: 6%;
+    padding-right: 6%;
+  }
+  .long-dialogue .stage-subtitles p {
+    font-size: 19px;
+  }
+  .long-dialogue .detective-view {
+    height: 360px;
+  }
+  .long-dialogue .detective-caption {
+    bottom: 480px;
+  }
+}

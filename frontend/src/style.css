@@ -1,6 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap");
 :root {
-  font-family: Manrope, Arial, sans-serif;
+  font-family: Arial, sans-serif;
   color: #e8e4d7;
   background: #0d1817;
   font-weight: 400;
@@ -60,7 +59,7 @@ p {
 h1,
 h2,
 h3 {
-  font-family: "Cormorant Garamond", Georgia, serif;
+  font-family: Georgia, serif;
   font-weight: 500;
 }
 h1 {
@@ -288,7 +287,7 @@ nav a.active {
   color: #7d9483;
 }
 .transcript > p {
-  font-family: "Cormorant Garamond", Georgia, serif;
+  font-family: Georgia, serif;
   font-size: 25px;
   line-height: 1.45;
   margin: 14px 0 16px;
@@ -710,4 +709,63 @@ a:focus-visible {
   .view-guest .main-column {
     order: 1;
   }
+}
+
+.room-instructions {
+  border-left: 2px solid var(--gold);
+  padding: 12px 16px;
+  margin: 16px 0;
+  color: #b8c7bb;
+  font-size: 13px;
+  line-height: 1.7;
+  background: #15261f;
+}
+.host-progress {
+  min-height: 42px;
+  margin-bottom: 14px;
+}
+.quick-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.quick-prompts button {
+  padding: 8px 10px;
+  font-size: 10px;
+}
+.request-notice {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #213b2d;
+  border: 1px solid var(--gold);
+  padding: 12px 20px;
+  font-size: 12px;
+  z-index: 15;
+  max-width: 90%;
+}
+
+.guest-response {
+  margin: 16px 0;
+  padding: 16px;
+  border-left: 2px solid var(--gold);
+  background: #0d2018;
+}
+.guest-response span {
+  font-size: 8px;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+.guest-response p {
+  margin: 10px 0 0;
+  font-family: Georgia, serif;
+  font-size: 17px;
+  line-height: 1.65;
+  color: #e0e6d5;
+}
+.view-guest .transcript > p,
+.view-guest .transcript > .eyebrow {
+  display: none;
 }

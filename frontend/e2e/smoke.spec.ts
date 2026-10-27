@@ -16,12 +16,13 @@ test("organizer, TV and guest complete a synchronized case", async ({
   const errors: string[] = [];
   for (const page of [organizer, guest, tv])
     page.on("pageerror", (error) => errors.push(error.message));
-  await organizer.goto("/");
+  await organizer.goto("/", { waitUntil: "domcontentloaded" });
   await organizer.getByRole("button", { name: /Create an evening/ }).click();
   await expect(organizer).toHaveURL(/room=/);
   const room = new URL(organizer.url()).searchParams.get("room");
-  await tv.goto(`/?view=tv&room=${room}`);
-  await guest.goto(`/?view=guest&room=${room}`);
+  await tv.goto(`/?view=tv&room=${room}`, { waitUntil: "domcontentloaded" });
+  await guest.goto(`/?view=guest&room=${room}`, { waitUntil: "domcontentloaded" });
+  await expect(guest.locator("canvas")).toHaveCount(0);
   await guest.getByLabel("Your name", { exact: true }).fill("Inspector Guest");
   await guest.getByRole("button", { name: "Join the investigation" }).click();
   await expect(
@@ -29,6 +30,7 @@ test("organizer, TV and guest complete a synchronized case", async ({
   ).toBeVisible();
   await organizer.getByRole("button", { name: "Begin case" }).click();
   await expect(tv.getByText("ACT 1", { exact: true })).toBeVisible();
+  await expect(organizer.getByRole("button", { name: /Next act/ })).toBeDisabled();
   await organizer.getByRole("button", { name: "Reveal next clue" }).click();
   await expect(
     tv.getByRole("heading", { name: "The untouched port", exact: true }),
@@ -63,6 +65,8 @@ test("organizer, TV and guest complete a synchronized case", async ({
   await expect(
     tv.getByRole("heading", { name: "The stopped clock", exact: true }),
   ).toBeVisible();
+  await expect(organizer.getByRole("button", { name: "Reveal next clue" })).toBeDisabled();
+  await expect(organizer.getByRole("button", { name: /Next act/ })).toBeEnabled();
   await organizer.getByRole("button", { name: /Next act/ }).click();
   await expect(tv.getByText("ACT 2", { exact: true })).toBeVisible();
   await organizer.getByRole("button", { name: "Reveal next clue" }).click();
@@ -75,7 +79,7 @@ test("organizer, TV and guest complete a synchronized case", async ({
   ).toBeVisible();
   await organizer.getByRole("button", { name: /Next act/ }).click();
   await expect(tv.getByText("ACT 3", { exact: true })).toBeVisible();
-  await guest.reload();
+  await guest.reload({ waitUntil: "domcontentloaded" });
   await expect(guest.getByText(/You are at the table/)).toBeVisible();
   await guest.getByRole("button", { name: "Accuse Dr." }).click();
   await expect
@@ -93,7 +97,8 @@ test("organizer, TV and guest complete a synchronized case", async ({
   await expect(
     tv.getByRole("heading", { name: "Every toast leaves a trace." }),
   ).toBeVisible();
-  await tv.reload();
+  await tv.screenshot({ path: "test-results/tv-solution.png", fullPage: true });
+  await tv.reload({ waitUntil: "domcontentloaded" });
   await expect(
     tv.getByRole("heading", { name: "Every toast leaves a trace." }),
   ).toBeVisible();

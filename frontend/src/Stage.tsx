@@ -7,6 +7,7 @@ type Props = {
     id: string;
     title: string;
     description: string;
+    summary?: string;
     act: number;
   }>;
   dialogue: string;
@@ -205,9 +206,7 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
     const observer = new ResizeObserver(resize);
     observer.observe(host);
     resize();
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    );
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0,
       elapsed = 0,
       previous = performance.now();
@@ -254,11 +253,15 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
   }, []);
 
   const latest = evidence[evidence.length - 1];
+  const longDialogue = dialogue.length > 300;
   return (
-    <section className="cinema-stage" aria-label="Detective and evidence stage">
+    <section
+      className={`cinema-stage ${longDialogue ? "long-dialogue" : ""}`}
+      aria-label="Detective and evidence stage"
+    >
       <div className="stage-grain" />
       <div className="stage-location">
-        <span className="live-dot" /> BLACKWOOD MANOR <span> / </span> THE
+        <span className="live-dot" /> BLACKTHORN MANOR <span> / </span> THE
         LIBRARY
       </div>
       <div className="manor-backdrop">
@@ -311,11 +314,12 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
         </span>
         <h3>{latest?.title || "A rather inconvenient death."}</h3>
         <p>
-          {latest?.description ||
+          {latest?.summary ||
+            latest?.description ||
             "A manor full of secrets. One impeccably dressed detective. Let the evening unfold."}
         </p>
         <div className="dossier-footer">
-          BLACKWOOD CONSTABULARY <span>CONFIDENTIAL</span>
+          BLACKTHORN CONSTABULARY <span>CONFIDENTIAL</span>
         </div>
       </aside>
       <div className="stage-subtitles" aria-live="polite">

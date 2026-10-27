@@ -1,6 +1,6 @@
 # Murder Mystery AI — Wobblebottom prototype
 
-A runnable dinner-party mystery with a React host desk, guest notebooks, a Three.js TV detective, and an authoritative FastAPI engine. No API keys or paid services are required.
+The Last Toast at Blackthorn Manor: a runnable dinner-party mystery with a React host desk, guest notebooks, a Three.js TV detective, and an authoritative FastAPI engine. No API keys or paid services are required.
 
 ## Windows quick start
 
@@ -25,7 +25,7 @@ For phones on the same Wi-Fi, use `powershell -ExecutionPolicy Bypass -File .\st
 5. Accusations open in act three. Guests can change their votes until the host resolves the case.
 6. Reveal the final clue and select **Resolve the case**. Reload any screen to restore its current room snapshot.
 
-The deterministic case has three suspects, five clues, three acts, and one fixed solution. The server controls clue gates and withholds unrevealed descriptions and the solution. Rooms and tokens are kept in memory: restarting the server clears them. The host credential is saved in that browser; keep it private. Guest reconnect tokens preserve identity without duplicating players.
+The deterministic case has three suspects, five clues, three acts, and one fixed solution. The server controls clue gates and withholds unrevealed descriptions and the solution. Rooms, progress and credentials are saved in SQLite: restarting restores committed games. Keep the same browser and room links to recover guest and host access. The host credential is saved in that browser; keep it private. Guest reconnect tokens preserve identity without duplicating players.
 
 ## Manual setup / development
 
@@ -74,10 +74,17 @@ External AI may phrase released facts but must never choose the solution or adva
 
 ## Scope and documentation
 
-This is a trusted-local-network prototype for one server process, with up to 24 guest identities per room. It has no durable storage, accounts, room expiry, deployment hardening or multi-worker synchronization. Do not expose it as a public service without adding those capabilities.
+This is a trusted-local-network prototype for one server process, with up to 24 guest identities per room. SQLite saves rooms in `data/mystery.sqlite3`; set `MYSTERY_DB_PATH` to choose another file. The database contains access credentials: keep it local and out of Git. There are no accounts, room expiry, deployment hardening or multi-worker synchronization. Do not expose it as a public service without adding those capabilities.
 
+- [Project specification](docs/SPECIFICATION.md)
+- [Latest progress and handoff](docs/PROGRESS.md)
+- [Architectural decisions](docs/DECISIONS.md)
+- [Game design — spoilers](docs/GAME_DESIGN.md)
+- [Playable rehearsal guide](docs/TEST_PLAYBOOK.md)
 - [API contract](backend/API.md)
 - [Architecture and integration seams](docs/ARCHITECTURE.md)
 - [Three-week task board](docs/TASK_BOARD.md)
 - [Repository/source inspection](docs/ARCHIVE_REVIEW.md)
 - [Validation results](docs/VALIDATION.md)
+
+Project coordination lives in `AGENTS.md` and the linked documents. Each milestone integrates into this application and records acceptance evidence; the user does not need to transfer plans or story details between conversations.

@@ -8,3 +8,7 @@ frontend/dist/
 playwright-report/
 test-results/
 *.tsbuildinfo
+data/
+*.sqlite3
+*.sqlite3-*
+frontend/.e2e-data/

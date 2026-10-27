@@ -1,5 +1,8 @@
 from __future__ import annotations
 import asyncio
+import copy
+import os
+from contextlib import asynccontextmanager
 import json
 import secrets
 from dataclasses import dataclass, field
@@ -7,11 +10,22 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from .mystery import TITLE, SUSPECTS, EVIDENCE, SOLUTION
+from .mystery import CASE_ID, CASE_VERSION, TITLE, SUSPECTS, EVIDENCE, SOLUTION
 from .dialogue import DialogueProvider, MockDialogueProvider
+from .storage import RoomStore, StorageError
 
 ROOT = Path(__file__).resolve().parents[1]
-app = FastAPI(title="Wobblebottom Mystery Prototype", version="0.1.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    store = RoomStore(os.environ.get("MYSTERY_DB_PATH", str(ROOT / "data" / "mystery.sqlite3")))
+    restored = {record["room_id"]: Room.from_record(record) for record in store.load_all()}
+    rooms.clear()
+    rooms.update(restored)
+    app.state.room_store = store
+    yield
+
+
+app = FastAPI(title="Wobblebottom Mystery Prototype", version="0.2.0", lifespan=lifespan)
 provider: DialogueProvider = MockDialogueProvider()
 
 @dataclass
@@ -24,9 +38,60 @@ class Room:
     guests: dict = field(default_factory=dict)
     revealed: list = field(default_factory=list)
     votes: dict = field(default_factory=dict)
-    dialogue: str = "Good evening. Welcome to Blackwood Manor. Keep your theories sharp and your fingerprints to yourself."
+    dialogue: str = "Good evening. Welcome to Blackthorn Manor. Keep your theories sharp and your fingerprints to yourself."
     clients: set = field(default_factory=set)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
+
+    def record(self):
+        # An explicit whitelist prevents accidental serialization of live sockets/locks.
+        return copy.deepcopy({"schema_version": 1, "case_id": CASE_ID, "case_version": CASE_VERSION, "room_id": self.room_id,
+                              "organizer_token": self.organizer_token, "act": self.act,
+                              "paused": self.paused, "revision": self.revision,
+                              "guests": self.guests, "revealed": self.revealed,
+                              "votes": self.votes, "dialogue": self.dialogue})
+
+    @classmethod
+    def from_record(cls, record):
+        if record.get("case_id") != CASE_ID or record.get("case_version") != CASE_VERSION:
+            raise StorageError("Saved room uses an incompatible case version. Preserve the database and restore the matching case or explicitly start with a new database.")
+        fields = {"room_id", "organizer_token", "act", "paused", "revision", "guests", "revealed", "votes", "dialogue"}
+        metadata = {"schema_version", "case_id", "case_version"}
+        known_clues = {clue["id"] for clue in EVIDENCE}
+        known_suspects = {suspect["id"] for suspect in SUSPECTS}
+        integer = lambda value: type(value) is int
+        text = lambda value: isinstance(value, str) and bool(value)
+        valid = (
+            set(record) == fields | metadata
+            and integer(record["schema_version"]) and record["schema_version"] == 1
+            and integer(record["case_version"])
+            and text(record["room_id"]) and len(record["room_id"]) == 6
+            and all(character in "0123456789ABCDEF" for character in record["room_id"])
+            and text(record["organizer_token"]) and record["organizer_token"].isascii()
+            and integer(record["act"]) and 0 <= record["act"] <= 4
+            and type(record["paused"]) is bool
+            and integer(record["revision"]) and record["revision"] >= 0
+            and isinstance(record["dialogue"], str)
+            and isinstance(record["guests"], dict) and len(record["guests"]) <= 24
+            and all(text(guest_id) and isinstance(guest, dict)
+                    and set(guest) == {"name", "token"}
+                    and text(guest["name"]) and len(guest["name"]) <= 40
+                    and text(guest["token"]) and guest["token"].isascii()
+                    for guest_id, guest in record["guests"].items())
+            and isinstance(record["revealed"], list)
+            and all(isinstance(clue, str) and clue in known_clues for clue in record["revealed"])
+            and len(set(record["revealed"])) == len(record["revealed"])
+            and isinstance(record["votes"], dict)
+            and all(guest_id in record["guests"] and isinstance(suspect, str) and suspect in known_suspects
+                    for guest_id, suspect in record["votes"].items())
+        )
+        if not valid:
+            raise StorageError("Invalid saved room record. Preserve the database for recovery; no saved data was discarded.")
+        return cls(**{key: copy.deepcopy(record[key]) for key in fields})
+
+    def restore(self, record):
+        for key, value in record.items():
+            if key not in {"schema_version", "case_id", "case_version"}:
+                setattr(self, key, copy.deepcopy(value))
 
     def snapshot(self):
         return {"room_id": self.room_id, "title": TITLE, "act": self.act,
@@ -49,15 +114,19 @@ def token_matches(candidate: str, expected: str) -> bool:
 
 @app.get("/health")
 def health():
-    return {"ok": True, "storage": "in-memory", "dialogue": "deterministic mock"}
+    return {"ok": True, "storage": "sqlite", "dialogue": "deterministic mock"}
 
 @app.post("/api/rooms", status_code=201)
-def create_room():
+async def create_room():
     while True:
         room_id = secrets.token_hex(3).upper()
         if room_id not in rooms:
             break
     room = Room(room_id, secrets.token_urlsafe(32))
+    try:
+        app.state.room_store.save(room.record())
+    except StorageError as exc:
+        raise HTTPException(503, "Room storage is unavailable. Try again after restoring storage.") from exc
     rooms[room_id] = room
     return {"room_id": room_id, "organizer_token": room.organizer_token}
 
@@ -68,7 +137,7 @@ def get_room(room_id):
     return room
 
 @app.get("/api/rooms/{room_id}/state")
-def read_state(room_id: str):
+async def read_state(room_id: str):
     return get_room(room_id).snapshot()
 
 async def broadcast(room):
@@ -100,7 +169,7 @@ def control(room, msg):
         if room.act != 0:
             raise ValueError("The case has already started.")
         room.act = 1
-        room.dialogue = "Lord Blackwood is dead. The tea is cold, the guests are nervous, and I have missed pudding. Let us begin."
+        room.dialogue = "Lord Blackthorn is dead. The tea is cold, the guests are nervous, and I have missed pudding. Let us begin."
     elif action == "reveal":
         candidates = [e for e in EVIDENCE if e["act"] == room.act and e["id"] not in room.revealed]
         evidence_id = msg.get("evidence_id")
@@ -143,6 +212,9 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                 if not isinstance(msg, dict):
                     raise ValueError("Expected an object command.")
                 async with room.lock:
+                    before = room.record()
+                    previous_identity = identity
+                    joined_packet = None
                     kind = msg.get("type")
                     if kind == "join":
                         if role != "guest":
@@ -157,7 +229,7 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                             room.guests[identity] = {"name": name.strip(), "token": secrets.token_urlsafe(24)}
                         else:
                             room.guests[identity]["name"] = name.strip()
-                        await ws.send_json({"type": "joined", "guest_id": identity, "guest_token": room.guests[identity]["token"]})
+                        joined_packet = {"type": "joined", "guest_id": identity, "guest_token": room.guests[identity]["token"]}
                     elif kind == "control":
                         if role != "organizer":
                             raise ValueError("Organizer access required.")
@@ -182,6 +254,14 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                     else:
                         raise ValueError("Unknown command.")
                     room.revision += 1
+                    try:
+                        app.state.room_store.save(room.record())
+                    except StorageError:
+                        room.restore(before)
+                        identity = previous_identity
+                        raise ValueError("Room changes could not be saved. No changes were applied; try again after restoring storage.")
+                    if joined_packet:
+                        await ws.send_json(joined_packet)
                     await broadcast(room)
             except (ValueError, TypeError) as exc:
                 await ws.send_json({"type": "error", "message": str(exc)})

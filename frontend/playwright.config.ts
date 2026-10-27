@@ -15,8 +15,15 @@ const python = existsSync(localPython) ? localPython : "python";
 
 export default defineConfig({
   testDir: "./e2e",
-  timeout: 45000,
-  use: { baseURL: "http://127.0.0.1:8001", headless: true },
+  timeout: 90000,
+  workers: 1,
+  expect: { timeout: 10000 },
+  use: {
+    baseURL: "http://127.0.0.1:8001",
+    headless: true,
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
+  },
   reporter: "list",
   webServer: {
     command: `"${python}" -m uvicorn backend.main:app --host 127.0.0.1 --port 8001 --ws-max-size 16384 --no-access-log --log-level warning`,
@@ -24,5 +31,8 @@ export default defineConfig({
     url: "http://127.0.0.1:8001/health",
     reuseExistingServer: false,
     timeout: 30000,
+    env: {
+      MYSTERY_DB_PATH: fileURLToPath(new URL(`./.e2e-data/${Date.now()}-${process.pid}.sqlite3`, import.meta.url)),
+    },
   },
 });

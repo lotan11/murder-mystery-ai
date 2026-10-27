@@ -15,6 +15,13 @@ const actNames = [
   "The final deduction",
   "Case closed",
 ];
+const actInstructions = [
+  "Gather the table, share the guest link, then begin the case when everyone is ready.",
+  "Establish what happened. Reveal the first clues and compare the clock with the victim’s last confirmed sighting.",
+  "Test the alibis. Review the released evidence before deciding whose story still holds together.",
+  "Make your deduction. Review motive, means and opportunity, then record an accusation before the host resolves the case.",
+  "The case is closed. Compare your deduction with Wobblebottom’s reconstruction.",
+];
 export default function App() {
   const [view] = useState<View>(initialView),
     [room, setRoom] = useState((params.get("room") || "").toUpperCase()),
@@ -24,6 +31,7 @@ export default function App() {
     [state, setState] = useState<RoomState | null>(null),
     [status, setStatus] = useState("Offline"),
     [error, setError] = useState(""),
+    [requestNotice, setRequestNotice] = useState(""),
     [name, setName] = useState(""),
     [text, setText] = useState(""),
     [busy, setBusy] = useState(false),
@@ -41,14 +49,17 @@ export default function App() {
     let closed = false,
       timer: ReturnType<typeof setTimeout>,
       attempt = 0;
-    const token = localStorage.getItem(`organizer:${room}`) || "";
+    const token =
+      view === "organizer"
+        ? localStorage.getItem(`organizer:${room}`) || ""
+        : "";
     const connect = () => {
       if (closed) return;
       setJoined(false);
       setStatus("Connecting");
       const url = new URL(socketURL(room, view, token));
       const guest = localStorage.getItem(`guest:${room}`);
-      if (guest) url.searchParams.set("guest_token", guest);
+      if (view === "guest" && guest) url.searchParams.set("guest_token", guest);
       const ws = new WebSocket(url);
       socket.current = ws;
       ws.onopen = () => {
@@ -66,9 +77,13 @@ export default function App() {
           return;
         }
         const result = decodeState(e.data);
-        if (result.error) setError(result.error);
+        if (result.error) {
+          setError(result.error);
+          setRequestNotice("");
+        }
         if (result.state) {
           setState(result.state);
+          setRequestNotice("");
           if (
             voiceRef.current &&
             result.state.dialogue !== lastSpoken.current &&
@@ -86,6 +101,7 @@ export default function App() {
         setError("Cannot connect to the room. Check the server and room code.");
       ws.onclose = (e) => {
         setStatus("Offline");
+        setRequestNotice("");
         if (!closed && e.code !== 1008)
           timer = setTimeout(connect, Math.min(1000 * 2 ** attempt++, 10000));
         else if (e.code === 1008)
@@ -109,6 +125,7 @@ export default function App() {
     }
     setError("");
     socket.current.send(JSON.stringify(message));
+    setRequestNotice("Request sent. Waiting for the room to update.");
     return true;
   }
   async function create() {
@@ -136,6 +153,11 @@ export default function App() {
     location.href = `?view=guest&room=${encodeURIComponent(code)}`;
   }
   const online = status === "Live";
+  const currentClues = state?.available_evidence;
+  const canProgress =
+    !!state && state.act >= 1 && state.act <= 3 && !state.paused && online;
+  const canContribute =
+    online && !!state && !state.paused && (view === "organizer" || joined);
   const control = (action: string) => send({ type: "control", action });
   function link(role: View) {
     return `${location.origin}/?view=${role}&room=${encodeURIComponent(room)}`;
@@ -158,7 +180,7 @@ export default function App() {
       {!room ? (
         <main className="welcome">
           <div className="eyebrow">
-            BLACKWOOD MANOR · INTERACTIVE DINNER MYSTERY
+            BLACKTHORN MANOR · INTERACTIVE DINNER MYSTERY
           </div>
           <h1>The Last Toast</h1>
           <p className="intro">
@@ -238,15 +260,27 @@ export default function App() {
                   <span className="paused">Evening paused</span>
                 )}
               </div>
-              <Stage
-                evidence={state?.evidence || []}
-                dialogue={
-                  state?.dialogue ||
-                  "The detective is waiting for the room connection."
-                }
-                act={state?.act || 0}
-                paused={state?.paused || false}
-              />
+              {view !== "guest" && state && (
+                <Stage
+                  evidence={state.evidence}
+                  dialogue={state.dialogue}
+                  act={state.act}
+                  paused={state.paused}
+                />
+              )}
+              {!state && (
+                <p className="room-instructions" role="status">
+                  Connecting to the manor. The server will restore this room’s
+                  latest saved progress.
+                </p>
+              )}
+              {view !== "tv" && state && (
+                <p className="room-instructions">
+                  {state.paused
+                    ? "The evening is paused. The host can resume when the table is ready."
+                    : actInstructions[state.act]}
+                </p>
+              )}
               <section className="transcript" aria-live="polite">
                 <div className="eyebrow">
                   DETECTIVE REGINALD P. WOBBLEBOTTOM{" "}
@@ -305,33 +339,38 @@ export default function App() {
                         Reveal each clue, let the table investigate, then move
                         the story forward.
                       </p>
+                      <p className="tiny host-progress" aria-live="polite">
+                        {state?.paused
+                          ? "Paused — resume to reveal clues or advance."
+                          : state?.act === 0
+                            ? "Ready when your guests are."
+                            : state?.act === 4
+                              ? "Case closed. Reset to rehearse again."
+                              : currentClues === undefined
+                                ? "Waiting for the host’s clue list…"
+                                : currentClues.length
+                                  ? `${currentClues.length} clue${currentClues.length === 1 ? "" : "s"} left in this act. Reveal them before moving on.`
+                                  : "All clues in this act are released. Give the table time to discuss, then advance."}
+                      </p>
                       <div className="control-grid">
                         <button
-                          disabled={!online || state?.act !== 0}
+                          disabled={!online || state?.act !== 0 || state.paused}
                           onClick={() => control("start")}
                           className="primary"
                         >
                           Begin case
                         </button>
                         <button
-                          disabled={
-                            !online ||
-                            !state ||
-                            state.act < 1 ||
-                            state.act > 3 ||
-                            state.paused
-                          }
+                          disabled={!canProgress || !currentClues?.length}
                           onClick={() => control("reveal")}
                         >
                           Reveal next clue
                         </button>
                         <button
                           disabled={
-                            !online ||
-                            !state ||
-                            state.act < 1 ||
-                            state.act > 3 ||
-                            state.paused
+                            !canProgress ||
+                            !currentClues ||
+                            currentClues.length > 0
                           }
                           onClick={() => control("advance")}
                         >
@@ -432,11 +471,16 @@ export default function App() {
                 <section className="panel">
                   <div className="eyebrow">ASK THE DETECTIVE</div>
                   <h3>A question of character</h3>
+                  {view === "guest" && state && (
+                    <blockquote className="guest-response" aria-live="polite">
+                      <span>WOBBLEBOTTOM · SCRIPTED DETECTIVE</span>
+                      <p>“{state.dialogue}”</p>
+                    </blockquote>
+                  )}
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
-                      if (send({ type: "dialogue", text: text.trim() }))
-                        setText("");
+                      send({ type: "dialogue", text: text.trim() });
                     }}
                   >
                     <label htmlFor="question">
@@ -450,17 +494,34 @@ export default function App() {
                       placeholder="What do we know about the glass?"
                       required
                     />
-                    <button
-                      disabled={
-                        !online ||
-                        !text.trim() ||
-                        (view === "guest" && !joined) ||
-                        state?.paused
-                      }
-                    >
+                    <button disabled={!canContribute || !text.trim()}>
                       Send observation ↗
                     </button>
                   </form>
+                  <div className="quick-prompts" aria-label="Detective prompts">
+                    <button
+                      disabled={!canContribute}
+                      onClick={() =>
+                        send({
+                          type: "dialogue",
+                          text: "Recap the evidence so far.",
+                        })
+                      }
+                    >
+                      Recap evidence
+                    </button>
+                    <button
+                      disabled={!canContribute}
+                      onClick={() =>
+                        send({
+                          type: "dialogue",
+                          text: "Give us a spoiler-free hint.",
+                        })
+                      }
+                    >
+                      Ask for a hint
+                    </button>
+                  </div>
                   <p className="tiny">
                     No audio is recorded. Responses use a deterministic dialogue
                     adapter.
@@ -521,6 +582,11 @@ export default function App() {
           </main>
         </>
       )}
+      {requestNotice && (
+        <div className="request-notice" role="status">
+          {requestNotice}
+        </div>
+      )}
       {error && (
         <div className="error" role="alert">
           {error}
@@ -535,7 +601,7 @@ export default function App() {
           Prototype integrations: procedural avatar · scripted AI · typed
           microphone simulation · no lip-sync
         </p>
-        <span>BLACKWOOD MANOR / 01</span>
+        <span>BLACKTHORN MANOR / 01</span>
       </footer>
     </div>
   );

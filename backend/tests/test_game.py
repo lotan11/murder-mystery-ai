@@ -4,7 +4,8 @@ from starlette.websockets import WebSocketDisconnect
 from backend.main import app, rooms
 
 @pytest.fixture
-def client():
+def client(tmp_path, monkeypatch):
+    monkeypatch.setenv("MYSTERY_DB_PATH", str(tmp_path / "rooms.sqlite3"))
     rooms.clear()
     with TestClient(app) as client:
         yield client
