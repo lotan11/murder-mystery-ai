@@ -9,7 +9,7 @@
 | TypeScript + Vite build | Passed |
 | Browser | 2 passed: full host/TV/phone case and WebGL context-loss fallback; includes real host gating, restored guest identity and no hidden guest canvas |
 | Windows process restart | Passed: saved act, evidence and pause checkpoint matched after restarting `start.ps1`; host credential authorized resume; React HTTP 200 |
-| Remote CI | Pending milestone push; historical runs failed the whole-case 45-second budget |
+| Remote CI | Passed on source commit `e27ab9a`: [GitHub run](https://github.com/lotan11/murder-mystery-ai/actions/runs/40600489863); historical timeouts resolved |
 
 Browser checks use real HTTP/WebSockets and isolated SQLite files, serial scenarios, retained failure traces and a bounded 90-second full-case allowance. They assert real host gating and that no avatar canvas is mounted on the guest view. No paid provider, microphone or speech service is used in automated tests.
 

@@ -7,10 +7,10 @@ Updated October 27, 2026. Lead/integrator owns this board. Status reflects commi
 | ID | Priority | Stream / owner | Status | Deliverable / acceptance |
 | --- | --- | --- | --- | --- |
 | M1-01 | P0 | Lead | Done | Inspect main, branches, PR1 and failed CI; reuse reviewed recovery fixes |
-| M1-02 | P0 | Story | Done; local tests pass | Blackthorn canon, fair clue timeline, targeted released-fact dialogue, hints and recap |
-| M1-03 | P0 | Backend | Done; local tests pass | SQLite room recovery, durable identities/votes/progress, atomic write failure handling |
-| M1-04 | P0 | Guest/host | Done; local tests pass | Host clue gates, act instructions, guest quick questions, lighter phone rendering |
-| M1-05 | P0 | QA / lead | In progress | Full case, storage restart, WebGL failure, client validation, Windows launcher and green remote CI |
+| M1-02 | P0 | Story | Done; local + CI pass | Blackthorn canon, fair clue timeline, targeted released-fact dialogue, hints and recap |
+| M1-03 | P0 | Backend | Done; local + CI pass | SQLite room recovery, durable identities/votes/progress, atomic write failure handling |
+| M1-04 | P0 | Guest/host | Done; local + CI pass | Host clue gates, act instructions, guest quick questions, lighter phone rendering |
+| M1-05 | P0 | QA / lead | Done; local + CI pass | Full case, storage restart, WebGL failure, client validation, Windows launcher and green remote CI |
 | M1-06 | P0 | Lead | Done | Specification, decisions, game design, backlog and progress report in repo |
 
 ## Next playable milestones

@@ -4,7 +4,7 @@ Updated October 27, 2026. This is the lead's authoritative handoff. Read it with
 
 ## Current milestone: M1 â€” reliable Blackthorn rehearsal
 
-Implemented and integrated locally. Local acceptance is complete; remote CI acceptance is being checked after the milestone push. See `VALIDATION.md` for results.
+**Accepted and pushed to main.** Source commit `e27ab9a` passes local acceptance and [GitHub CI](https://github.com/lotan11/murder-mystery-ai/actions/runs/40600489863). The acceptance-record commit only updates documentation. The application is ready for a short human rehearsal; this is not a claim that the entire production platform is complete.
 
 Delivered in one application:
 
@@ -21,7 +21,7 @@ Delivered in one application:
 - 37 backend tests and 9 client tests pass; TypeScript/production build passes.
 - Two browser scenarios pass: complete host/TV/phone flow and renderer recovery. Long TV dialogue uses compact evidence summaries and readable caption sizing; full descriptions remain in guest notebooks.
 - The Windows launcher was stopped and restarted on port 8018: committed act-one evidence, pause state and host credential survived; the built React page returned HTTP 200.
-- Original main and the pre-existing verification branch had CI timeouts in the full-case browser test. The new run removes remote font waits and hidden guest GPU work, uses serial browser scenarios and retains all progression/reconnect assertions under a bounded 90-second case limit. Remote acceptance must be checked after pushing.
+- Original main and the pre-existing verification branch had CI timeouts in the full-case browser test. The new run removes remote font waits and hidden guest GPU work, uses serial browser scenarios and retains all progression/reconnect assertions under a bounded 90-second case limit. The complete independent check now passes: [M1 CI](https://github.com/lotan11/murder-mystery-ai/actions/runs/40600489863).
 
 ## What is still simulated or absent
 
