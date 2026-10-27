@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import Stage from "./Stage";
-import { decodeState, socketURL, type RoomState } from "./client";
+import {
+  decodePrivate,
+  decodeState,
+  socketURL,
+  type PrivateState,
+  type RoomState,
+} from "./client";
 type View = "tv" | "guest" | "organizer";
 const params = new URLSearchParams(location.search);
 const initialView = (
@@ -36,7 +42,14 @@ export default function App() {
     [text, setText] = useState(""),
     [busy, setBusy] = useState(false),
     [voice, setVoice] = useState(false),
-    [joined, setJoined] = useState(false);
+    [joined, setJoined] = useState(false),
+    [privateState, setPrivateState] = useState<PrivateState | null>(null),
+    [privateVisible, setPrivateVisible] = useState(false),
+    [introduction, setIntroduction] = useState(""),
+    [rationale, setRationale] = useState(""),
+    [assignments, setAssignments] = useState<Record<string, string>>({});
+  const privateRole = useRef(""),
+    previousAct = useRef<number | null>(null);
   const socket = useRef<WebSocket | null>(null),
     voiceRef = useRef(false),
     lastSpoken = useRef("");
@@ -56,6 +69,9 @@ export default function App() {
     const connect = () => {
       if (closed) return;
       setJoined(false);
+      setPrivateState(null);
+      setPrivateVisible(false);
+      privateRole.current = "";
       setStatus("Connecting");
       const url = new URL(socketURL(room, view, token));
       const guest = localStorage.getItem(`guest:${room}`);
@@ -76,12 +92,43 @@ export default function App() {
           setJoined(true);
           return;
         }
+        if (message?.type === "private") {
+          if (view !== "guest") return;
+          const result = decodePrivate(e.data);
+          if (result.error) {
+            setPrivateState(null);
+            setPrivateVisible(false);
+            setError(result.error);
+            return;
+          }
+          if (result.privateState) {
+            const next = result.privateState;
+            if (privateRole.current !== next.character.id) {
+              setPrivateVisible(false);
+              setIntroduction("");
+              setRationale("");
+            }
+            privateRole.current = next.character.id;
+            setPrivateState(next);
+          }
+          return;
+        }
         const result = decodeState(e.data);
         if (result.error) {
           setError(result.error);
           setRequestNotice("");
         }
         if (result.state) {
+          if (
+            previousAct.current !== null &&
+            previousAct.current !== 0 &&
+            result.state.act === 0
+          ) {
+            setPrivateVisible(false);
+            setIntroduction("");
+            setRationale("");
+          }
+          previousAct.current = result.state.act;
           setState(result.state);
           setRequestNotice("");
           if (
@@ -101,6 +148,11 @@ export default function App() {
         setError("Cannot connect to the room. Check the server and room code.");
       ws.onclose = (e) => {
         setStatus("Offline");
+        setJoined(false);
+        setPrivateState(null);
+        setPrivateVisible(false);
+        setIntroduction("");
+        setRationale("");
         setRequestNotice("");
         if (!closed && e.code !== 1008)
           timer = setTimeout(connect, Math.min(1000 * 2 ** attempt++, 10000));
@@ -115,6 +167,8 @@ export default function App() {
       closed = true;
       clearTimeout(timer);
       socket.current?.close();
+      setPrivateState(null);
+      setPrivateVisible(false);
       window.speechSynthesis?.cancel();
     };
   }, [room, view]);
@@ -316,6 +370,41 @@ export default function App() {
                   )}
                 </section>
               )}
+              {view !== "tv" && !!state?.introductions?.length && (
+                <section
+                  className="public-introductions panel"
+                  aria-label="Public introductions"
+                >
+                  <div className="eyebrow">SHARED WITH THE TABLE</div>
+                  <h2>The introductions</h2>
+                  {state.introductions.map((entry) => (
+                    <article key={entry.guest_id}>
+                      <h3>
+                        {entry.character_name}{" "}
+                        <small>played by {entry.name}</small>
+                      </h3>
+                      <p>{entry.text}</p>
+                    </article>
+                  ))}
+                </section>
+              )}
+              {state?.act === 4 && !!state.accusations?.length && (
+                <section className="public-accusations panel">
+                  <div className="eyebrow">THE TABLE’S DEDUCTIONS</div>
+                  <h2>Reasons revealed</h2>
+                  {state.accusations.map((entry) => (
+                    <article key={entry.guest_id}>
+                      <h3>
+                        {entry.name} accused{" "}
+                        {state.suspects.find(
+                          (person) => person.id === entry.suspect,
+                        )?.name || entry.suspect}
+                      </h3>
+                      <p>{entry.rationale || "No written reason submitted."}</p>
+                    </article>
+                  ))}
+                </section>
+              )}
               {state?.solution && (
                 <section className="solution">
                   <span className="eyebrow">THE RECONSTRUCTION</span>
@@ -468,6 +557,110 @@ export default function App() {
                     )}
                   </section>
                 )}
+                {view === "guest" && joined && privateState && (
+                  <>
+                    <section
+                      className="panel private-character"
+                      aria-label="Your private character"
+                    >
+                      <div className="eyebrow">FOR YOUR EYES ONLY</div>
+                      <h2>Your character</h2>
+                      <h3>{privateState.character.name}</h3>
+                      <p className="muted">
+                        Your private brief stays on this screen. Hide it before
+                        sharing your phone.
+                      </p>
+                      <button
+                        type="button"
+                        aria-expanded={privateVisible}
+                        aria-controls="private-brief"
+                        onClick={() => setPrivateVisible(!privateVisible)}
+                      >
+                        {privateVisible
+                          ? "Hide private brief"
+                          : "Reveal private brief"}
+                      </button>
+                      {privateVisible && (
+                        <div id="private-brief" className="private-brief">
+                          <p>{privateState.character.private_brief}</p>
+                          <h3>Your objectives</h3>
+                          <ul>
+                            {privateState.character.objectives.map(
+                              (objective, index) => (
+                                <li key={index}>{objective}</li>
+                              ),
+                            )}
+                          </ul>
+                          <p className="performance-notes">
+                            {privateState.character.performance_notes}
+                          </p>
+                        </div>
+                      )}
+                    </section>
+                    <section className="panel introduction-form">
+                      <div className="eyebrow">INTRODUCE YOURSELF</div>
+                      <h3>A place in the story</h3>
+                      <p className="muted">
+                        Suggested public introduction:{" "}
+                        {privateState.character.public_intro}
+                      </p>
+                      <form
+                        onSubmit={(event) => {
+                          event.preventDefault();
+                          send({
+                            type: "introduce",
+                            text: introduction.trim(),
+                          });
+                        }}
+                      >
+                        <button
+                          type="button"
+                          className="text-button"
+                          disabled={!canContribute || !state || state.act > 1}
+                          onClick={() =>
+                            setIntroduction(privateState.character.public_intro)
+                          }
+                        >
+                          Use suggested introduction
+                        </button>
+                        <label htmlFor="introduction">
+                          Your public introduction
+                        </label>
+                        <textarea
+                          id="introduction"
+                          maxLength={240}
+                          value={introduction}
+                          onChange={(event) =>
+                            setIntroduction(event.target.value)
+                          }
+                          placeholder={privateState.character.public_intro}
+                        />
+                        <button
+                          disabled={
+                            !canContribute ||
+                            !state ||
+                            state.act > 1 ||
+                            !introduction.trim()
+                          }
+                        >
+                          {privateState.introduction_submitted
+                            ? "Update introduction"
+                            : "Submit introduction"}
+                        </button>
+                      </form>
+                      <p className="tiny">
+                        Introductions are optional and public. Write only what
+                        you want everyone to see. Available in the gathering and
+                        Act 1.
+                      </p>
+                      {privateState.introduction_submitted && (
+                        <p className="joined">
+                          Your introduction is shared with the table.
+                        </p>
+                      )}
+                    </section>
+                  </>
+                )}
                 <section className="panel">
                   <div className="eyebrow">ASK THE DETECTIVE</div>
                   <h3>A question of character</h3>
@@ -535,6 +728,34 @@ export default function App() {
                       Accusations open in Act 3. You may change your vote until
                       the case resolves.
                     </p>
+                    <label htmlFor="rationale">
+                      Reason for your accusation
+                    </label>
+                    <textarea
+                      id="rationale"
+                      maxLength={300}
+                      value={rationale}
+                      onChange={(event) => setRationale(event.target.value)}
+                      placeholder="Which released clue supports your deduction?"
+                      disabled={!canContribute || state?.act !== 3}
+                    />
+                    <p className="tiny">
+                      Your reason is visible only to you until the finale.
+                      Sending a new accusation replaces your previous vote and
+                      reason.
+                    </p>
+                    {privateState?.own_vote && (
+                      <p className="own-vote" aria-live="polite">
+                        Recorded:{" "}
+                        {state?.suspects.find(
+                          (person) =>
+                            person.id === privateState.own_vote?.suspect,
+                        )?.name || privateState.own_vote.suspect}
+                        .{" "}
+                        {privateState.own_vote.rationale ||
+                          "No written reason."}
+                      </p>
+                    )}
                     <p className="tiny" aria-live="polite">
                       Votes recorded:{" "}
                       {state?.votes
@@ -558,7 +779,11 @@ export default function App() {
                             state.act !== 3
                           }
                           onClick={() =>
-                            send({ type: "accuse", suspect: s.id })
+                            send({
+                              type: "accuse",
+                              suspect: s.id,
+                              rationale: rationale.trim(),
+                            })
                           }
                         >
                           Accuse {s.name.split(" ")[0]}
@@ -572,7 +797,74 @@ export default function App() {
                     AT THE TABLE · {state?.guests.length || 0}
                   </div>
                   {state?.guests.length ? (
-                    state.guests.map((g) => <span key={g.id}>{g.name}</span>)
+                    state.guests.map((g) =>
+                      view === "organizer" ? (
+                        <div className="assignment-row" key={g.id}>
+                          <strong>{g.name}</strong>
+                          <p>
+                            {g.character_name || "Role pending"}
+                            {g.introduced
+                              ? " · Introduced"
+                              : " · Introduction optional"}
+                          </p>
+                          <label htmlFor={`character-${g.id}`}>
+                            Character for {g.name}
+                          </label>
+                          <select
+                            id={`character-${g.id}`}
+                            value={
+                              assignments[g.id] ||
+                              g.character_id ||
+                              "investigator"
+                            }
+                            onChange={(event) =>
+                              setAssignments({
+                                ...assignments,
+                                [g.id]: event.target.value,
+                              })
+                            }
+                            disabled={
+                              !online || state.act !== 0 || state.paused
+                            }
+                          >
+                            <option value="ada">Ada Blackthorn</option>
+                            <option value="felix">Felix Finch</option>
+                            <option value="margot">Dr. Margot Vale</option>
+                            <option value="investigator">
+                              Visiting investigator
+                            </option>
+                          </select>
+                          <button
+                            disabled={
+                              !online ||
+                              state.act !== 0 ||
+                              state.paused ||
+                              (assignments[g.id] || g.character_id) ===
+                                g.character_id
+                            }
+                            aria-label={`Assign character to ${g.name}`}
+                            onClick={() =>
+                              send({
+                                type: "control",
+                                action: "assign",
+                                guest_id: g.id,
+                                character_id:
+                                  assignments[g.id] ||
+                                  g.character_id ||
+                                  "investigator",
+                              })
+                            }
+                          >
+                            Assign character
+                          </button>
+                        </div>
+                      ) : (
+                        <span key={g.id}>
+                          {g.name}
+                          {g.character_name ? ` · ${g.character_name}` : ""}
+                        </span>
+                      ),
+                    )
                   ) : (
                     <p className="muted">The suspects are arriving.</p>
                   )}

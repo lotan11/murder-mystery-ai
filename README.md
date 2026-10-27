@@ -19,13 +19,15 @@ For phones on the same Wi-Fi, use `powershell -ExecutionPolicy Bypass -File .\st
 ## Play a complete case
 
 1. Create a room in the organizer (host) view. Open **TV stage** on a second screen and share **Guest notebook** with players.
-2. Each guest enters a name. The host selects **Begin case**, then **Reveal next clue**.
+2. Each guest enters a name and receives a character card. The first three guests receive the three suspect roles; additional guests investigate. The host may change assignments in the lobby. Guests choose **Reveal private brief** on their own devices and may submit a public introduction. Then the host selects **Begin case** and **Reveal next clue**.
 3. Guests review released evidence and send typed observations to Detective Reginald P. Wobblebottom.
 4. Reveal all clues before selecting **Next act**. Pause and resume as needed.
-5. Accusations open in act three. Guests can change their votes until the host resolves the case.
+5. Accusations open in act three. Guests may add a reason and change their votes until resolution. Reasons remain private to each guest until the finale, when the table can compare deductions.
 6. Reveal the final clue and select **Resolve the case**. Reload any screen to restore its current room snapshot.
 
-The deterministic case has three suspects, five clues, three acts, and one fixed solution. The server controls clue gates and withholds unrevealed descriptions and the solution. Rooms, progress and credentials are saved in SQLite: restarting restores committed games. Keep the same browser and room links to recover guest and host access. The host credential is saved in that browser; keep it private. Guest reconnect tokens preserve identity without duplicating players.
+The deterministic case has three suspects, five clues, three acts, and one fixed solution. Character briefs provide dramatic objectives: the culprit player receives actor knowledge, while investigators solve from released clues. No one must lie or invent evidence. Start a fresh room for the first character rehearsal. The server controls clue gates and withholds unrevealed descriptions and the solution. Rooms, progress and credentials are saved in SQLite: restarting restores committed games. Keep the same browser and room links to recover guest and host access. The host credential is saved in that browser; keep it private. Guest reconnect tokens preserve identity, role and submitted introduction without duplicating players. Private briefs arrive only on the authenticated guest socket, stay out of public snapshots and are not saved in browser storage. Existing M1 SQLite saves upgrade atomically to schema 2 without deleting progress or credentials.
+
+For multiple test guests on one computer, use different browser profiles or different browsers. Normal tabs share a guest identity; real guests should use their own phones. To swap two occupied roles, temporarily assign one player to investigator first.
 
 ## Manual setup / development
 

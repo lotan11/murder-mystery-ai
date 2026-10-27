@@ -31,7 +31,7 @@ class RoomStore:
             with closing(self._connect()) as connection, connection:
                 rows = connection.execute("SELECT room_id, payload FROM rooms ORDER BY room_id").fetchall()
             records = [json.loads(row[1]) for row in rows]
-            if not all(isinstance(record, dict) and record.get("schema_version") == 1
+            if not all(isinstance(record, dict) and type(record.get("schema_version")) is int and record["schema_version"] in (1, 2)
                        and record.get("room_id") == row[0] for row, record in zip(rows, records)):
                 raise ValueError("Unsupported room record.")
             return records
@@ -39,13 +39,16 @@ class RoomStore:
             raise StorageError("Cannot read saved rooms; preserve the database for recovery.") from exc
 
     def save(self, record: dict) -> None:
+        self.save_many([record])
+
+    def save_many(self, records: list[dict]) -> None:
+        """A startup migration commits all records together, or none of them."""
         try:
-            payload = json.dumps(record, ensure_ascii=False, separators=(",", ":"))
+            values = [(record["room_id"], json.dumps(record, ensure_ascii=False, separators=(",", ":"))) for record in records]
             with closing(self._connect()) as connection, connection:
-                connection.execute(
+                connection.executemany(
                     "INSERT INTO rooms (room_id, payload) VALUES (?, ?) "
-                    "ON CONFLICT(room_id) DO UPDATE SET payload = excluded.payload",
-                    (record["room_id"], payload),
+                    "ON CONFLICT(room_id) DO UPDATE SET payload = excluded.payload", values,
                 )
         except (sqlite3.Error, ValueError, TypeError, KeyError) as exc:
             raise StorageError("Room changes could not be saved.") from exc

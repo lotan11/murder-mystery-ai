@@ -18,3 +18,11 @@ Accepted decisions apply until superseded by a dated entry. Code remains the aut
 ## Integration boundary for future services
 
 Before an external AI, transcription or voice service becomes a dependency, add an ADR defining data sent, consent, failure behavior, credentials and spending controls. A provider error must fall back or leave a clear recoverable UI; it must never silently unlock clues. Licensed avatar assets need provenance and redistribution permission recorded in the repository.
+
+## M2 decisions — October 27, 2026
+
+- **ADR-011: Separate guest projection.** Authenticated guests receive `private` packets bound to their socket identity. Host/TV/public snapshots carry role names and submitted introductions, never private briefs or objectives. The dialogue provider still receives public facts only.
+- **ADR-012: Fixed suspect characters, expandable investigators.** The first three joiners receive Ada, Felix and Vale; additional guests investigate. Named roles are exclusive and may be reassigned by the host only in the unpaused lobby. Character cards live in `backend/characters.py`, while murder facts remain in `backend/mystery.py`.
+- **ADR-013: Actor knowledge is explicit.** The culprit's player knows their guilt privately and helps stage the deduction; other guests solve the case. No character requires fabricated evidence or forced lying. A blind-all-players game would need a different design, not secretly withholding a role's premise.
+- **ADR-014: Additive saved-room migration.** Schema 2 adds assignments, introductions and accusation reasons. Existing schema-1 rooms validate before a single atomic migration transaction. Case ID/version and existing progress/credentials remain unchanged; invalid records or failed migration preserve the database and stop startup.
+- **ADR-015: Deliberate disclosure.** Guest-authored introductions are public after submission. Accusation reasons are private until act four, then become part of the shared reconstruction. Reset retains identities/roles but clears introductions, votes and reasons. Private briefs are hidden by default and never written to browser storage.

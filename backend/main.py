@@ -13,19 +13,25 @@ from fastapi.staticfiles import StaticFiles
 from .mystery import CASE_ID, CASE_VERSION, TITLE, SUSPECTS, EVIDENCE, SOLUTION
 from .dialogue import DialogueProvider, MockDialogueProvider
 from .storage import RoomStore, StorageError
+from .characters import CHARACTERS
 
 ROOT = Path(__file__).resolve().parents[1]
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     store = RoomStore(os.environ.get("MYSTERY_DB_PATH", str(ROOT / "data" / "mystery.sqlite3")))
-    restored = {record["room_id"]: Room.from_record(record) for record in store.load_all()}
+    records = store.load_all()
+    restored = {record["room_id"]: Room.from_record(record) for record in records}
+    # Validate every record before committing an additive schema migration.
+    legacy = [restored[record["room_id"]].record() for record in records if record["schema_version"] == 1]
+    if legacy:
+        store.save_many(legacy)
     rooms.clear()
     rooms.update(restored)
     app.state.room_store = store
     yield
 
 
-app = FastAPI(title="Wobblebottom Mystery Prototype", version="0.2.0", lifespan=lifespan)
+app = FastAPI(title="Wobblebottom Mystery Prototype", version="0.3.0", lifespan=lifespan)
 provider: DialogueProvider = MockDialogueProvider()
 
 @dataclass
@@ -38,23 +44,37 @@ class Room:
     guests: dict = field(default_factory=dict)
     revealed: list = field(default_factory=list)
     votes: dict = field(default_factory=dict)
+    assignments: dict = field(default_factory=dict)
+    introductions: dict = field(default_factory=dict)
+    rationales: dict = field(default_factory=dict)
     dialogue: str = "Good evening. Welcome to Blackthorn Manor. Keep your theories sharp and your fingerprints to yourself."
     clients: set = field(default_factory=set)
+    guest_clients: dict = field(default_factory=dict)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
     def record(self):
         # An explicit whitelist prevents accidental serialization of live sockets/locks.
-        return copy.deepcopy({"schema_version": 1, "case_id": CASE_ID, "case_version": CASE_VERSION, "room_id": self.room_id,
+        return copy.deepcopy({"schema_version": 2, "case_id": CASE_ID, "case_version": CASE_VERSION, "room_id": self.room_id,
                               "organizer_token": self.organizer_token, "act": self.act,
                               "paused": self.paused, "revision": self.revision,
                               "guests": self.guests, "revealed": self.revealed,
-                              "votes": self.votes, "dialogue": self.dialogue})
+                              "votes": self.votes, "dialogue": self.dialogue,
+                              "assignments": self.assignments, "introductions": self.introductions, "rationales": self.rationales})
 
     @classmethod
     def from_record(cls, record):
         if record.get("case_id") != CASE_ID or record.get("case_version") != CASE_VERSION:
             raise StorageError("Saved room uses an incompatible case version. Preserve the database and restore the matching case or explicitly start with a new database.")
-        fields = {"room_id", "organizer_token", "act", "paused", "revision", "guests", "revealed", "votes", "dialogue"}
+        record = copy.deepcopy(record)
+        legacy_fields = {"room_id", "organizer_token", "act", "paused", "revision", "guests", "revealed", "votes", "dialogue", "schema_version", "case_id", "case_version"}
+        if record.get("schema_version") == 1 and set(record) == legacy_fields:
+            record["schema_version"] = 2
+            guests = record.get("guests")
+            record["assignments"] = {guest_id: ("ada", "felix", "margot")[index] if index < 3 else "investigator"
+                                     for index, guest_id in enumerate(guests)} if isinstance(guests, dict) else {}
+            record["introductions"] = {}
+            record["rationales"] = {guest_id: "" for guest_id in record.get("votes", {})} if isinstance(record.get("votes"), dict) else {}
+        fields = {"assignments", "introductions", "rationales", "room_id", "organizer_token", "act", "paused", "revision", "guests", "revealed", "votes", "dialogue"}
         metadata = {"schema_version", "case_id", "case_version"}
         known_clues = {clue["id"] for clue in EVIDENCE}
         known_suspects = {suspect["id"] for suspect in SUSPECTS}
@@ -62,7 +82,7 @@ class Room:
         text = lambda value: isinstance(value, str) and bool(value)
         valid = (
             set(record) == fields | metadata
-            and integer(record["schema_version"]) and record["schema_version"] == 1
+            and integer(record["schema_version"]) and record["schema_version"] == 2
             and integer(record["case_version"])
             and text(record["room_id"]) and len(record["room_id"]) == 6
             and all(character in "0123456789ABCDEF" for character in record["room_id"])
@@ -83,6 +103,14 @@ class Room:
             and isinstance(record["votes"], dict)
             and all(guest_id in record["guests"] and isinstance(suspect, str) and suspect in known_suspects
                     for guest_id, suspect in record["votes"].items())
+            and isinstance(record["assignments"], dict) and set(record["assignments"]) == set(record["guests"])
+            and all(isinstance(role, str) and role in CHARACTERS for role in record["assignments"].values())
+            and all(list(record["assignments"].values()).count(role) <= 1 for role in ("ada", "felix", "margot"))
+            and isinstance(record["introductions"], dict)
+            and all(guest_id in record["guests"] and isinstance(intro, str) and 1 <= len(intro.strip()) <= 240
+                    for guest_id, intro in record["introductions"].items())
+            and isinstance(record["rationales"], dict) and set(record["rationales"]) == set(record["votes"])
+            and all(isinstance(reason, str) and len(reason) <= 300 for reason in record["rationales"].values())
         )
         if not valid:
             raise StorageError("Invalid saved room record. Preserve the database for recovery; no saved data was discarded.")
@@ -93,11 +121,28 @@ class Room:
             if key not in {"schema_version", "case_id", "case_version"}:
                 setattr(self, key, copy.deepcopy(value))
 
+    def next_character(self):
+        return next((role for role in ("ada", "felix", "margot") if role not in self.assignments.values()), "investigator")
+
+    def private_snapshot(self, guest_id):
+        if guest_id not in self.guests:
+            raise ValueError("Unknown guest identity.")
+        return {"guest_id": guest_id, "character": copy.deepcopy(CHARACTERS[self.assignments[guest_id]]),
+                "introduction_submitted": guest_id in self.introductions,
+                "own_vote": {"suspect": self.votes[guest_id], "rationale": self.rationales.get(guest_id, "")} if guest_id in self.votes else None}
+
     def snapshot(self):
         return {"room_id": self.room_id, "title": TITLE, "act": self.act,
                 "phase": ["Lobby", "The discovery", "The contradictions", "The accusation", "Case closed"][self.act],
                 "paused": self.paused, "revision": self.revision,
-                "guests": [{"id": k, "name": v["name"]} for k, v in self.guests.items()],
+                "guests": [{"id": k, "name": v["name"], "character_id": self.assignments[k],
+                            "character_name": CHARACTERS[self.assignments[k]]["name"], "introduced": k in self.introductions}
+                           for k, v in self.guests.items()],
+                "introductions": [{"guest_id": k, "name": self.guests[k]["name"],
+                                   "character_name": CHARACTERS[self.assignments[k]]["name"], "text": intro}
+                                  for k, intro in self.introductions.items()],
+                "accusations": [{"guest_id": k, "name": self.guests[k]["name"], "suspect": suspect,
+                                 "rationale": self.rationales.get(k, "")} for k, suspect in self.votes.items()] if self.act == 4 else [],
                 "evidence": [e.copy() for e in EVIDENCE if e["id"] in self.revealed],
                 "available_evidence": [{"id": e["id"], "title": e["title"], "act": e["act"]} for e in EVIDENCE if e["act"] == self.act and e["id"] not in self.revealed],
                 "suspects": SUSPECTS, "dialogue": self.dialogue,
@@ -145,8 +190,12 @@ async def broadcast(room):
     for client in list(room.clients):
         try:
             await client.send_json(packet)
+            identity = room.guest_clients.get(client)
+            if identity:
+                await client.send_json({"type": "private", "data": room.private_snapshot(identity)})
         except Exception:
             room.clients.discard(client)
+            room.guest_clients.pop(client, None)
 
 def control(room, msg):
     action = msg.get("action")
@@ -161,11 +210,25 @@ def control(room, msg):
         room.paused = False
         room.revealed.clear()
         room.votes.clear()
+        room.rationales.clear()
+        room.introductions.clear()
         room.dialogue = "A fresh investigation. Try to look surprised this time."
         return
     if room.paused:
         raise ValueError("Resume the room before progressing the case.")
-    if action == "start":
+    if action == "assign":
+        if room.act != 0:
+            raise ValueError("Characters can only be assigned in the lobby.")
+        guest_id, character_id = msg.get("guest_id"), msg.get("character_id")
+        if not isinstance(guest_id, str) or guest_id not in room.guests:
+            raise ValueError("Choose a joined guest.")
+        if not isinstance(character_id, str) or character_id not in CHARACTERS:
+            raise ValueError("Unknown character.")
+        if character_id != "investigator" and any(k != guest_id and role == character_id for k, role in room.assignments.items()):
+            raise ValueError("That character is already assigned. Free it before assigning it again.")
+        room.assignments[guest_id] = character_id
+        room.introductions.pop(guest_id, None)
+    elif action == "start":
         if room.act != 0:
             raise ValueError("The case has already started.")
         room.act = 1
@@ -197,10 +260,13 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
     await ws.accept()
     identity = next((k for k, g in room.guests.items() if guest_token and token_matches(guest_token, g["token"])), None) if role == "guest" else None
     room.clients.add(ws)
+    if identity:
+        room.guest_clients[ws] = identity
     try:
         await ws.send_json({"type": "state", "data": room.snapshot()})
         if identity:
             await ws.send_json({"type": "joined", "guest_id": identity, "guest_token": room.guests[identity]["token"]})
+            await ws.send_json({"type": "private", "data": room.private_snapshot(identity)})
         while True:
             try:
                 packet = await ws.receive()
@@ -216,6 +282,8 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                     previous_identity = identity
                     joined_packet = None
                     kind = msg.get("type")
+                    if role == "guest" and "guest_id" in msg:
+                        raise ValueError("Guest identity is bound to the connection, not a command field.")
                     if kind == "join":
                         if role != "guest":
                             raise ValueError("Only guest screens can join.")
@@ -227,9 +295,19 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                                 raise ValueError("This prototype supports 24 guests per room.")
                             identity = secrets.token_hex(8)
                             room.guests[identity] = {"name": name.strip(), "token": secrets.token_urlsafe(24)}
+                            room.assignments[identity] = room.next_character()
                         else:
                             room.guests[identity]["name"] = name.strip()
                         joined_packet = {"type": "joined", "guest_id": identity, "guest_token": room.guests[identity]["token"]}
+                    elif kind == "introduce":
+                        if role != "guest" or not identity:
+                            raise ValueError("Join as a guest before introducing yourself.")
+                        if room.paused or room.act not in (0, 1):
+                            raise ValueError("Introductions are open in the lobby and act one while unpaused.")
+                        text = msg.get("text")
+                        if not isinstance(text, str) or not 1 <= len(text.strip()) <= 240:
+                            raise ValueError("Enter an introduction between 1 and 240 characters.")
+                        room.introductions[identity] = text.strip()
                     elif kind == "control":
                         if role != "organizer":
                             raise ValueError("Organizer access required.")
@@ -250,7 +328,11 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                             suspect = msg.get("suspect")
                             if suspect not in {s["id"] for s in SUSPECTS}:
                                 raise ValueError("Unknown suspect.")
+                            rationale = msg.get("rationale", "")
+                            if not isinstance(rationale, str) or len(rationale) > 300:
+                                raise ValueError("Keep your accusation reason within 300 characters.")
                             room.votes[identity] = suspect
+                            room.rationales[identity] = rationale.strip()
                     else:
                         raise ValueError("Unknown command.")
                     room.revision += 1
@@ -261,6 +343,7 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                         identity = previous_identity
                         raise ValueError("Room changes could not be saved. No changes were applied; try again after restoring storage.")
                     if joined_packet:
+                        room.guest_clients[ws] = identity
                         await ws.send_json(joined_packet)
                     await broadcast(room)
             except (ValueError, TypeError) as exc:
@@ -269,6 +352,7 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
         pass
     finally:
         room.clients.discard(ws)
+        room.guest_clients.pop(ws, None)
 
 DIST = ROOT / "frontend" / "dist"
 if DIST.exists():

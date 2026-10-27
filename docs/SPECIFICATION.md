@@ -34,7 +34,7 @@ Launch case: **The Last Toast at Blackthorn Manor**. Tone: elegant intrigue with
 | --- | --- |
 | M0: First slice | Host + guest + TV complete the authored case with real WebSockets and scripted detective |
 | M1: Reliable rehearsal | Consistent Blackthorn canon, recoverable saved room, contextual detective questions, useful host gates, full browser flow and CI green |
-| M2: Dinner participation | Assigned characters, private goals/secrets with per-player projection, short introduction and accusation rationale; four-player rehearsal |
+| M2: Dinner participation | Assigned characters, private goals/secrets with per-player projection, optional introduction and private accusation rationale; four-guest automated flow plus a separately recorded human rehearsal |
 | M3: Optional real dialogue | One explicit provider adapter, validated structured responses, no spoiler leakage, timeout/fallback behavior; offline/scripted mode preserved |
 | M4: Voice and performance | Consented microphone/transcription, custom voice if selected, interruption, rigged character and visemes; each component optional and tested |
 | M5: Hosted pilot | Durable deployment, account/session boundaries, room expiry, rate limits, monitoring, HTTPS and tested recovery |
@@ -43,7 +43,7 @@ M3–M5 require separate acceptance and actual integration work; they are not de
 
 ## Scope for the current rehearsal
 
-One case, 3 authored suspects, 1–24 connected guest identities, trusted local network, one backend process, SQLite on one machine. Intended initial rehearsal: 3–6 guests, approximately 20–30 minutes. Guests currently investigate as themselves; full private character play belongs to M2. Actual phones and a physical TV must be rehearsed separately from viewport tests.
+One case, 3 authored suspects, 1–24 connected guest identities, trusted local network, one backend process, SQLite on one machine. Intended initial rehearsal: 3–6 guests, approximately 20–30 minutes. M2 assigns the first three guests to suspect characters and additional guests to visiting investigators. Character briefs and objectives use guest-only payloads. Introductions are optional and deliberately public; accusation reasons stay private until the finale. The culprit player receives actor knowledge, so they participate in the drama rather than a blind guessing contest. Actual phones and a physical TV must be rehearsed separately from viewport tests.
 
 ## Quality gate
 

@@ -1,5 +1,20 @@
 # Validation results
 
+## M2 local integration — October 27, 2026
+
+| Check | Result |
+| --- | --- |
+| Backend | 57 passed: includes private delivery, spoofing/access checks, character design, migration/recovery, rollback and unchanged case grounding |
+| Client | 12 passed: includes separate private decoder, malformed private payloads and final-only public rationale validation |
+| TypeScript + production build | Passed |
+| Browser | 3 passed: four independent guests with reassignment/introductions/private reasons, full original case and renderer failure recovery |
+| Windows upgrade | Passed on real existing schema-1 saves: atomic migration to schema 2, progress/party/credentials preserved and frontend HTTP 200 |
+| Remote CI | Pending milestone push |
+
+The four-guest browser scenario inspects actual received WebSocket packets, checks that only the authenticated owner receives their private data, confirms host/TV receive none, and exercises concealed briefs, host reassignment, public introductions, reconnect and finale disclosure. Four phone-sized viewports have no horizontal overflow. Store tests validate additive migration and failure preservation. No paid AI/audio service was invoked.
+
+Human dinner playtesting, real phone/TV readability and actor comfort remain unverified. Automated character roleplay does not count as a human rehearsal. Introductions are intentionally public after submission; accusation reasons become public only at resolution.
+
 ## M1 local integration — October 27, 2026
 
 | Check | Result |

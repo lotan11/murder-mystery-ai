@@ -2,6 +2,14 @@ import json
 from contextlib import closing
 import sqlite3
 
+def receive(ws):
+    """Legacy state tests ignore additive identity-only character updates."""
+    while True:
+        packet = ws.receive_json()
+        if packet["type"] != "private":
+            return packet
+
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -31,26 +39,26 @@ def test_restart_restores_progress_votes_and_credentials(tmp_path, monkeypatch):
         room = client.post("/api/rooms").json()
         rid = room["room_id"]
         with client.websocket_connect(f"/ws/{rid}?role=organizer&token={room['organizer_token']}") as host:
-            host.receive_json()
+            receive(host)
             host.send_json({"type": "control", "action": "start"})
-            host.receive_json()
+            receive(host)
             for act in (1, 2):
                 for _ in range(2):
                     host.send_json({"type": "control", "action": "reveal"})
-                    host.receive_json()
+                    receive(host)
                 host.send_json({"type": "control", "action": "advance"})
-                assert host.receive_json()["data"]["act"] == act + 1
+                assert receive(host)["data"]["act"] == act + 1
         with client.websocket_connect(f"/ws/{rid}?role=guest") as guest:
-            guest.receive_json()
+            receive(guest)
             guest.send_json({"type": "join", "name": "Returning sleuth"})
-            identity = guest.receive_json()
-            guest.receive_json()
+            identity = receive(guest)
+            receive(guest)
             guest.send_json({"type": "accuse", "suspect": "margot"})
-            expected = guest.receive_json()["data"]
+            expected = receive(guest)["data"]
         with client.websocket_connect(f"/ws/{rid}?role=organizer&token={room['organizer_token']}") as host:
-            host.receive_json()
+            receive(host)
             host.send_json({"type": "control", "action": "pause"})
-            expected = host.receive_json()["data"]
+            expected = receive(host)["data"]
         assert expected["solution"] is None
         assert len(expected["evidence"]) == 4
     # Discard all live state. A new application lifespan must recover from SQLite only.
@@ -59,12 +67,12 @@ def test_restart_restores_progress_votes_and_credentials(tmp_path, monkeypatch):
         assert restarted.get("/health").json()["storage"] == "sqlite"
         assert restarted.get(f"/api/rooms/{rid}/state").json() == expected
         with restarted.websocket_connect(f"/ws/{rid}?role=guest&guest_token={identity['guest_token']}") as guest:
-            assert guest.receive_json()["data"] == expected
-            assert guest.receive_json()["guest_id"] == identity["guest_id"]
+            assert receive(guest)["data"] == expected
+            assert receive(guest)["guest_id"] == identity["guest_id"]
         with restarted.websocket_connect(f"/ws/{rid}?role=organizer&token={room['organizer_token']}") as host:
-            host.receive_json()
+            receive(host)
             host.send_json({"type": "control", "action": "resume"})
-            resumed = host.receive_json()["data"]
+            resumed = receive(host)["data"]
             assert resumed["revision"] == expected["revision"] + 1
             assert not resumed["paused"]
         public = json.dumps(resumed)
@@ -89,22 +97,22 @@ def test_failed_write_rolls_back_state_and_guest_identity(tmp_path, monkeypatch)
             raise StorageError("disk full")
         monkeypatch.setattr(app.state.room_store, "save", fail)
         with client.websocket_connect(f"/ws/{rid}?role=guest") as guest:
-            guest.receive_json()
+            receive(guest)
             guest.send_json({"type": "join", "name": "Not yet committed"})
-            assert guest.receive_json()["type"] == "error"
+            assert receive(guest)["type"] == "error"
             assert client.get(f"/api/rooms/{rid}/state").json() == initial
             monkeypatch.setattr(app.state.room_store, "save", save)
             guest.send_json({"type": "dialogue", "text": "Am I joined?"})
-            assert guest.receive_json()["type"] == "error"
+            assert receive(guest)["type"] == "error"
             guest.send_json({"type": "join", "name": "Committed guest"})
-            assert guest.receive_json()["type"] == "joined"
-            committed = guest.receive_json()["data"]
+            assert receive(guest)["type"] == "joined"
+            committed = receive(guest)["data"]
             assert len(committed["guests"]) == 1
         monkeypatch.setattr(app.state.room_store, "save", fail)
         with client.websocket_connect(f"/ws/{rid}?role=organizer&token={room['organizer_token']}") as host:
-            host.receive_json()
+            receive(host)
             host.send_json({"type": "control", "action": "start"})
-            assert host.receive_json()["type"] == "error"
+            assert receive(host)["type"] == "error"
         assert client.get(f"/api/rooms/{rid}/state").json() == committed
         assert app.state.room_store.load_all()[0]["revision"] == committed["revision"]
         assert client.post("/api/rooms").status_code == 503

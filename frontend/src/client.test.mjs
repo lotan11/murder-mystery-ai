@@ -6,7 +6,7 @@ const source = ts.transpileModule(
   readFileSync(new URL("./client.ts", import.meta.url), "utf8"),
   { compilerOptions: { module: ts.ModuleKind.ESNext } },
 ).outputText;
-const { socketURL, decodeState } = await import(
+const { socketURL, decodeState, decodePrivate } = await import(
   `data:text/javascript;base64,${Buffer.from(source).toString("base64")}`
 );
 test("secure socket URL preserves organizer credentials", () => {
@@ -108,5 +108,104 @@ test("released evidence accepts optional summaries without trusting structured c
   };
   assert.ok(
     decodeState(JSON.stringify({ type: "state", data: invalid })).error,
+  );
+});
+
+const privateCard = {
+  guest_id: "guest-ada",
+  character: {
+    id: "ada",
+    name: "Ada Blackthorn",
+    public_intro: "I am the heir.",
+    private_brief: "A private dramatic objective.",
+    objectives: ["Ask a careful question."],
+    performance_notes: "Keep your composure.",
+  },
+  introduction_submitted: false,
+  own_vote: null,
+};
+test("private character updates have a separate decoder and never replace public state", () => {
+  const packet = JSON.stringify({ type: "private", data: privateCard });
+  assert.deepEqual(decodeState(packet), {});
+  assert.deepEqual(decodePrivate(packet), { privateState: privateCard });
+  assert.deepEqual(
+    decodePrivate(JSON.stringify({ type: "state", data: snapshot })),
+    {},
+  );
+});
+test("private decoder rejects malformed roles, objectives and vote reasons", () => {
+  for (const data of [
+    { ...privateCard, character: { ...privateCard.character, id: "unknown" } },
+    {
+      ...privateCard,
+      character: { ...privateCard.character, private_brief: { hidden: true } },
+    },
+    {
+      ...privateCard,
+      character: { ...privateCard.character, objectives: [null] },
+    },
+    {
+      ...privateCard,
+      own_vote: { suspect: "margot", rationale: { hidden: true } },
+    },
+    { ...privateCard, own_vote: { suspect: "unknown", rationale: "A reason" } },
+  ])
+    assert.ok(decodePrivate(JSON.stringify({ type: "private", data })).error);
+});
+test("extended public participation records validate without accepting early rationales", () => {
+  const data = {
+    ...snapshot,
+    guests: [
+      {
+        id: "guest",
+        name: "Morgan",
+        character_id: "ada",
+        character_name: "Ada Blackthorn",
+        introduced: true,
+      },
+    ],
+    introductions: [
+      {
+        guest_id: "guest",
+        name: "Morgan",
+        character_name: "Ada Blackthorn",
+        text: "A public introduction.",
+      },
+    ],
+    accusations: [],
+  };
+  assert.deepEqual(
+    decodeState(JSON.stringify({ type: "state", data })).state,
+    data,
+  );
+  assert.ok(
+    decodeState(
+      JSON.stringify({
+        type: "state",
+        data: { ...data, introductions: [null] },
+      }),
+    ).error,
+  );
+  const accusation = {
+    guest_id: "guest",
+    name: "Morgan",
+    suspect: "margot",
+    rationale: "The tray.",
+  };
+  assert.ok(
+    decodeState(
+      JSON.stringify({
+        type: "state",
+        data: { ...data, accusations: [accusation] },
+      }),
+    ).error,
+  );
+  assert.ok(
+    decodeState(
+      JSON.stringify({
+        type: "state",
+        data: { ...data, act: 4, accusations: [accusation] },
+      }),
+    ).state,
   );
 });

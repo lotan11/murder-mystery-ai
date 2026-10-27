@@ -769,3 +769,115 @@ a:focus-visible {
 .view-guest .transcript > .eyebrow {
   display: none;
 }
+
+/* Private character play is confined to authenticated guest UI. */
+.private-character {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, #263c30, #172924);
+}
+.private-character h3 {
+  color: #d7bc85;
+  margin-bottom: 12px;
+}
+.private-character > .muted {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.private-brief {
+  border-top: 1px solid var(--border);
+  margin-top: 18px;
+  padding-top: 18px;
+}
+.private-brief p,
+.private-brief li {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #c7d2c3;
+}
+.private-brief ul {
+  padding-left: 19px;
+  margin: 0 0 18px;
+}
+.private-brief h3 {
+  font-size: 23px;
+}
+.performance-notes {
+  font-style: italic;
+  border-left: 2px solid var(--gold);
+  padding-left: 12px;
+}
+.introduction-form p {
+  font-size: 12px;
+  line-height: 1.8;
+}
+.introduction-form .text-button {
+  display: block;
+  padding-left: 0;
+}
+.assignment-row {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.assignment-row strong {
+  font-size: 13px;
+}
+.assignment-row p {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 7px 0;
+}
+.assignment-row select {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #3a5043;
+  background: #0e1b17;
+  color: #e0e7d9;
+  font: inherit;
+  font-size: 12px;
+  border-radius: 2px;
+}
+.assignment-row button {
+  margin-top: 10px;
+  font-size: 11px;
+}
+.assignment-row select:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.public-introductions,
+.public-accusations {
+  margin-top: 18px;
+}
+.public-introductions article,
+.public-accusations article {
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+}
+.public-introductions h3,
+.public-accusations h3 {
+  font-size: 23px;
+  margin: 0 0 9px;
+}
+.public-introductions h3 small {
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  color: var(--muted);
+  display: block;
+  margin-top: 7px;
+}
+.public-introductions p,
+.public-accusations p {
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+.own-vote {
+  font-size: 12px;
+  line-height: 1.8;
+  border-left: 2px solid var(--gold);
+  padding: 10px 12px;
+  background: #0e1b17;
+  overflow-wrap: anywhere;
+}

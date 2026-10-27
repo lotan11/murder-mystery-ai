@@ -1,3 +1,4 @@
+const characterIds = ["ada", "felix", "margot", "investigator"];
 export type Evidence = {
   id: string;
   title: string;
@@ -5,13 +6,45 @@ export type Evidence = {
   summary?: string;
   act: number;
 };
+export type CharacterId = "ada" | "felix" | "margot" | "investigator";
+export type PrivateState = {
+  guest_id: string;
+  character: {
+    id: CharacterId;
+    name: string;
+    public_intro: string;
+    private_brief: string;
+    objectives: string[];
+    performance_notes: string;
+  };
+  introduction_submitted: boolean;
+  own_vote: { suspect: string; rationale: string } | null;
+};
 export type RoomState = {
   room_id: string;
   title: string;
   act: number;
   paused: boolean;
   revision: number;
-  guests: { id: string; name: string }[];
+  guests: {
+    id: string;
+    name: string;
+    character_id?: CharacterId;
+    character_name?: string;
+    introduced?: boolean;
+  }[];
+  introductions?: {
+    guest_id: string;
+    name: string;
+    character_name: string;
+    text: string;
+  }[];
+  accusations?: {
+    guest_id: string;
+    name: string;
+    suspect: string;
+    rationale: string;
+  }[];
   evidence: Evidence[];
   available_evidence?: Pick<Evidence, "id" | "title" | "act">[];
   suspects: { id: string; name: string; description: string }[];
@@ -61,7 +94,27 @@ export function decodeState(raw: string): {
         Number(data.revision) >= 0 &&
         typeof data.paused === "boolean" &&
         Array.isArray(data.guests) &&
-        data.guests.every((guest) => strings(guest, ["id", "name"])) &&
+        data.guests.every(
+          (guest) =>
+            strings(guest, ["id", "name"]) &&
+            (guest.character_id === undefined ||
+              characterIds.includes(guest.character_id)) &&
+            (guest.character_name === undefined ||
+              typeof guest.character_name === "string") &&
+            (guest.introduced === undefined ||
+              typeof guest.introduced === "boolean"),
+        ) &&
+        (data.introductions === undefined ||
+          (Array.isArray(data.introductions) &&
+            data.introductions.every((entry) =>
+              strings(entry, ["guest_id", "name", "character_name", "text"]),
+            ))) &&
+        (data.accusations === undefined ||
+          (Array.isArray(data.accusations) &&
+            data.accusations.every((entry) =>
+              strings(entry, ["guest_id", "name", "suspect", "rationale"]),
+            ) &&
+            (data.act === 4 || data.accusations.length === 0))) &&
         Array.isArray(data.suspects) &&
         data.suspects.every((suspect) =>
           strings(suspect, ["id", "name", "description"]),
@@ -94,6 +147,51 @@ export function decodeState(raw: string): {
   } catch {
     return {
       error: "An unreadable room update arrived. Reconnect to recover.",
+    };
+  }
+}
+
+/** Private data stays in memory and is never merged into a public room snapshot. */
+export function decodePrivate(raw: string): {
+  privateState?: PrivateState;
+  error?: string;
+} {
+  try {
+    const message = JSON.parse(raw);
+    if (message?.type !== "private") return {};
+    const data = message.data;
+    const character = data?.character;
+    const string = (value: unknown) => typeof value === "string";
+    if (
+      data &&
+      typeof data.guest_id === "string" &&
+      data.guest_id &&
+      character &&
+      characterIds.includes(character.id) &&
+      [
+        character.name,
+        character.public_intro,
+        character.private_brief,
+        character.performance_notes,
+      ].every(string) &&
+      Array.isArray(character.objectives) &&
+      character.objectives.length > 0 &&
+      character.objectives.every(string) &&
+      typeof data.introduction_submitted === "boolean" &&
+      (data.own_vote === null ||
+        (data.own_vote &&
+          ["ada", "felix", "margot"].includes(data.own_vote.suspect) &&
+          string(data.own_vote.rationale)))
+    )
+      return { privateState: data as PrivateState };
+    return {
+      error:
+        "An incomplete private character update arrived. Reconnect to restore your card.",
+    };
+  } catch {
+    return {
+      error:
+        "An unreadable private character update arrived. Reconnect to restore your card.",
     };
   }
 }
