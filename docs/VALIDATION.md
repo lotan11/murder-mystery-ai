@@ -9,7 +9,7 @@
 | TypeScript + production build | Passed |
 | Browser | 3 passed: four independent guests with reassignment/introductions/private reasons, full original case and renderer failure recovery |
 | Windows upgrade | Passed on real existing schema-1 saves: atomic migration to schema 2, progress/party/credentials preserved and frontend HTTP 200 |
-| Remote CI | Pending milestone push |
+| Remote CI | Passed on source `091aa6b`: [GitHub run](https://github.com/lotan11/murder-mystery-ai/actions/runs/40604506205) |
 
 The four-guest browser scenario inspects actual received WebSocket packets, checks that only the authenticated owner receives their private data, confirms host/TV receive none, and exercises concealed briefs, host reassignment, public introductions, reconnect and finale disclosure. Four phone-sized viewports have no horizontal overflow. Store tests validate additive migration and failure preservation. No paid AI/audio service was invoked.
 

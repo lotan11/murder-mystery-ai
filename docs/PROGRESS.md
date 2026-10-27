@@ -4,7 +4,7 @@ Updated October 27, 2026. Authoritative handoff for the integrated repository; r
 
 ## Current milestone: M2 — playable dinner characters
 
-Software implementation is complete and locally verified. Remote CI acceptance is being checked after the milestone push. A four-person human dinner rehearsal remains pending; automated browser sessions do not establish story pacing or acting comfort.
+**Software milestone accepted and pushed to main.** Source commit `091aa6b` passes local tests and [GitHub CI](https://github.com/lotan11/murder-mystery-ai/actions/runs/40604506205). The follow-up acceptance commit updates documentation only. A four-person human dinner rehearsal remains pending; automated browser sessions do not establish story pacing or acting comfort.
 
 Delivered in the existing application:
 
@@ -20,6 +20,7 @@ Delivered in the existing application:
 
 - 57 backend tests pass, covering story/cards, progression, access/privacy, forged identity rejection, migration, rollback, restart and malformed data.
 - 12 client tests and the TypeScript/production build pass.
+- [Independent GitHub CI](https://github.com/lotan11/murder-mystery-ai/actions/runs/40604506205) passes backend/client tests, build and all browser scenarios.
 - Three browser scenarios pass: full host/TV/phone case, four independent guests with isolated roles/introductions/reassignment/finale rationales, and WebGL fallback.
 - A real Windows server upgrade migrated the existing schema-1 database to schema 2. Case progress, party identities, host credentials and HTTP 200 frontend were preserved.
 - Four-guest mobile viewports have no horizontal overflow. Real phones, physical TV readability and a human dinner rehearsal remain manual work.

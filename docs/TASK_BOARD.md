@@ -17,9 +17,9 @@ Updated October 27, 2026. Lead/integrator owns this board. Status reflects commi
 
 | ID | Priority | Milestone | Status | Acceptance / dependency |
 | --- | --- | --- | --- | --- |
-| M2-01 | P1 | Private characters | Done; local QA passed | Assign character cards; public identity and private goals separated server-side |
-| M2-02 | P1 | Private characters | Done; local QA passed | Guest-only secret delivery and host roster; reconnect restores assignment without leaking secrets |
-| M2-03 | P1 | Participation | Done; local QA passed | Introductory round, accusation rationale and final reconstruction tied to motives |
+| M2-01 | P1 | Private characters | Done; local + CI pass | Assign character cards; public identity and private goals separated server-side |
+| M2-02 | P1 | Private characters | Done; local + CI pass | Guest-only secret delivery and host roster; reconnect restores assignment without leaking secrets |
+| M2-03 | P1 | Participation | Done; local + CI pass | Introductory round, accusation rationale and final reconstruction tied to motives |
 | M2-04 | P1 | Rehearsal | Automated four-guest flow passed; human rehearsal pending | Four actual players, phones + TV, 20–30 minute rehearsal and feedback record |
 | M3-01 | P1 | Optional AI | Planned | Provider decision, released-fact context, validated structured response and deterministic fallback |
 | M3-02 | P1 | Optional AI | Planned | Spoiler/injection/timeout/cost tests before enabling model-backed dialogue |
