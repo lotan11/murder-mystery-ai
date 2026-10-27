@@ -1,5 +1,6 @@
 from __future__ import annotations
 import asyncio
+import json
 import secrets
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -41,6 +42,10 @@ class Room:
                 "integrations": {"dialogue": "deterministic mock", "microphone": "not connected", "avatar": "procedural placeholder", "lip_sync": "not connected"}}
 
 rooms: dict[str, Room] = {}
+
+def token_matches(candidate: str, expected: str) -> bool:
+    # compare_digest's string form rejects non-ASCII user input.
+    return secrets.compare_digest(candidate.encode("utf-8"), expected.encode("utf-8"))
 
 @app.get("/health")
 def health():
@@ -117,19 +122,24 @@ def control(room, msg):
 @app.websocket("/ws/{room_id}")
 async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "", guest_token: str = ""):
     room = rooms.get(room_id.upper())
-    if room is None or role not in ("tv", "guest", "organizer") or (role == "organizer" and not secrets.compare_digest(token, room.organizer_token)):
+    if room is None or role not in ("tv", "guest", "organizer") or (role == "organizer" and not token_matches(token, room.organizer_token)):
         await ws.close(code=1008)
         return
     await ws.accept()
-    identity = next((k for k, g in room.guests.items() if guest_token and secrets.compare_digest(g["token"], guest_token)), None) if role == "guest" else None
+    identity = next((k for k, g in room.guests.items() if guest_token and token_matches(guest_token, g["token"])), None) if role == "guest" else None
     room.clients.add(ws)
-    await ws.send_json({"type": "state", "data": room.snapshot()})
-    if identity:
-        await ws.send_json({"type": "joined", "guest_id": identity, "guest_token": room.guests[identity]["token"]})
     try:
+        await ws.send_json({"type": "state", "data": room.snapshot()})
+        if identity:
+            await ws.send_json({"type": "joined", "guest_id": identity, "guest_token": room.guests[identity]["token"]})
         while True:
             try:
-                msg = await ws.receive_json()
+                packet = await ws.receive()
+                if packet["type"] == "websocket.disconnect":
+                    raise WebSocketDisconnect(packet.get("code", 1000))
+                if packet.get("text") is None:
+                    raise ValueError("Send commands as JSON text, not binary data.")
+                msg = json.loads(packet["text"])
                 if not isinstance(msg, dict):
                     raise ValueError("Expected an object command.")
                 async with room.lock:

@@ -25,3 +25,24 @@ test("server error is not treated as snapshot", () =>
   }));
 test("unknown event does not overwrite room state", () =>
   assert.deepEqual(decodeState('{"type":"performance","data":{}}'), {}));
+
+const snapshot = {
+  room_id: "ABC123", title: "The Last Toast", act: 0, paused: false,
+  revision: 0, guests: [], evidence: [], suspects: [], dialogue: "Welcome",
+  votes: {}, solution: null,
+};
+test("complete authoritative snapshots replace room state", () => {
+  assert.deepEqual(decodeState(JSON.stringify({ type: "state", data: snapshot })), { state: snapshot });
+});
+test("incomplete snapshots cannot reach rendering", () => {
+  for (const data of [
+    { evidence: [] },
+    { ...snapshot, guests: [null] },
+    { ...snapshot, evidence: [{ id: "clue" }] },
+    { ...snapshot, suspects: [{ id: "suspect", name: null }] },
+    { ...snapshot, votes: { suspect: "one" } },
+  ]) assert.ok(decodeState(JSON.stringify({ type: "state", data })).error);
+});
+test("structured error payload cannot crash the error banner", () => {
+  assert.equal(typeof decodeState('{"type":"error","message":{"unexpected":true}}').error, "string");
+});

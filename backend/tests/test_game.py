@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+from starlette.websockets import WebSocketDisconnect
 from backend.main import app, rooms
 
 @pytest.fixture
@@ -99,3 +100,41 @@ def test_validation(client):
         ws.send_json([])
         assert ws.receive_json()['type'] == 'error'
     assert client.get('/api/rooms/MISSING/state').status_code == 404
+
+
+def test_non_ascii_credentials_are_rejected_without_crashing(client):
+    room = create(client)
+    rid = room['room_id']
+    with pytest.raises(WebSocketDisconnect) as exc:
+        with client.websocket_connect(f'/ws/{rid}?role=organizer&token=%C3%A9'):
+            pass
+    assert exc.value.code == 1008
+    # Unknown guest credentials do not restore another guest's identity.
+    with client.websocket_connect(f'/ws/{rid}?role=guest&guest_token=%C3%A9') as ws:
+        assert ws.receive_json()['type'] == 'state'
+        assert send(ws, type='dialogue', text='hello')['type'] == 'error'
+        assert send(ws, type='join', name='New guest')['type'] == 'joined'
+        assert len(ws.receive_json()['data']['guests']) == 1
+
+
+def test_binary_frames_are_errors_and_connection_remains_usable(client):
+    room = create(client)
+    with client.websocket_connect(f"/ws/{room['room_id']}?role=guest") as ws:
+        initial = ws.receive_json()['data']
+        ws.send_bytes(b'{"type":"join","name":"Binary"}')
+        assert ws.receive_json()['type'] == 'error'
+        assert client.get(f"/api/rooms/{room['room_id']}/state").json() == initial
+        assert send(ws, type='join', name='Text guest')['type'] == 'joined'
+        assert ws.receive_json()['data']['revision'] == initial['revision'] + 1
+
+
+def test_failed_commands_do_not_mutate_state_or_other_rooms(client):
+    first, second = create(client), create(client)
+    initial_second = client.get(f"/api/rooms/{second['room_id']}/state").json()
+    with client.websocket_connect(f"/ws/{first['room_id']}?role=organizer&token={first['organizer_token']}") as ws:
+        ws.receive_json()
+        state = send(ws, type='control', action='start')['data']
+        for command in [dict(type='control', action='advance'), dict(type='control', action='reveal', evidence_id='note'), dict(type='accuse', suspect='margot')]:
+            assert send(ws, **command)['type'] == 'error'
+            assert client.get(f"/api/rooms/{first['room_id']}/state").json() == state
+    assert client.get(f"/api/rooms/{second['room_id']}/state").json() == initial_second

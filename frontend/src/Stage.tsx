@@ -38,6 +38,7 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
+    renderer.domElement.setAttribute("aria-hidden", "true");
     host.appendChild(renderer.domElement);
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
@@ -195,8 +196,8 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
     );
     floor.receiveShadow = true;
     const resize = () => {
-      const width = host.clientWidth,
-        height = host.clientHeight;
+      const width = Math.max(host.clientWidth, 1),
+        height = Math.max(host.clientHeight, 1);
       renderer.setSize(width, height);
       camera.aspect = width / Math.max(height, 1);
       camera.updateProjectionMatrix();
@@ -206,14 +207,16 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
     resize();
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
-    ).matches;
+    );
     let frame = 0,
       elapsed = 0,
       previous = performance.now();
+    let disposed = false;
     const draw = (now: number) => {
+      if (disposed) return;
       const dt = Math.min((now - previous) / 1000, 0.05);
       previous = now;
-      if (!pausedRef.current && !reduce) elapsed += dt;
+      if (!pausedRef.current && !reduce.matches) elapsed += dt;
       character.position.y = Math.sin(elapsed * 1.3) * 0.014;
       head.rotation.y = Math.sin(elapsed * 0.45) * 0.055;
       head.rotation.z = Math.sin(elapsed * 0.7) * 0.014;
@@ -221,7 +224,9 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
       frame = requestAnimationFrame(draw);
     };
     frame = requestAnimationFrame(draw);
-    return () => {
+    const dispose = () => {
+      if (disposed) return;
+      disposed = true;
       cancelAnimationFrame(frame);
       observer.disconnect();
       scene.traverse((obj) => {
@@ -235,6 +240,16 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
       });
       renderer.dispose();
       renderer.domElement.remove();
+    };
+    const contextLost = (event: Event) => {
+      event.preventDefault();
+      dispose();
+      setFallback(true);
+    };
+    renderer.domElement.addEventListener("webglcontextlost", contextLost);
+    return () => {
+      renderer.domElement.removeEventListener("webglcontextlost", contextLost);
+      dispose();
     };
   }, []);
 
