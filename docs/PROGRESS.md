@@ -2,7 +2,7 @@
 
 Updated October 27, 2026. This is the lead's authoritative handoff. Read it with `SPECIFICATION.md`, `TASK_BOARD.md`, `DECISIONS.md` and the spoiler-marked `GAME_DESIGN.md`.
 
-## Current milestone: M1 â€” reliable Blackthorn rehearsal
+## Current milestone: M1 — reliable Blackthorn rehearsal
 
 **Accepted and pushed to main.** Source commit `e27ab9a` passes local acceptance and [GitHub CI](https://github.com/lotan11/murder-mystery-ai/actions/runs/40600489863). The acceptance-record commit only updates documentation. The application is ready for a short human rehearsal; this is not a claim that the entire production platform is complete.
 
@@ -27,7 +27,7 @@ Delivered in one application:
 
 AI dialogue remains deterministic; external model calls are not enabled. Browser speech is real but optional and device-dependent. Microphone capture, custom TTS, production rigged avatar, speech-driven lip sync and public deployment are absent. The procedural avatar is a placeholder. SQLite is real persistence for one backend process, not distributed storage or account authentication.
 
-## Next milestone: M2 â€” private dinner characters
+## Next milestone: M2 — private dinner characters
 
 1. Define three character cards and investigator/spectator behavior for larger parties; retain fixed case IDs and authored solution.
 2. Deliver private objectives through authenticated per-guest payloads, separate from the public room snapshot; test cross-guest and TV isolation.

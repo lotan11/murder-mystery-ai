@@ -2,7 +2,7 @@
 
 Updated October 27, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
 
-## Current delivery: M1 â€” reliable Blackthorn rehearsal
+## Current delivery: M1 — reliable Blackthorn rehearsal
 
 | ID | Priority | Stream / owner | Status | Deliverable / acceptance |
 | --- | --- | --- | --- | --- |
@@ -20,7 +20,7 @@ Updated October 27, 2026. Lead/integrator owns this board. Status reflects commi
 | M2-01 | P1 | Private characters | Ready after M1 | Assign character cards; public identity and private goals separated server-side |
 | M2-02 | P1 | Private characters | Planned | Guest-only secret delivery and host roster; reconnect restores assignment without leaking secrets |
 | M2-03 | P1 | Participation | Planned | Introductory round, accusation rationale and final reconstruction tied to motives |
-| M2-04 | P1 | Rehearsal | Manual test pending | Four actual players, phones + TV, 20â€“30 minute rehearsal and feedback record |
+| M2-04 | P1 | Rehearsal | Manual test pending | Four actual players, phones + TV, 20–30 minute rehearsal and feedback record |
 | M3-01 | P1 | Optional AI | Planned | Provider decision, released-fact context, validated structured response and deterministic fallback |
 | M3-02 | P1 | Optional AI | Planned | Spoiler/injection/timeout/cost tests before enabling model-backed dialogue |
 | M4-01 | P2 | Speech | Planned | Consent, push-to-talk transcription, pause/mute/interruption and visible audio state |
@@ -35,4 +35,4 @@ Updated October 27, 2026. Lead/integrator owns this board. Status reflects commi
 
 The lead resolves architecture and implementation choices within the accepted scope. External model/voice spend, avatar licensing or public hosting need a concrete proposed integration before user input. No paid provider, recording, purchased asset or public deployment is enabled in M1.
 
-Planning context: earlier availability was three weeks part-time, roughly 10â€“12 hours/week. M1 creates a reliable short rehearsal; M2 is the next playable target. Production-quality voice, avatar and hosting are separate milestones, not an implied three-week promise.
+Planning context: earlier availability was three weeks part-time, roughly 10–12 hours/week. M1 creates a reliable short rehearsal; M2 is the next playable target. Production-quality voice, avatar and hosting are separate milestones, not an implied three-week promise.
