@@ -27,3 +27,14 @@ For multiple simulated players on one computer, use separate browser profiles or
 Report feedback in this chat; the lead should update `PROGRESS.md` and the task board rather than create an unrelated specification elsewhere. Do not post host or guest bearer tokens in public issues.
 
 The automation validates software behavior; only a real dinner rehearsal validates pacing and room readability. The complete solution and timeline are documented in `GAME_DESIGN.md` (spoilers).
+
+## Local TV performance rehearsal
+
+1. Start on Windows, create an evening, open the organizer-generated TV link in a second tab/device. Confirm captions and evidence appear with speech silent.
+2. Select Animated detective, wait for the sample, choose David or Zira, and enable local voice. Confirm current public line and restrained mouth movement.
+3. Begin the case, reveal clues and ask a released-evidence question. Confirm changed public dialogue speaks; a guest joining or other unchanged-text snapshot must not repeat the same line.
+4. Pause during speech and during preparation. Confirm immediate playback stop and no delayed old line. Resume and deliberately Replay dialogue; Mute then change acts and confirm silence.
+5. Switch voices, disable the animated detective and reload/disconnect. Confirm no overlapping device voice and no automatic re-enable after reconnect.
+6. With speech support unavailable, confirm captions/evidence and host controls still work. A room-only TV link without a capability should explain how to obtain speech access.
+
+Automated transport/animation fixtures are synthetic tones. Subjective voice quality, precise lip timing and physical TV/phone playback need a human rehearsal; do not mark them validated from CI alone.
