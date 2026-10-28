@@ -12,7 +12,7 @@ The host opens acts and releases clues. Wobblebottom explains already released f
 
 Lord Blackthorn collapses during a dinner at his manor. His untouched port invites an obvious theory; his tea provides the less convenient truth. Ada Blackthorn has fought with her father over the estate. Felix Finch owes him money. Dr. Margot Vale has been trusted with the family's medical supplies for years.
 
-Detective Reginald P. Wobblebottom is serious, composed, observant and respectful. He uses measured, direct language without sarcasm, comic asides or remarks at the guests’ expense. He distinguishes evidence from assumptions and explains uncertainty clearly. He never invents testimony or announces a culprit before the final reconstruction.
+Detective Reginald P. Wobblebottom is competent, observant and quietly charismatic. His default personality uses playfully sarcastic dry humor with measured conversational timing and subtle facial expressions. Humor gently questions theories, never humiliates players or replaces evidence. Avoid slapstick, exaggerated lips, cartoon movement, broad grins and constant comic asides. He distinguishes facts from assumptions and never announces the culprit before the final reconstruction.
 
 ## Fair-play contract
 

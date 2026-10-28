@@ -1,0 +1,439 @@
+.casting-page {
+  min-height: 100svh;
+  background:
+    radial-gradient(ellipse at 30% 20%, #28453966, transparent 62%), #0d1817;
+  color: #e8e4d7;
+}
+.casting-header {
+  height: 90px;
+  padding: 0 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.casting-header > a:last-child {
+  font-size: 12px;
+  color: var(--gold);
+  text-decoration: none;
+}
+.casting-main {
+  max-width: 1540px;
+  padding: 40px 5% 65px;
+  margin: auto;
+}
+.casting-main > h1 {
+  font-size: 65px;
+  margin: 16px 0;
+}
+.casting-intro {
+  font-size: 14px;
+  line-height: 1.9;
+  color: #acbcae;
+  margin-bottom: 30px;
+}
+.casting-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 355px;
+  gap: 30px;
+}
+.casting-character-options,
+.casting-voice-options {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.casting-character-options legend,
+.casting-voice-options legend {
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+.casting-character-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.casting-character-options label,
+.casting-voice-options label {
+  position: relative;
+  margin: 0;
+  padding: 16px 14px;
+  background: #14271f;
+  border: 1px solid #3a5040;
+  cursor: pointer;
+}
+.casting-character-options label.selected,
+.casting-voice-options label.selected {
+  border-color: var(--gold);
+  background: #2b3b2a;
+}
+.casting-character-options input,
+.casting-voice-options input {
+  width: auto;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  margin: 0;
+  accent-color: var(--gold);
+}
+.casting-character-options strong {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: 400;
+  display: block;
+  padding-right: 10px;
+  color: #e3d6b9;
+}
+.casting-character-options span,
+.casting-voice-options span {
+  display: block;
+  font-size: 10px;
+  line-height: 1.8;
+  color: #a5b8a5;
+  margin-top: 9px;
+}
+.casting-portrait {
+  position: relative;
+  height: 650px;
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid #807042;
+  background: radial-gradient(ellipse at 50% 30%, #4b6254, #132721 70%);
+  border-radius: 3px;
+}
+.casting-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0;
+}
+.casting-portrait img.ready {
+  opacity: 1;
+}
+.casting-portrait-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 52px 25px 23px;
+  background: linear-gradient(transparent, #091713f5);
+  text-shadow: 0 1px 6px #000;
+}
+.casting-portrait-label strong {
+  display: block;
+  color: #e5d3ae;
+  font-family: Georgia, serif;
+  font-size: 32px;
+  font-weight: 400;
+  margin-bottom: 9px;
+}
+.casting-portrait-label span {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: #c7ceb7;
+}
+.casting-portrait-pending {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 42%;
+  text-align: center;
+  font-size: 13px;
+  color: #d0c3a1;
+}
+.casting-direction {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #9fb39f;
+  margin: 15px 0;
+}
+.casting-desk .panel {
+  padding: 24px;
+  margin-bottom: 18px;
+}
+.casting-note {
+  font-size: 11px;
+  line-height: 1.9;
+  color: #a6b7a5;
+}
+.casting-voice-options {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 18px 0;
+}
+.casting-voice-options strong {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: 21px;
+  color: #e0cfaa;
+}
+.casting-voice-options span {
+  margin-top: 6px;
+}
+.casting-desk select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #53654b;
+  background: #0e1d17;
+  color: #e2e6d5;
+  font: inherit;
+  font-size: 11px;
+}
+.casting-desk select:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.casting-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 19px;
+}
+.casting-actions button {
+  font-size: 12px;
+}
+.casting-status {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #d0d5bd;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin: 18px 0 0;
+}
+.casting-error,
+.casting-unavailable {
+  font-size: 11px;
+  line-height: 1.8;
+  padding-left: 12px;
+  border-left: 2px solid #b89a6b;
+  color: #d4bd9b;
+  margin-top: 15px;
+}
+.casting-script {
+  padding: 26px 6% 30px;
+  text-align: center;
+  border: 1px solid #536246;
+  background: #182b21;
+  margin: 24px 0;
+}
+.casting-script > p {
+  font-family: Georgia, serif;
+  font-size: 25px;
+  line-height: 1.7;
+  margin: 14px auto 18px;
+  max-width: 1000px;
+}
+.casting-caption-note {
+  font-size: 10px;
+  line-height: 1.7;
+  color: #94aa95;
+}
+.casting-overview {
+  padding: 28px;
+}
+.casting-table-wrap {
+  overflow: auto;
+}
+.casting-overview table {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: left;
+  margin: 22px 0;
+}
+.casting-overview th,
+.casting-overview td {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 12px;
+  font-size: 12px;
+}
+.casting-overview th {
+  font-weight: 400;
+  color: #c9b180;
+}
+.casting-overview tbody th {
+  font-family: Georgia, serif;
+  font-size: 19px;
+  color: #dddbc7;
+}
+.casting-overview button {
+  font-size: 11px;
+  min-width: 90px;
+}
+.casting-overview button.selected {
+  border-color: var(--gold);
+  color: #e0c38b;
+  background: #344a31;
+}
+.casting-star {
+  color: #d8b969;
+}
+.casting-shortlist {
+  padding: 28px;
+  margin-top: 18px;
+}
+.casting-shortlist > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.casting-shortlist > div:last-child > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  padding: 10px 14px;
+  background: #243c2b;
+  border: 1px solid #6b7850;
+  color: #d5d1b7;
+  font-size: 12px;
+}
+.casting-shortlist button {
+  padding: 0 4px;
+  background: none;
+  border: 0;
+  color: #c6b588;
+  font-size: 20px;
+}
+.casting-page > audio {
+  display: none;
+}
+@media (max-width: 1000px) {
+  .casting-layout {
+    grid-template-columns: minmax(0, 1fr) 305px;
+    gap: 20px;
+  }
+  .casting-portrait {
+    height: 600px;
+  }
+  .casting-character-options {
+    grid-template-columns: 1fr;
+  }
+  .casting-character-options label {
+    padding: 13px 14px;
+  }
+  .casting-character-options span {
+    margin-top: 4px;
+  }
+  .casting-desk .panel {
+    padding: 21px;
+  }
+}
+@media (max-width: 760px) {
+  .casting-main {
+    padding-top: 28px;
+  }
+  .casting-main > h1 {
+    font-size: 49px;
+  }
+  .casting-header {
+    height: 78px;
+  }
+  .casting-header > a:last-child {
+    font-size: 10px;
+    text-align: right;
+    max-width: 110px;
+  }
+  .casting-layout {
+    display: block;
+  }
+  .casting-character-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .casting-character-options strong {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .casting-character-options span {
+    display: none;
+  }
+  .casting-portrait {
+    height: 560px;
+  }
+  .casting-desk {
+    margin-top: 25px;
+  }
+  .casting-voice-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 9px;
+  }
+  .casting-voice-options label {
+    padding: 15px 12px;
+  }
+  .casting-voice-options strong {
+    font-size: 20px;
+  }
+  .casting-script > p {
+    font-size: 22px;
+  }
+  .casting-overview,
+  .casting-shortlist {
+    padding: 21px;
+  }
+}
+@media (max-width: 500px) {
+  .casting-header .brand {
+    font-size: 8px;
+    letter-spacing: 1.2px;
+  }
+  .casting-header .brand-sub {
+    font-size: 6px;
+    letter-spacing: 1.5px;
+  }
+  .casting-main > h1 {
+    font-size: 42px;
+  }
+  .casting-intro {
+    font-size: 12px;
+  }
+  .casting-character-options label {
+    padding: 27px 10px 10px;
+  }
+  .casting-portrait {
+    height: 460px;
+  }
+  .casting-portrait-label strong {
+    font-size: 27px;
+  }
+  .casting-portrait-label span {
+    font-size: 9px;
+    line-height: 1.7;
+    display: block;
+  }
+  .casting-voice-options {
+    display: flex;
+  }
+  .casting-overview th,
+  .casting-overview td {
+    padding: 12px 8px;
+  }
+  .casting-overview tbody th {
+    font-size: 15px;
+    min-width: 100px;
+  }
+  .casting-overview button {
+    min-width: 72px;
+    padding: 10px 7px;
+  }
+  .casting-script {
+    padding: 25px 18px;
+  }
+  .casting-script > p {
+    font-size: 21px;
+  }
+}
+
+.casting-script > p.casting-note {
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #a5b8a5;
+  max-width: 760px;
+  margin: 18px auto;
+}

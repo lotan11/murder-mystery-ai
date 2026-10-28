@@ -1,3 +1,13 @@
+# Latest delivery: character and British voice approval audition — October 28, 2026
+
+User requested three premium stylized-realistic detective candidates, three mature British voice candidates and restored playfully sarcastic dry humor. The separate `?view=casting` page now presents three original generated concept portraits (Classic/Modern/Scholar), George/Daniel/Lewis British male Kokoro neural recordings, three identical scene scripts, all nine face/voice pairings, captions, explicit play/stop and a device-local shortlist. The portraits are concepts, not rigged 3D avatars. The shortlist is not approval and cannot activate anything in the game.
+
+Nine real local full-precision neural WAVs were generated at speed 0.92 using verified public model assets in an isolated optional runtime. All nine API/audio paths were inspected and decoded in the real browser, with distinct audio hashes, no clipping at PCM limits, no page errors, no external playback requests and no mobile page overflow. Performance directions are provided for approval; no precise emotion control, measured word timing or candidate lip-sync is claimed. See CASTING_APPROVAL.md for regeneration, licensing boundaries, prompts and limits.
+
+Latest personality direction overrides the earlier serious-only choice: restrained, respectful dry humor is restored in default game narration, scripted framing, hints and approved AI remarks. Existing saved lines are preserved rather than automatically rewritten to serious text. Case facts, solution and identity remain unchanged. Working procedural/TalkingHead avatar, approved mouth/expression profile, local Windows speech and all game interfaces remain intact; no new face or neural voice replaces an active game asset.
+
+Verification: 215 backend tests pass, with two Windows symlink privilege skips; 15 client tests and production build pass; all nine browser scenarios pass (previous seven plus casting comparison/missing-recordings). Real desktop/mobile casting screenshots were reviewed. Character, voice and inflection approval are pending; final 3D production/rigging and any activation follow that approval. Remote CI follows the source push.
+
 # Latest direction: serious detective and case authoring — October 28, 2026
 
 User requested a serious detective without sarcasm and asked for easier story changes. Scripted framing, all event narration, approved AI remarks and local audition lines now use a composed, factual delivery. Existing local David/Zira samples were regenerated. Known earlier authored phrases in saved narration normalize on restore; case facts, credentials and private player data are preserved. Approved restrained avatar animation is unchanged.

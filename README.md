@@ -102,4 +102,8 @@ The TV can opt into the approved TalkingHead sample and local Windows speech for
 
 ## Editing the story
 
-The server-only [Blackthorn case package](backend/cases/blackthorn.json) contains the story, clues, private cards, hints and narration. Read [case authoring and current limits](docs/CASE_AUTHORING.md) before editing. The detective now uses a serious, respectful style without sarcasm.
+The server-only [Blackthorn case package](backend/cases/blackthorn.json) contains the story, clues, private cards, hints and narration. Read [case authoring and current limits](docs/CASE_AUTHORING.md) before editing. The detective uses respectful dry humor under the latest personality direction.
+
+## Choose the character and voice
+
+Open `/?view=casting` to compare three original concept portraits and three real local British neural voices across identical scenes. No candidate replaces the active game avatar or voice. See [casting setup and approval boundary](docs/CASTING_APPROVAL.md), including optional regeneration and licensing provenance.

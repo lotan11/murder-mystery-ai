@@ -11,7 +11,7 @@ The user has authorized development, routine technical decisions, integration, t
 - `docs/PROGRESS.md`: latest handoff, verification results, and next task.
 - `docs/AI_INTEGRATION.md`: optional provider configuration, bounded planning and live-test limitations.
 
-Inspect Git status, remote branches, open PRs, and the latest CI results before implementation. Preserve unrelated edits. Reuse reviewed work from other branches instead of duplicating it. Story facts, role cards, case narration, topic aliases and hints live in `backend/cases/blackthorn.json`; `backend/mystery.py` and `backend/characters.py` are compatibility exports. Read `docs/CASE_AUTHORING.md` before editing a case. Detective delivery is serious and respectful, without sarcasm. Story facts stay server-side; all clients receive server projections. Do not introduce a second engine, case package, or frontend for the same responsibility.
+Inspect Git status, remote branches, open PRs, and the latest CI results before implementation. Preserve unrelated edits. Reuse reviewed work from other branches instead of duplicating it. Story facts, role cards, case narration, topic aliases and hints live in `backend/cases/blackthorn.json`; `backend/mystery.py` and `backend/characters.py` are compatibility exports. Read `docs/CASE_AUTHORING.md` before editing a case. Detective delivery is observant, respectful and playfully sarcastic, with restrained dry humor and no slapstick. New candidate portraits/voices stay in the separate casting sandbox until user approval. Story facts stay server-side; all clients receive server projections. Do not introduce a second engine, case package, or frontend for the same responsibility.
 
 ## Parallel development and integration
 

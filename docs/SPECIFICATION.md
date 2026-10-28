@@ -6,7 +6,7 @@ Status: authoritative working specification, updated October 27, 2026.
 
 Let an organizer run a dinner mystery from a host desk while guests participate on phones and a shared television presents Detective Reginald P. Wobblebottom, dialogue, and cinematic evidence. The user should test complete milestones rather than assemble work from separate conversations.
 
-Launch case: **The Last Toast at Blackthorn Manor**. Tone: serious intrigue with a composed, respectful detective. Wobblebottom explains evidence methodically, without sarcasm, jokes or comic asides. The case must have an authored, consistent solution independent of an AI model.
+Launch case: **The Last Toast at Blackthorn Manor**. Tone: elegant intrigue with a composed detective, playfully sarcastic dry humor, natural conversational timing and subtle expressions. Humor never humiliates guests, replaces facts or becomes slapstick. The case must have an authored, consistent solution independent of an AI model.
 
 ## Users and surfaces
 
@@ -56,3 +56,7 @@ A separate `?view=audition` route compares locally prepared David/Zira speech on
 ## Optional TV local performance
 
 Keep the original TV stage available. An opt-in TalkingHead performance can speak current server-selected public dialogue with installed Windows voices, explicit enable/mute/replay, pause and disconnect cancellation, captions and clear sample-avatar labels. Guest private material and arbitrary request text must never reach synthesis. Stale generation must not play after state changes. Final British voice, bespoke detective rig, microphone and premium services are outside this increment.
+
+## Character and voice approval sandbox
+
+Offer three premium stylized-realistic mature detective concept portraits and three British male neural voice candidates at `?view=casting`. Compare the same three short scenes across every face/voice pairing without autoplay. Save a device-local shortlist; no candidate replaces active game assets until user approval. Distinguish concepts from rigged 3D avatars, generated voice audio from test tones, and performance direction from precise emotional control. See CASTING_APPROVAL.md.

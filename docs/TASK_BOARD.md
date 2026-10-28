@@ -68,3 +68,15 @@ Approved animation refinement CI is green: run 40715846893. No final voice or as
 - Implemented: one server-only JSON case package, validated at startup, with facts, suspects, private cards, hints, topic aliases and event narration. Compatibility exports preserve the engine.
 - Pending later: multiple-case selection, arbitrary role IDs/rosters, editor UI and reusable visual themes. The current prototype keeps fixed role IDs and three investigation acts.
 - Verification: 197 backend tests pass (one Windows privilege skip); production build and all seven browser checks pass locally; current CI pending.
+
+## Current approval milestone: Wobblebottom casting
+
+| Task | Owner | Status | Evidence |
+| --- | --- | --- | --- |
+| Three premium concept portraits | Lead / image generation | Done | Classic, Modern, Scholar; source PNGs and exact prompts in repo |
+| Three British neural voice candidates | Backend | Done | George, Daniel, Lewis; nine actual local WAVs, fixed identical scenes |
+| Nine-pair comparison studio | Frontend | Done | Separate casting route, captions, play/stop and local-only shortlist |
+| Restore restrained dry humor | Lead | Done | Default narration, scripted framing and approved remarks; no slapstick |
+| Regression / playback checks | Lead / QA | Local pass; CI pending | 215 backend, 15 client, nine browser scenarios; actual nine-clip playback |
+| Character / voice / inflection selection | User | Awaiting approval | No candidate activated in game |
+| Selected 3D rig and final voice activation | Lead | Pending selection | Keep working avatar/local SAPI until approved |

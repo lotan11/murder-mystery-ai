@@ -10,7 +10,7 @@ The authoritative story is `backend/cases/blackthorn.json`. It is a **server-onl
 - `narration`: welcome, case opening, act transition and reset lines.
 - `solution`: the final evidence-based reconstruction.
 
-Detective manner stays separate: `backend/dialogue.py` provides serious, neutral response framing; `backend/ai_dialogue.py` supplies approved neutral remarks. The avatar, local speech and WebSocket interfaces consume the same public dialogue, so they do not need rebuilding for ordinary story text edits. Frontend production rebuilding is unnecessary for JSON-only edits; restart the backend to load the edited package.
+Detective manner stays separate: `backend/dialogue.py` provides factual response framing with restrained dry humor; `backend/ai_dialogue.py` supplies approved dry-humor remarks. The avatar, local speech and WebSocket interfaces consume the same public dialogue, so they do not need rebuilding for ordinary story text edits. Frontend production rebuilding is unnecessary for JSON-only edits; restart the backend to load the edited package.
 
 ## Safe editing workflow
 

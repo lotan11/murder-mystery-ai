@@ -341,6 +341,9 @@ export default function App() {
             </form>
           </div>
           <p>
+            <a className="share-link" href="/?view=casting">
+              Compare detective looks and British voices ↗
+            </a>
             <a className="share-link" href="/?view=audition">
               Open the voice and avatar audition ↗
             </a>

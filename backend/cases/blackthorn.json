@@ -82,7 +82,7 @@
         "compound",
         "cyanide"
       ],
-      "hint": "Access is one question; opportunity is another. List what this ledger proves, and what it does not. Distinguish established facts from unresolved questions."
+      "hint": "Access is one question; opportunity is another. List what this ledger proves, and what it does not. A useful distinction, however inconvenient to a favourite theory."
     },
     {
       "id": "alibi",
@@ -98,7 +98,7 @@
         "ada",
         "felix"
       ],
-      "hint": "Compare the released evidence for access with the released alibi. Consider means and opportunity separately, and support each conclusion with a released fact."
+      "hint": "Compare the released evidence for access with the released alibi. Means and opportunity deserve separate attention; an unfortunate personality is not evidence of a crime."
     },
     {
       "id": "note",
@@ -170,9 +170,9 @@
     }
   },
   "narration": {
-    "welcome": "Good evening. I am Detective Reginald P. Wobblebottom. We will examine the evidence carefully and establish what happened at Blackthorn Manor.",
-    "reset": "The investigation has been reset. We will review the evidence from the beginning.",
-    "start": "Lord Blackthorn has died. We must establish the circumstances, examine the evidence, and account for each guest’s movements.",
-    "advance": "We will now examine the next stage of the investigation."
+    "welcome": "Good evening. I am Detective Reginald P. Wobblebottom. Let us establish the facts before the theories become too attached to themselves.",
+    "reset": "We begin again. The facts have not changed, though our theories may benefit from the opportunity.",
+    "start": "Lord Blackthorn is dead. We will examine the evidence carefully. First impressions are useful; they are also quite capable of being wrong.",
+    "advance": "Let us examine the next evidence. A promising theory should welcome the inconvenience of being tested."
   }
 }

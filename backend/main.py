@@ -14,9 +14,9 @@ from .mystery import CASE_ID, CASE_VERSION, TITLE, SUSPECTS, EVIDENCE, SOLUTION,
 from .dialogue import DialogueProvider, MockDialogueProvider
 from .storage import RoomStore, StorageError
 from .characters import CHARACTERS
-from .legacy_tone import serious_saved_dialogue
 from .ai_dialogue import load_config, OpenAIPlanner, PlannerError
 from .audition import router as audition_router
+from .casting import router as casting_router
 from .local_speech import LocalSpeechRenderer, create_router as local_speech_router
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -48,6 +48,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Wobblebottom Mystery Prototype", version="0.4.0", lifespan=lifespan)
 app.include_router(audition_router)
+app.include_router(casting_router)
 provider: DialogueProvider = MockDialogueProvider()
 
 @dataclass
@@ -143,7 +144,6 @@ class Room:
         if not valid:
             raise StorageError("Invalid saved room record. Preserve the database for recovery; no saved data was discarded.")
         restored = cls(**{key: copy.deepcopy(record[key]) for key in fields})
-        restored.dialogue = serious_saved_dialogue(restored.dialogue)
         return restored
 
     def restore(self, record):
@@ -528,6 +528,8 @@ if DIST.exists():
         app.mount("/assets", StaticFiles(directory=DIST / "assets"), name="assets")
     if (DIST / "audition").exists():
         app.mount("/audition", StaticFiles(directory=DIST / "audition"), name="audition-assets")
+    if (DIST / "casting").exists():
+        app.mount("/casting", StaticFiles(directory=DIST / "casting"), name="casting-assets")
     @app.get("/{path:path}")
     def frontend(path: str):
         if path.startswith(("api/", "ws/")):
