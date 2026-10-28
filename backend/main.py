@@ -535,6 +535,7 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                         except StorageError:
                             room.restore(before)
                             raise ValueError("Usage could not be reserved. No audio was sent for transcription.")
+                    await broadcast(room)
                     try:
                         transcript = await app.state.transcriber.transcribe(audio, metadata["mime_type"])
                     except TranscriptionError as exc:

@@ -956,7 +956,7 @@ export default function App() {
                     </button>
                   </div>
                   <p className="tiny">
-                    No audio is recorded.{" "}
+                    Typed observations do not use audio. Microphone listening is separate and opt-in; raw audio is not retained.{" "}
                     {detective.aiAvailable
                       ? "Optional AI assistance uses released evidence; scripted fallback remains available."
                       : "Scripted responses work without an AI service."}
