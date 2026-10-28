@@ -21,8 +21,8 @@ Updated October 27, 2026. Lead/integrator owns this board. Status reflects commi
 | M2-02 | P1 | Private characters | Done; local + CI pass | Guest-only secret delivery and host roster; reconnect restores assignment without leaking secrets |
 | M2-03 | P1 | Participation | Done; local + CI pass | Introductory round, accusation rationale and final reconstruction tied to motives |
 | M2-04 | P1 | Rehearsal | Automated four-guest flow passed; human rehearsal pending | Four actual players, phones + TV, 20–30 minute rehearsal and feedback record |
-| M3-01 | P1 | Optional AI | Done; local QA passed | Explicit Responses adapter, released-fact plan, strict validation and deterministic fallback |
-| M3-02 | P1 | Optional AI | Done; local QA passed | Grounding/injection/timeout/request-budget tests, offline-only automation |
+| M3-01 | P1 | Optional AI | Done; local + CI pass | Explicit Responses adapter, released-fact plan, strict validation and deterministic fallback |
+| M3-02 | P1 | Optional AI | Done; local + CI pass | Grounding/injection/timeout/request-budget tests, offline-only automation |
 | M3-03 | P1 | Live validation | Not enabled | User-configured key/model/spend and deliberate live smoke test; no credentials in Git/chat |
 | M3-04 | P2 | Dialogue design | Backlog | Evaluate factual validation before allowing arbitrary model-written prose |
 | M4-01 | P2 | Speech | Planned | Consent, push-to-talk transcription, pause/mute/interruption and visible audio state |

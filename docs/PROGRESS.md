@@ -4,7 +4,7 @@ Updated October 27, 2026. Authoritative handoff for the integrated repository. R
 
 ## Current delivery: M3 — optional grounded AI planning
 
-Software implementation is complete and locally verified; remote CI acceptance is being checked after pushing. Live provider/account/model operation is not claimed tested or enabled. The application continues to run in free scripted mode by default.
+**Software foundation accepted and pushed to main.** Source commit `2485145` passes local tests and [independent GitHub CI](https://github.com/lotan11/murder-mystery-ai/actions/runs/40607478899). The acceptance-record commit changes documentation only. Live provider/account/model operation is not claimed tested or enabled. The application continues to run in free scripted mode by default.
 
 Delivered in the existing application:
 
@@ -21,7 +21,7 @@ Delivered in the existing application:
 ## Verification
 
 - 134 backend tests pass: previous game/privacy/migration tests plus 52 mocked adapter tests and 25 orchestration cases.
-- 15 client tests and production build pass.
+- 15 client tests and production build pass. [GitHub CI](https://github.com/lotan11/murder-mystery-ai/actions/runs/40607478899) independently passes all backend, client, build and browser checks.
 - Four browser scenarios pass: full host/TV/phone case, four-guest role privacy/introductions/rationales, renderer failure and explicit scripted-default status.
 - A real Windows launch with `-EnvFile .\.env.example` migrated schema-2 saves to schema 3; every previous public-state field and host access were preserved. Health confirms paid AI disabled and React returns HTTP 200.
 - All automated tests force offline defaults and forbid real outbound HTTP. The integration is tested with injected transports/fake planners, not a live account.
