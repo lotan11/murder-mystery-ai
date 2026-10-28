@@ -6,7 +6,7 @@ const source = ts.transpileModule(
   readFileSync(new URL("./client.ts", import.meta.url), "utf8"),
   { compilerOptions: { module: ts.ModuleKind.ESNext } },
 ).outputText;
-const { socketURL, decodeState, decodePrivate } = await import(
+const { socketURL, decodeState, decodePrivate, dialogueStatus } = await import(
   `data:text/javascript;base64,${Buffer.from(source).toString("base64")}`
 );
 test("secure socket URL preserves organizer credentials", () => {
@@ -207,5 +207,93 @@ test("extended public participation records validate without accepting early rat
         data: { ...data, act: 4, accusations: [accusation] },
       }),
     ).state,
+  );
+});
+
+const dialogueMeta = {
+  provider: "openai",
+  source: "model",
+  reason: "ready",
+  calls_used: 1,
+  calls_limit: 20,
+  available: true,
+  busy: false,
+};
+test("dialogue metadata validates optional provider status and request usage", () => {
+  assert.deepEqual(
+    decodeState(
+      JSON.stringify({
+        type: "state",
+        data: { ...snapshot, dialogue_meta: dialogueMeta },
+      }),
+    ).state.dialogue_meta,
+    dialogueMeta,
+  );
+  for (const change of [
+    { provider: "unknown" },
+    { provider: ["openai"] },
+    { source: { unexpected: true } },
+    { reason: { secret: true } },
+    { calls_used: -1 },
+    { calls_used: 1.5 },
+    { calls_limit: "20" },
+    { available: 1 },
+    { busy: null },
+  ])
+    assert.ok(
+      decodeState(
+        JSON.stringify({
+          type: "state",
+          data: { ...snapshot, dialogue_meta: { ...dialogueMeta, ...change } },
+        }),
+      ).error,
+    );
+});
+test("dialogue labels reflect the actual response source and preserve legacy scripted mode", () => {
+  assert.equal(dialogueStatus().label, "Scripted detective");
+  assert.equal(dialogueStatus().aiAvailable, false);
+  assert.equal(dialogueStatus(dialogueMeta).label, "AI-assisted detective");
+  assert.equal(
+    dialogueStatus({ ...dialogueMeta, source: "scripted" }).label,
+    "Scripted detective",
+  );
+  assert.equal(
+    dialogueStatus({ ...dialogueMeta, source: "fallback", reason: "timeout" })
+      .label,
+    "Scripted fallback",
+  );
+  assert.match(
+    dialogueStatus({ ...dialogueMeta, source: "fallback", reason: "timeout" })
+      .reason,
+    /took too long/,
+  );
+  assert.equal(dialogueStatus({ ...dialogueMeta, busy: true }).busy, true);
+  assert.equal(
+    dialogueStatus({ ...dialogueMeta, available: false }).aiAvailable,
+    false,
+  );
+});
+test("provider diagnostics use safe fixed copy instead of raw reason strings or inherited properties", () => {
+  for (const reason of [
+    "secret diagnostic with user data",
+    "__proto__",
+    "constructor",
+    "toString",
+  ]) {
+    const presentation = dialogueStatus({
+      ...dialogueMeta,
+      source: "fallback",
+      reason,
+    });
+    assert.equal(typeof presentation.reason, "string");
+    assert.ok(!presentation.reason.includes(reason));
+  }
+  assert.match(
+    dialogueStatus({ ...dialogueMeta, reason: "missing_api_key" }).reason,
+    /no key configured/,
+  );
+  assert.match(
+    dialogueStatus({ ...dialogueMeta, reason: "budget_exhausted" }).reason,
+    /allowance/,
   );
 });

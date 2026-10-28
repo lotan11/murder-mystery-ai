@@ -31,7 +31,7 @@ class RoomStore:
             with closing(self._connect()) as connection, connection:
                 rows = connection.execute("SELECT room_id, payload FROM rooms ORDER BY room_id").fetchall()
             records = [json.loads(row[1]) for row in rows]
-            if not all(isinstance(record, dict) and type(record.get("schema_version")) is int and record["schema_version"] in (1, 2)
+            if not all(isinstance(record, dict) and type(record.get("schema_version")) is int and record["schema_version"] in (1, 2, 3)
                        and record.get("room_id") == row[0] for row, record in zip(rows, records)):
                 raise ValueError("Unsupported room record.")
             return records

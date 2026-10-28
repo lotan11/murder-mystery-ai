@@ -39,3 +39,28 @@ Saved records pin `case_id` and `case_version` from the canonical case definitio
 ## Compatible save migration
 
 M2 uses room-record schema 2 while retaining canonical case version 1. A validated M1 schema-1 save is upgraded additively: existing guests receive deterministic roles in saved join order, introductions start empty and prior votes receive empty rationales. Progress, pause state, revision and all credentials stay unchanged. Startup validates every record before atomically saving all legacy upgrades in one SQLite transaction; invalid or unsupported records leave the database untouched. Fresh schema-2 saves validate unique named-role assignments, guest references, introduction limits and rationale/vote consistency. Back up the database while the server is stopped before upgrades; never delete an old save to make a migration appear to pass.
+
+
+## Optional model-directed dialogue (M3)
+
+The default remains free, deterministic scripted dialogue. A live planning call requires all of `MYSTERY_DIALOGUE_PROVIDER=openai`, `MYSTERY_ALLOW_PAID_AI=true`, `OPENAI_API_KEY`, and an explicit `MYSTERY_OPENAI_MODEL`. There is no default paid model. `MYSTERY_AI_MAX_CALLS` defaults to 5 attempts per room (1–50); `MYSTERY_AI_TIMEOUT` defaults to 4 seconds (1–10). Invalid or incomplete settings disable external calls safely. No key, model, raw provider exception or provider response body is exposed by the room or health APIs.
+
+The guest/host command remains `{type:"dialogue",text:"Explain the port."}`. Hints, recaps, requests for hidden facts, the lobby, unrevealed cases and the resolved case stay scripted without spending an attempt. Eligible questions during acts 1–3 may use the configured planner. Its context is an explicit allowlist of the act and released clue facts, plus public suspect profiles at the engine boundary; the adapter further strips the HTTP payload to the act, released evidence and submitted question. It never receives the guest roster, introductions, private cards, objectives, votes, rationales, room identifiers or bearer tokens automatically. The user's explicitly submitted question is sent only when paid mode is enabled.
+
+A model selects released evidence IDs and an approved authored remark; the adapter constructs text from released facts and rejects arbitrary prose or hidden IDs. Model output cannot change progression, evidence, identities or the solution. Timeouts, refusals, invalid plans and provider errors use the deterministic provider as fallback. No automatic retry occurs.
+
+### Attempt accounting and responsiveness
+
+Before dispatch, the server increments and durably saves `ai_calls`; a failed reservation sends no request. Attempts conservatively include calls that time out, are cancelled, or produce a stale result. They are not a billing estimate. Reset never clears this counter; restart restores it. A new room gets a separate counter. This is a per-room safety limit, not an account-wide monetary spending cap.
+
+Only one external plan is in flight per room. Its await runs outside the room lock and outside the socket receive loop: even the same host socket can pause/reset or progress the case while the plan waits. Another eligible question receives a safe busy error without changing the room revision, dialogue, attempt count or current request. The original in-flight answer remains valid. A deliberate scripted hint or recap may still update the dialogue and invalidate a pending plan. Completion applies only if the reserved revision, act and pause state still match; otherwise the late answer is discarded and the requester gets a safe error. The charged reservation remains. Shutdown cancels and awaits outstanding tasks; busy is runtime state and is false after restart.
+
+Public snapshots add `dialogue_meta`:
+
+```json
+{"provider":"scripted","source":"scripted","reason":"scripted_default","calls_used":0,"calls_limit":5,"available":false,"busy":false}
+```
+
+`provider` is the configured mode (`scripted` or `openai`); `source` is the last applied reply (`scripted`, `model`, `fallback`). `reason` is a safe enum such as `ready`, `scripted_policy`, `budget_exhausted`, `busy`, `timeout`, `provider_error`, `refused` or `invalid_plan`, with configuration reason codes for disabled modes. At the last allowed successful call, source remains `model` while reason becomes `budget_exhausted`. `available` means configured and within the remaining attempt budget; `busy` is independent. Lowering the configured limit after a restart can legitimately make `calls_used` exceed `calls_limit`.
+
+Saved room schema 3 adds `ai_calls`, `dialogue_source` and `dialogue_reason`. Valid schema-1 and schema-2 rooms are upgraded atomically without changing their game state or credentials; previous model-attempt accounting did not exist and starts at zero. Incompatible or malformed records are preserved and rejected rather than discarded.

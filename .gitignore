@@ -5,6 +5,8 @@ node_modules/
 frontend/dist/
 *.pyc
 .env
+.env.*
+!.env.example
 playwright-report/
 test-results/
 *.tsbuildinfo

@@ -881,3 +881,39 @@ a:focus-visible {
   background: #0e1b17;
   overflow-wrap: anywhere;
 }
+
+.dialogue-provider h3 {
+  color: #d8bf89;
+}
+.dialogue-provider .muted {
+  font-size: 12px;
+  line-height: 1.8;
+}
+.provider-usage {
+  font-size: 12px;
+  color: #d1d9c8;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 14px;
+}
+.detective-status {
+  font-size: 11px;
+  color: #ceb17c;
+  margin: 14px 0 10px;
+}
+.ai-disclosure {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #c7d3bf;
+  padding: 12px;
+  border: 1px solid #5a704b;
+  background: #203324;
+}
+.fallback-notice {
+  border-left: 2px solid #b49b6b;
+  padding-left: 12px;
+}
+textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

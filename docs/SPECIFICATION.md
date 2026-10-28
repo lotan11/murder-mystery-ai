@@ -35,7 +35,7 @@ Launch case: **The Last Toast at Blackthorn Manor**. Tone: elegant intrigue with
 | M0: First slice | Host + guest + TV complete the authored case with real WebSockets and scripted detective |
 | M1: Reliable rehearsal | Consistent Blackthorn canon, recoverable saved room, contextual detective questions, useful host gates, full browser flow and CI green |
 | M2: Dinner participation | Assigned characters, private goals/secrets with per-player projection, optional introduction and private accusation rationale; four-guest automated flow plus a separately recorded human rehearsal |
-| M3: Optional real dialogue | One explicit provider adapter, validated structured responses, no spoiler leakage, timeout/fallback behavior; offline/scripted mode preserved |
+| M3: Optional grounded AI assistance | Responses adapter selects released facts/approved remarks; strict validation, request limits and timeout/fallback tests; offline mode preserved. Live account/model smoke test recorded separately |
 | M4: Voice and performance | Consented microphone/transcription, custom voice if selected, interruption, rigged character and visemes; each component optional and tested |
 | M5: Hosted pilot | Durable deployment, account/session boundaries, room expiry, rate limits, monitoring, HTTPS and tested recovery |
 

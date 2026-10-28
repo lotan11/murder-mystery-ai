@@ -20,6 +20,15 @@ export type PrivateState = {
   introduction_submitted: boolean;
   own_vote: { suspect: string; rationale: string } | null;
 };
+export type DialogueMeta = {
+  provider: "scripted" | "openai";
+  source: "scripted" | "model" | "fallback";
+  reason: string;
+  calls_used: number;
+  calls_limit: number;
+  available: boolean;
+  busy: boolean;
+};
 export type RoomState = {
   room_id: string;
   title: string;
@@ -49,6 +58,7 @@ export type RoomState = {
   available_evidence?: Pick<Evidence, "id" | "title" | "act">[];
   suspects: { id: string; name: string; description: string }[];
   dialogue: string;
+  dialogue_meta?: DialogueMeta;
   performance?: { emotion: string; gesture: string };
   votes: unknown;
   solution: string | null;
@@ -136,6 +146,8 @@ export function decodeState(raw: string): {
         Object.values(data.votes).every(
           (count) => Number.isInteger(count) && Number(count) >= 0,
         ) &&
+        (data.dialogue_meta === undefined ||
+          validDialogueMeta(data.dialogue_meta)) &&
         (data.solution === null || typeof data.solution === "string")
       )
         return { state: data as RoomState };
@@ -194,4 +206,84 @@ export function decodePrivate(raw: string): {
         "An unreadable private character update arrived. Reconnect to restore your card.",
     };
   }
+}
+
+function validDialogueMeta(value: unknown): value is DialogueMeta {
+  if (typeof value !== "object" || value === null || Array.isArray(value))
+    return false;
+  const meta = value as Record<string, unknown>;
+  return (
+    typeof meta.provider === "string" &&
+    ["scripted", "openai"].includes(meta.provider) &&
+    typeof meta.source === "string" &&
+    ["scripted", "model", "fallback"].includes(meta.source) &&
+    typeof meta.reason === "string" &&
+    Number.isInteger(meta.calls_used) &&
+    Number(meta.calls_used) >= 0 &&
+    Number.isInteger(meta.calls_limit) &&
+    Number(meta.calls_limit) >= 0 &&
+    typeof meta.available === "boolean" &&
+    typeof meta.busy === "boolean"
+  );
+}
+
+const dialogueReasons: Record<string, string> = {
+  scripted_default:
+    "Scripted responses are selected. No paid AI requests are made.",
+  ready:
+    "Optional AI assistance is ready. Case facts remain authored and clue-gated.",
+  missing_paid_consent:
+    "Paid AI requests have not been enabled. Scripted responses remain available.",
+  missing_api_key:
+    "The AI provider has no key configured. Scripted responses remain available.",
+  scripted_policy:
+    "This question uses the scripted detective to preserve the case’s clue gates.",
+  busy: "The detective is already considering a question. Please wait for the room’s reply.",
+  case_event: "This part of the story uses the authored case narration.",
+  reset:
+    "The case has reset. Earlier AI request attempts still count toward this room’s allowance.",
+  missing_key:
+    "The AI provider has no key configured. Scripted responses remain available.",
+  missing_model:
+    "The AI provider has no model configured. Scripted responses remain available.",
+  paid_opt_in_required:
+    "Paid AI requests have not been enabled. Scripted responses remain available.",
+  invalid_configuration:
+    "The AI configuration needs attention. Scripted responses remain available.",
+  timeout:
+    "The AI provider took too long. The scripted detective answered instead.",
+  provider_error:
+    "The AI provider could not answer. The scripted detective answered instead.",
+  refused:
+    "The AI provider declined this request. The scripted detective answered instead.",
+  invalid_plan:
+    "The AI response did not match the released evidence. The scripted detective answered instead.",
+  budget_exhausted:
+    "This room has reached its AI request allowance. Scripted responses remain available.",
+  stale:
+    "The case changed while the AI considered the question. Only current released facts are used.",
+  scripted_guard:
+    "This question is handled by the scripted detective to preserve the case’s clue gates.",
+};
+
+/** UI copy comes from known statuses, never raw provider diagnostics. */
+export function dialogueStatus(meta?: DialogueMeta) {
+  return {
+    label:
+      meta?.source === "model"
+        ? "AI-assisted detective"
+        : meta?.source === "fallback"
+          ? "Scripted fallback"
+          : "Scripted detective",
+    busy: meta?.busy ?? false,
+    aiAvailable: meta?.provider === "openai" && meta.available,
+    reason: meta?.reason
+      ? Object.hasOwn(dialogueReasons, meta.reason)
+        ? dialogueReasons[meta.reason]
+        : "The scripted detective remains available while the AI provider is unavailable."
+      : "Dialogue uses authored case facts and approved detective remarks.",
+    provider: meta?.provider ?? "scripted",
+    callsUsed: meta?.calls_used ?? 0,
+    callsLimit: meta?.calls_limit ?? 0,
+  };
 }

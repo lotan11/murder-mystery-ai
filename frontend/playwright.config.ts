@@ -32,7 +32,16 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 30000,
     env: {
-      MYSTERY_DB_PATH: fileURLToPath(new URL(`./.e2e-data/${Date.now()}-${process.pid}.sqlite3`, import.meta.url)),
+      MYSTERY_DIALOGUE_PROVIDER: "scripted",
+      MYSTERY_ALLOW_PAID_AI: "false",
+      OPENAI_API_KEY: "",
+      MYSTERY_OPENAI_MODEL: "",
+      MYSTERY_DB_PATH: fileURLToPath(
+        new URL(
+          `./.e2e-data/${Date.now()}-${process.pid}.sqlite3`,
+          import.meta.url,
+        ),
+      ),
     },
   },
 });

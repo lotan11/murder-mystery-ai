@@ -3,6 +3,7 @@ import Stage from "./Stage";
 import {
   decodePrivate,
   decodeState,
+  dialogueStatus,
   socketURL,
   type PrivateState,
   type RoomState,
@@ -212,6 +213,11 @@ export default function App() {
     !!state && state.act >= 1 && state.act <= 3 && !state.paused && online;
   const canContribute =
     online && !!state && !state.paused && (view === "organizer" || joined);
+  const detective = dialogueStatus(state?.dialogue_meta);
+  const canQuestion = canContribute && !detective.busy;
+  const detectiveLabel = detective.busy
+    ? "Detective is considering…"
+    : detective.label;
   const control = (action: string) => send({ type: "control", action });
   function link(role: View) {
     return `${location.origin}/?view=${role}&room=${encodeURIComponent(room)}`;
@@ -272,7 +278,7 @@ export default function App() {
             </form>
           </div>
           <p className="footnote">
-            LOCAL PROTOTYPE · SCRIPTED DETECTIVE · NO MICROPHONE CAPTURE
+            LOCAL PROTOTYPE · OPTIONAL AI · NO MICROPHONE CAPTURE
           </p>
         </main>
       ) : (
@@ -338,7 +344,7 @@ export default function App() {
               <section className="transcript" aria-live="polite">
                 <div className="eyebrow">
                   DETECTIVE REGINALD P. WOBBLEBOTTOM{" "}
-                  <span>· SCRIPTED DIALOGUE</span>
+                  <span>· {detectiveLabel}</span>
                 </div>
                 <p>“{state?.dialogue || "Connecting to the manor…"}”</p>
                 <label className="voice">
@@ -486,6 +492,32 @@ export default function App() {
                       >
                         Reset this room
                       </button>
+                    </section>
+                    <section
+                      className="panel dialogue-provider"
+                      aria-label="Detective integration status"
+                    >
+                      <div className="eyebrow">DETECTIVE INTEGRATION</div>
+                      <h3>{detectiveLabel}</h3>
+                      <p className="muted">
+                        {detective.provider === "openai"
+                          ? detective.aiAvailable
+                            ? "AI provider configured and available."
+                            : "AI provider configured but unavailable."
+                          : "Scripted provider selected. No paid AI requests are made."}
+                      </p>
+                      {detective.provider === "openai" && (
+                        <p className="provider-usage">
+                          AI request attempts: {detective.callsUsed}/
+                          {detective.callsLimit}
+                        </p>
+                      )}
+                      <p className="tiny">{detective.reason}</p>
+                      <p className="tiny">
+                        Resetting the case does not reset its AI allowance.
+                        Model assistance selects released clues and approved
+                        remarks; the facts remain authored.
+                      </p>
                     </section>
                     <section className="panel">
                       <div className="eyebrow">INVITE THE TABLE</div>
@@ -666,20 +698,35 @@ export default function App() {
                   <h3>A question of character</h3>
                   {view === "guest" && state && (
                     <blockquote className="guest-response" aria-live="polite">
-                      <span>WOBBLEBOTTOM · SCRIPTED DETECTIVE</span>
+                      <span>WOBBLEBOTTOM · {detectiveLabel}</span>
                       <p>“{state.dialogue}”</p>
                     </blockquote>
+                  )}
+                  <p className="detective-status" role="status">
+                    {detectiveLabel}
+                  </p>
+                  {detective.aiAvailable && (
+                    <p className="ai-disclosure">
+                      Questions are sent to the configured AI provider with
+                      released evidence. Your private card is not included.
+                      Include only what you want to send in your question.
+                    </p>
+                  )}
+                  {state?.dialogue_meta?.source === "fallback" && (
+                    <p className="tiny fallback-notice">{detective.reason}</p>
                   )}
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
-                      send({ type: "dialogue", text: text.trim() });
+                      if (canQuestion)
+                        send({ type: "dialogue", text: text.trim() });
                     }}
                   >
                     <label htmlFor="question">
                       Simulated microphone · typed input
                     </label>
                     <textarea
+                      disabled={!canQuestion}
                       id="question"
                       value={text}
                       onChange={(e) => setText(e.target.value)}
@@ -687,13 +734,13 @@ export default function App() {
                       placeholder="What do we know about the glass?"
                       required
                     />
-                    <button disabled={!canContribute || !text.trim()}>
+                    <button disabled={!canQuestion || !text.trim()}>
                       Send observation ↗
                     </button>
                   </form>
                   <div className="quick-prompts" aria-label="Detective prompts">
                     <button
-                      disabled={!canContribute}
+                      disabled={!canQuestion}
                       onClick={() =>
                         send({
                           type: "dialogue",
@@ -704,7 +751,7 @@ export default function App() {
                       Recap evidence
                     </button>
                     <button
-                      disabled={!canContribute}
+                      disabled={!canQuestion}
                       onClick={() =>
                         send({
                           type: "dialogue",
@@ -716,8 +763,10 @@ export default function App() {
                     </button>
                   </div>
                   <p className="tiny">
-                    No audio is recorded. Responses use a deterministic dialogue
-                    adapter.
+                    No audio is recorded.{" "}
+                    {detective.aiAvailable
+                      ? "Optional AI assistance uses released evidence; scripted fallback remains available."
+                      : "Scripted responses work without an AI service."}
                   </p>
                 </section>
                 {view === "guest" && (
@@ -890,7 +939,7 @@ export default function App() {
       <footer>
         <span>W / MYSTERY SOCIETY</span>
         <p>
-          Prototype integrations: procedural avatar · scripted AI · typed
+          Prototype integrations: procedural avatar · {detective.label} · typed
           microphone simulation · no lip-sync
         </p>
         <span>BLACKTHORN MANOR / 01</span>

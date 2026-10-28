@@ -21,8 +21,10 @@ Updated October 27, 2026. Lead/integrator owns this board. Status reflects commi
 | M2-02 | P1 | Private characters | Done; local + CI pass | Guest-only secret delivery and host roster; reconnect restores assignment without leaking secrets |
 | M2-03 | P1 | Participation | Done; local + CI pass | Introductory round, accusation rationale and final reconstruction tied to motives |
 | M2-04 | P1 | Rehearsal | Automated four-guest flow passed; human rehearsal pending | Four actual players, phones + TV, 20–30 minute rehearsal and feedback record |
-| M3-01 | P1 | Optional AI | Planned | Provider decision, released-fact context, validated structured response and deterministic fallback |
-| M3-02 | P1 | Optional AI | Planned | Spoiler/injection/timeout/cost tests before enabling model-backed dialogue |
+| M3-01 | P1 | Optional AI | Done; local QA passed | Explicit Responses adapter, released-fact plan, strict validation and deterministic fallback |
+| M3-02 | P1 | Optional AI | Done; local QA passed | Grounding/injection/timeout/request-budget tests, offline-only automation |
+| M3-03 | P1 | Live validation | Not enabled | User-configured key/model/spend and deliberate live smoke test; no credentials in Git/chat |
+| M3-04 | P2 | Dialogue design | Backlog | Evaluate factual validation before allowing arbitrary model-written prose |
 | M4-01 | P2 | Speech | Planned | Consent, push-to-talk transcription, pause/mute/interruption and visible audio state |
 | M4-02 | P2 | Character | Planned | Licensed rigged avatar, expressive gestures and readable captions |
 | M4-03 | P2 | Speech/avatar | Planned | Custom voice and timestamped visemes; actual lip-sync validation |
@@ -33,6 +35,6 @@ Updated October 27, 2026. Lead/integrator owns this board. Status reflects commi
 
 ## Routine decisions and user decisions
 
-The lead resolves architecture and implementation choices within the accepted scope. External model/voice spend, avatar licensing or public hosting need a concrete proposed integration before user input. No paid provider, recording, purchased asset or public deployment is enabled in M2.
+The lead resolves architecture and implementation choices within the accepted scope. External model/voice spend, avatar licensing or public hosting need a concrete proposed integration before user input. A paid provider adapter exists but remains disabled by default; no paid invocation, recording, purchased asset or public deployment is enabled in the current rehearsal.
 
-Planning context: earlier availability was three weeks part-time, roughly 10–12 hours/week. M1 supplies reliable recovery; M2 now supplies playable character participation. Human rehearsal and M3 optional dialogue are next. Production-quality voice, avatar and hosting are separate milestones, not an implied three-week promise.
+Planning context: earlier availability was three weeks part-time, roughly 10–12 hours/week. M1 supplies reliable recovery; M2 now supplies playable character participation. M3 now adds optional bounded planning; human rehearsal and deliberate live-provider validation remain next. Production-quality voice, avatar and hosting are separate milestones, not an implied three-week promise.

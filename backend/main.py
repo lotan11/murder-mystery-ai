@@ -14,6 +14,7 @@ from .mystery import CASE_ID, CASE_VERSION, TITLE, SUSPECTS, EVIDENCE, SOLUTION
 from .dialogue import DialogueProvider, MockDialogueProvider
 from .storage import RoomStore, StorageError
 from .characters import CHARACTERS
+from .ai_dialogue import load_config, OpenAIPlanner, PlannerError
 
 ROOT = Path(__file__).resolve().parents[1]
 @asynccontextmanager
@@ -22,16 +23,26 @@ async def lifespan(app: FastAPI):
     records = store.load_all()
     restored = {record["room_id"]: Room.from_record(record) for record in records}
     # Validate every record before committing an additive schema migration.
-    legacy = [restored[record["room_id"]].record() for record in records if record["schema_version"] == 1]
+    legacy = [restored[record["room_id"]].record() for record in records if record["schema_version"] in (1, 2)]
     if legacy:
         store.save_many(legacy)
     rooms.clear()
     rooms.update(restored)
     app.state.room_store = store
-    yield
+    app.state.planner_config = load_config()
+    app.state.planner = OpenAIPlanner(app.state.planner_config)
+    app.state.planner_tasks = set()
+    try:
+        yield
+    finally:
+        tasks = list(app.state.planner_tasks)
+        for task in tasks:
+            task.cancel()
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
 
 
-app = FastAPI(title="Wobblebottom Mystery Prototype", version="0.3.0", lifespan=lifespan)
+app = FastAPI(title="Wobblebottom Mystery Prototype", version="0.4.0", lifespan=lifespan)
 provider: DialogueProvider = MockDialogueProvider()
 
 @dataclass
@@ -47,6 +58,11 @@ class Room:
     assignments: dict = field(default_factory=dict)
     introductions: dict = field(default_factory=dict)
     rationales: dict = field(default_factory=dict)
+    ai_calls: int = 0
+    dialogue_source: str = "scripted"
+    dialogue_reason: str = "initial"
+    ai_busy: bool = False
+    ai_request_id: str | None = None
     dialogue: str = "Good evening. Welcome to Blackthorn Manor. Keep your theories sharp and your fingerprints to yourself."
     clients: set = field(default_factory=set)
     guest_clients: dict = field(default_factory=dict)
@@ -54,12 +70,13 @@ class Room:
 
     def record(self):
         # An explicit whitelist prevents accidental serialization of live sockets/locks.
-        return copy.deepcopy({"schema_version": 2, "case_id": CASE_ID, "case_version": CASE_VERSION, "room_id": self.room_id,
+        return copy.deepcopy({"schema_version": 3, "case_id": CASE_ID, "case_version": CASE_VERSION, "room_id": self.room_id,
                               "organizer_token": self.organizer_token, "act": self.act,
                               "paused": self.paused, "revision": self.revision,
                               "guests": self.guests, "revealed": self.revealed,
                               "votes": self.votes, "dialogue": self.dialogue,
-                              "assignments": self.assignments, "introductions": self.introductions, "rationales": self.rationales})
+                              "assignments": self.assignments, "introductions": self.introductions, "rationales": self.rationales,
+                              "ai_calls": self.ai_calls, "dialogue_source": self.dialogue_source, "dialogue_reason": self.dialogue_reason})
 
     @classmethod
     def from_record(cls, record):
@@ -74,7 +91,10 @@ class Room:
                                      for index, guest_id in enumerate(guests)} if isinstance(guests, dict) else {}
             record["introductions"] = {}
             record["rationales"] = {guest_id: "" for guest_id in record.get("votes", {})} if isinstance(record.get("votes"), dict) else {}
-        fields = {"assignments", "introductions", "rationales", "room_id", "organizer_token", "act", "paused", "revision", "guests", "revealed", "votes", "dialogue"}
+        v2_fields = legacy_fields | {"assignments", "introductions", "rationales"}
+        if record.get("schema_version") == 2 and set(record) == v2_fields:
+            record.update(schema_version=3, ai_calls=0, dialogue_source="scripted", dialogue_reason="initial")
+        fields = {"ai_calls", "dialogue_source", "dialogue_reason", "assignments", "introductions", "rationales", "room_id", "organizer_token", "act", "paused", "revision", "guests", "revealed", "votes", "dialogue"}
         metadata = {"schema_version", "case_id", "case_version"}
         known_clues = {clue["id"] for clue in EVIDENCE}
         known_suspects = {suspect["id"] for suspect in SUSPECTS}
@@ -82,7 +102,7 @@ class Room:
         text = lambda value: isinstance(value, str) and bool(value)
         valid = (
             set(record) == fields | metadata
-            and integer(record["schema_version"]) and record["schema_version"] == 2
+            and integer(record["schema_version"]) and record["schema_version"] == 3
             and integer(record["case_version"])
             and text(record["room_id"]) and len(record["room_id"]) == 6
             and all(character in "0123456789ABCDEF" for character in record["room_id"])
@@ -90,6 +110,9 @@ class Room:
             and integer(record["act"]) and 0 <= record["act"] <= 4
             and type(record["paused"]) is bool
             and integer(record["revision"]) and record["revision"] >= 0
+            and integer(record["ai_calls"]) and record["ai_calls"] >= 0
+            and record["dialogue_source"] in ("scripted", "model", "fallback")
+            and isinstance(record["dialogue_reason"], str) and record["dialogue_reason"] in DIALOGUE_REASONS
             and isinstance(record["dialogue"], str)
             and isinstance(record["guests"], dict) and len(record["guests"]) <= 24
             and all(text(guest_id) and isinstance(guest, dict)
@@ -131,6 +154,17 @@ class Room:
                 "introduction_submitted": guest_id in self.introductions,
                 "own_vote": {"suspect": self.votes[guest_id], "rationale": self.rationales.get(guest_id, "")} if guest_id in self.votes else None}
 
+    def dialogue_meta(self):
+        config = app.state.planner_config if hasattr(app.state, "planner_config") else load_config()
+        reason = config.reason if self.dialogue_reason == "initial" else self.dialogue_reason
+        if config.enabled and self.ai_calls >= config.max_calls and reason == "ready":
+            reason = "budget_exhausted"
+        return {"provider": config.provider if config.provider in ("scripted", "openai") else "scripted", "source": self.dialogue_source,
+                "reason": reason,
+                "calls_used": self.ai_calls, "calls_limit": config.max_calls,
+                "available": config.enabled and self.ai_calls < config.max_calls,
+                "busy": self.ai_busy}
+
     def snapshot(self):
         return {"room_id": self.room_id, "title": TITLE, "act": self.act,
                 "phase": ["Lobby", "The discovery", "The contradictions", "The accusation", "Case closed"][self.act],
@@ -145,11 +179,11 @@ class Room:
                                  "rationale": self.rationales.get(k, "")} for k, suspect in self.votes.items()] if self.act == 4 else [],
                 "evidence": [e.copy() for e in EVIDENCE if e["id"] in self.revealed],
                 "available_evidence": [{"id": e["id"], "title": e["title"], "act": e["act"]} for e in EVIDENCE if e["act"] == self.act and e["id"] not in self.revealed],
-                "suspects": SUSPECTS, "dialogue": self.dialogue,
+                "suspects": SUSPECTS, "dialogue": self.dialogue, "dialogue_meta": self.dialogue_meta(),
                 "performance": {"emotion": "thoughtful", "gesture": "notes"},
                 "votes": {s["id"]: list(self.votes.values()).count(s["id"]) for s in SUSPECTS},
                 "solution": SOLUTION if self.act == 4 else None,
-                "integrations": {"dialogue": "deterministic mock", "microphone": "not connected", "avatar": "procedural placeholder", "lip_sync": "not connected"}}
+                "integrations": {"dialogue": "optional OpenAI planner" if self.dialogue_meta()["provider"] == "openai" and app.state.planner_config.enabled else "deterministic mock", "microphone": "not connected", "avatar": "procedural placeholder", "lip_sync": "not connected"}}
 
 rooms: dict[str, Room] = {}
 
@@ -159,7 +193,9 @@ def token_matches(candidate: str, expected: str) -> bool:
 
 @app.get("/health")
 def health():
-    return {"ok": True, "storage": "sqlite", "dialogue": "deterministic mock"}
+    config = app.state.planner_config
+    return {"ok": True, "storage": "sqlite", "dialogue": config.provider if config.provider in ("scripted", "openai") else "scripted",
+            "ai_enabled": config.enabled, "ai_reason": config.reason, "ai_calls_limit": config.max_calls}
 
 @app.post("/api/rooms", status_code=201)
 async def create_room():
@@ -212,6 +248,8 @@ def control(room, msg):
         room.votes.clear()
         room.rationales.clear()
         room.introductions.clear()
+        room.dialogue_source = "scripted"
+        room.dialogue_reason = "reset"
         room.dialogue = "A fresh investigation. Try to look surprised this time."
         return
     if room.paused:
@@ -231,6 +269,7 @@ def control(room, msg):
     elif action == "start":
         if room.act != 0:
             raise ValueError("The case has already started.")
+        room.dialogue_source, room.dialogue_reason = "scripted", "case_event"
         room.act = 1
         room.dialogue = "Lord Blackthorn is dead. The tea is cold, the guests are nervous, and I have missed pudding. Let us begin."
     elif action == "reveal":
@@ -239,6 +278,7 @@ def control(room, msg):
         clue = next((e for e in candidates if evidence_id is None or e["id"] == evidence_id), None)
         if clue is None:
             raise ValueError("That clue is unavailable in this act.")
+        room.dialogue_source, room.dialogue_reason = "scripted", "case_event"
         room.revealed.append(clue["id"])
         room.dialogue = f"{clue['title']}. {clue['description']} Do resist the urge to lick the evidence."
     elif action == "advance":
@@ -246,10 +286,132 @@ def control(room, msg):
             raise ValueError("There is no act to advance.")
         if any(e["act"] == room.act and e["id"] not in room.revealed for e in EVIDENCE):
             raise ValueError("Reveal every clue in this act before advancing.")
+        room.dialogue_source, room.dialogue_reason = "scripted", "case_event"
         room.act += 1
         room.dialogue = SOLUTION if room.act == 4 else "The plot thickens. Unlike the soup, it now has substance. Examine the next evidence."
     else:
         raise ValueError("Unknown organizer action.")
+
+DIALOGUE_REASONS = {
+    "initial", "ready", "scripted_default", "missing_paid_consent", "missing_api_key", "missing_model",
+    "invalid_configuration", "scripted_policy", "budget_exhausted", "busy", "case_event", "reset",
+    "timeout", "provider_error", "refused", "invalid_plan",
+}
+
+
+def public_planner_context(room):
+    """Explicit allowlist: never forward the full room, user roster, cards or introductions."""
+    snapshot = room.snapshot()
+    return {"act": snapshot["act"], "evidence": [
+        {key: clue[key] for key in ("id", "title", "description", "summary", "act") if key in clue}
+        for clue in snapshot["evidence"]
+    ], "suspects": [{key: suspect[key] for key in ("id", "name", "description")} for suspect in SUSPECTS]}
+
+
+def scripted_policy(text, room):
+    lower = text.casefold()
+    return room.act not in (1, 2, 3) or not room.revealed or any(term in lower for term in (
+        "hint", "help", "recap", "summary", "summarise", "summarize", "what do we know", "so far",
+        "ignore", "system prompt", "hidden", "unrevealed", "spoiler", "killer", "murderer", "who did", "culprit", "solution",
+    ))
+
+
+async def finish_planner(room, ws, text, context, revision, act, request_id):
+    """Network awaits never hold the room lock; late answers cannot overwrite newer play."""
+    dialogue = None
+    source, reason = "model", "ready"
+    try:
+        result = await asyncio.wait_for(app.state.planner.respond(text, context), timeout=app.state.planner_config.timeout_seconds)
+        if not isinstance(result.dialogue, str) or not result.dialogue.strip() or len(result.dialogue) > 700:
+            raise PlannerError("invalid_plan")
+        dialogue = result.dialogue
+    except asyncio.CancelledError:
+        # The reserved attempt remains durable even when the server is stopped.
+        raise
+    except TimeoutError:
+        source, reason = "fallback", "timeout"
+    except PlannerError as exc:
+        source = "fallback"
+        reason = exc.reason if exc.reason in {"timeout", "provider_error", "refused", "invalid_plan"} else "provider_error"
+    except Exception:
+        source, reason = "fallback", "provider_error"
+    async with room.lock:
+        if room.ai_request_id != request_id:
+            return
+        room.ai_busy = False
+        room.ai_request_id = None
+        if room.revision != revision or room.act != act or room.paused:
+            if ws in room.clients:
+                try:
+                    await ws.send_json({"type": "error", "message": "The room changed while the detective was considering that question. The late answer was discarded; ask again when ready."})
+                except Exception:
+                    room.clients.discard(ws)
+            await broadcast(room)
+            return
+        before = room.record()
+        room.dialogue = dialogue if source == "model" else provider.respond(text, room.snapshot())
+        room.dialogue_source, room.dialogue_reason = source, reason
+        room.revision += 1
+        try:
+            app.state.room_store.save(room.record())
+        except StorageError:
+            room.restore(before)
+            if ws in room.clients:
+                try:
+                    await ws.send_json({"type": "error", "message": "The detective's answer could not be saved. The reserved attempt remains recorded; no answer was applied."})
+                except Exception:
+                    room.clients.discard(ws)
+        await broadcast(room)
+
+
+async def handle_dialogue(room, ws, role, identity, msg):
+    async with room.lock:
+        if role != "organizer" and not (role == "guest" and identity):
+            raise ValueError("Join as a guest before contributing.")
+        if role == "guest" and "guest_id" in msg:
+            raise ValueError("Guest identity is bound to the connection, not a command field.")
+        if room.paused:
+            raise ValueError("The investigation is paused.")
+        text = msg.get("text")
+        if not isinstance(text, str) or not text.strip() or len(text) > 500:
+            raise ValueError("Enter a statement between 1 and 500 characters.")
+        config = app.state.planner_config
+        before = room.record()
+        reason = (config.reason if not config.enabled else
+                  "scripted_policy" if scripted_policy(text, room) else
+                  "busy" if room.ai_busy else
+                  "budget_exhausted" if room.ai_calls >= config.max_calls else None)
+        if reason == "busy":
+            await ws.send_json({"type": "error", "message": "The detective is still considering the current question. Wait for that answer before submitting another."})
+            return
+        if reason is not None:
+            room.dialogue = provider.respond(text, room.snapshot())
+            room.dialogue_source = "fallback" if reason in {"busy", "budget_exhausted"} else "scripted"
+            room.dialogue_reason = reason
+            room.revision += 1
+            try:
+                app.state.room_store.save(room.record())
+            except StorageError:
+                room.restore(before)
+                raise ValueError("Room changes could not be saved. No changes were applied; try again after restoring storage.")
+            await broadcast(room)
+            return
+        room.ai_calls += 1
+        room.revision += 1
+        try:
+            app.state.room_store.save(room.record())
+        except StorageError:
+            room.restore(before)
+            raise ValueError("The AI attempt could not be reserved. No provider request was sent.")
+        request_id = secrets.token_hex(12)
+        room.ai_request_id, room.ai_busy = request_id, True
+        context = public_planner_context(room)
+        revision, act = room.revision, room.act
+        await broadcast(room)
+        task = asyncio.create_task(finish_planner(room, ws, text, context, revision, act, request_id))
+        app.state.planner_tasks.add(task)
+        task.add_done_callback(app.state.planner_tasks.discard)
+
 
 @app.websocket("/ws/{room_id}")
 async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "", guest_token: str = ""):
@@ -277,6 +439,9 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                 msg = json.loads(packet["text"])
                 if not isinstance(msg, dict):
                     raise ValueError("Expected an object command.")
+                if msg.get("type") == "dialogue":
+                    await handle_dialogue(room, ws, role, identity, msg)
+                    continue
                 async with room.lock:
                     before = room.record()
                     previous_identity = identity
@@ -312,27 +477,21 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                         if role != "organizer":
                             raise ValueError("Organizer access required.")
                         control(room, msg)
-                    elif kind in ("dialogue", "accuse"):
+                    elif kind == "accuse":
                         if role != "organizer" and not (role == "guest" and identity):
                             raise ValueError("Join as a guest before contributing.")
                         if room.paused:
                             raise ValueError("The investigation is paused.")
-                        if kind == "dialogue":
-                            text = msg.get("text")
-                            if not isinstance(text, str) or not text.strip() or len(text) > 500:
-                                raise ValueError("Enter a statement between 1 and 500 characters.")
-                            room.dialogue = provider.respond(text, room.snapshot())
-                        else:
-                            if role != "guest" or room.act != 3:
-                                raise ValueError("Joined guests may accuse during act three.")
-                            suspect = msg.get("suspect")
-                            if suspect not in {s["id"] for s in SUSPECTS}:
-                                raise ValueError("Unknown suspect.")
-                            rationale = msg.get("rationale", "")
-                            if not isinstance(rationale, str) or len(rationale) > 300:
-                                raise ValueError("Keep your accusation reason within 300 characters.")
-                            room.votes[identity] = suspect
-                            room.rationales[identity] = rationale.strip()
+                        if role != "guest" or room.act != 3:
+                            raise ValueError("Joined guests may accuse during act three.")
+                        suspect = msg.get("suspect")
+                        if suspect not in {s["id"] for s in SUSPECTS}:
+                            raise ValueError("Unknown suspect.")
+                        rationale = msg.get("rationale", "")
+                        if not isinstance(rationale, str) or len(rationale) > 300:
+                            raise ValueError("Keep your accusation reason within 300 characters.")
+                        room.votes[identity] = suspect
+                        room.rationales[identity] = rationale.strip()
                     else:
                         raise ValueError("Unknown command.")
                     room.revision += 1

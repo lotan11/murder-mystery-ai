@@ -25,7 +25,7 @@ For phones on the same Wi-Fi, use `powershell -ExecutionPolicy Bypass -File .\st
 5. Accusations open in act three. Guests may add a reason and change their votes until resolution. Reasons remain private to each guest until the finale, when the table can compare deductions.
 6. Reveal the final clue and select **Resolve the case**. Reload any screen to restore its current room snapshot.
 
-The deterministic case has three suspects, five clues, three acts, and one fixed solution. Character briefs provide dramatic objectives: the culprit player receives actor knowledge, while investigators solve from released clues. No one must lie or invent evidence. Start a fresh room for the first character rehearsal. The server controls clue gates and withholds unrevealed descriptions and the solution. Rooms, progress and credentials are saved in SQLite: restarting restores committed games. Keep the same browser and room links to recover guest and host access. The host credential is saved in that browser; keep it private. Guest reconnect tokens preserve identity, role and submitted introduction without duplicating players. Private briefs arrive only on the authenticated guest socket, stay out of public snapshots and are not saved in browser storage. Existing M1 SQLite saves upgrade atomically to schema 2 without deleting progress or credentials.
+The deterministic case has three suspects, five clues, three acts, and one fixed solution. Character briefs provide dramatic objectives: the culprit player receives actor knowledge, while investigators solve from released clues. No one must lie or invent evidence. Start a fresh room for the first character rehearsal. The server controls clue gates and withholds unrevealed descriptions and the solution. Rooms, progress and credentials are saved in SQLite: restarting restores committed games. Keep the same browser and room links to recover guest and host access. The host credential is saved in that browser; keep it private. Guest reconnect tokens preserve identity, role and submitted introduction without duplicating players. Private briefs arrive only on the authenticated guest socket, stay out of public snapshots and are not saved in browser storage. Existing schema-1/2 SQLite saves upgrade atomically to schema 3 without deleting progress or credentials. AI request counts, when used, survive restart and reset.
 
 For multiple test guests on one computer, use different browser profiles or different browsers. Normal tabs share a guest identity; real guests should use their own phones. To swap two occupied roles, temporarily assign one player to investigator first.
 
@@ -65,19 +65,20 @@ The browser test starts its own backend on port **8001**, so leave that port fre
 | --- | --- |
 | Multiplayer | Real WebSockets, server snapshots, host permissions and guest identity |
 | Mystery | Real deterministic engine and authored case |
-| AI dialogue | Scripted provider; no external model calls. `backend/dialogue.py` defines the replacement interface |
+| AI dialogue | Scripted by default. Optional OpenAI planning selects released facts and approved remarks; explicit local paid configuration required. See the AI guide |
 | Microphone | Not connected. Typed text simulates a transcript; no recording or upload |
 | Speech | Opt-in browser speech synthesis; device-dependent voice, no custom TTS service |
 | Detective | Lightweight procedural Three.js avatar with idle movement and a CSS fallback |
 | Lip sync | Not connected; idle motion is not speech-driven animation |
 | Evidence | 3D stage combined with readable HTML evidence and guest notebooks |
 
-External AI may phrase released facts but must never choose the solution or advance the game. Speech remains optional and captions work without it. The app works without external fonts using local fallback fonts.
+The optional AI planner selects released clue IDs and an approved remark; the server supplies authored factual text. It does not generate arbitrary prose or advance the game. Speech remains optional and captions work without it. The app works without external fonts using local fallback fonts.
 
 ## Scope and documentation
 
 This is a trusted-local-network prototype for one server process, with up to 24 guest identities per room. SQLite saves rooms in `data/mystery.sqlite3`; set `MYSTERY_DB_PATH` to choose another file. The database contains access credentials: keep it local and out of Git. There are no accounts, room expiry, deployment hardening or multi-worker synchronization. Do not expose it as a public service without adding those capabilities.
 
+- [Optional AI configuration and limitations](docs/AI_INTEGRATION.md)
 - [Project specification](docs/SPECIFICATION.md)
 - [Latest progress and handoff](docs/PROGRESS.md)
 - [Architectural decisions](docs/DECISIONS.md)

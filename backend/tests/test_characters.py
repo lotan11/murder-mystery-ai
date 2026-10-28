@@ -186,14 +186,14 @@ def test_accusation_reason_private_until_resolution_and_reset_clears_participati
         assert private["own_vote"] is None and not private["introduction_submitted"]
 
 
-def test_legacy_schema_migration_preserves_m1_room_and_commits_schema_two(tmp_path, monkeypatch):
+def test_legacy_schema_migration_preserves_m1_room_and_commits_current_schema(tmp_path, monkeypatch):
     path = tmp_path / "legacy.sqlite3"
     monkeypatch.setenv("MYSTERY_DB_PATH", str(path))
     legacy = Room("ABC123", "old-host", act=3, paused=True, revision=42,
                   guests={"g1": {"name": "First", "token": "old-guest"}, "g2": {"name": "Second", "token": "second-token"}},
                   votes={"g1": "margot"}, revealed=["glass", "clock", "ledger", "alibi"]).record()
     legacy["schema_version"] = 1
-    for field in ("assignments", "introductions", "rationales"):
+    for field in ("assignments", "introductions", "rationales", "ai_calls", "dialogue_source", "dialogue_reason"):
         legacy.pop(field)
     RoomStore(path).save(legacy)
     with TestClient(app) as client:
@@ -208,7 +208,7 @@ def test_legacy_schema_migration_preserves_m1_room_and_commits_schema_two(tmp_pa
             assert private["character"]["id"] == "ada"
             assert private["own_vote"] == {"suspect": "margot", "rationale": ""}
     stored = RoomStore(path).load_all()[0]
-    assert stored["schema_version"] == 2 and stored["revision"] == 42
+    assert stored["schema_version"] == 3 and stored["revision"] == 42
     with TestClient(app) as client:
         assert client.get("/api/rooms/ABC123/state").json() == public
 
@@ -283,7 +283,7 @@ def test_invalid_legacy_record_prevents_all_startup_migration_writes(tmp_path, m
     for room_id in ("ABC123", "DEF456"):
         record = Room(room_id, "host").record()
         record["schema_version"] = 1
-        for field in ("assignments", "introductions", "rationales"):
+        for field in ("assignments", "introductions", "rationales", "ai_calls", "dialogue_source", "dialogue_reason"):
             record.pop(field)
         records.append(record)
     records[1]["act"] = 99

@@ -2,7 +2,8 @@
 param(
     [ValidateRange(1, 65535)][int]$Port = 8000,
     [switch]$Lan,
-    [switch]$SkipSetup
+    [switch]$SkipSetup,
+    [string]$EnvFile
 )
 
 $ErrorActionPreference = 'Stop'
@@ -32,6 +33,12 @@ try {
     $bindAddress = if ($Lan) { '0.0.0.0' } else { '127.0.0.1' }
     Write-Host "Open http://localhost:$Port and create an evening. Press Ctrl+C to stop."
     if ($Lan) { Write-Host 'For guests, open the app using this computer''s LAN IPv4 address, then share its guest link.' }
-    & $pythonPath -m uvicorn backend.main:app --host $bindAddress --port $Port --ws-max-size 16384 --no-access-log --log-level warning
+    $serverArguments = @('-m', 'uvicorn', 'backend.main:app', '--host', $bindAddress, '--port', "$Port", '--ws-max-size', '16384', '--no-access-log', '--log-level', 'warning')
+    if ($EnvFile) {
+        $resolvedEnvFile = (Resolve-Path -LiteralPath $EnvFile).Path
+        if (-not (Test-Path -LiteralPath $resolvedEnvFile -PathType Leaf)) { throw 'The selected environment file is missing.' }
+        $serverArguments += @('--env-file', $resolvedEnvFile)
+    }
+    & $pythonPath @serverArguments
     if ($LASTEXITCODE -ne 0) { throw 'Server stopped with an error. Check whether the port is already in use.' }
 } finally { Pop-Location }

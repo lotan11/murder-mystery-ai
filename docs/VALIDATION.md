@@ -1,5 +1,19 @@
 # Validation results
 
+## M3 local integration — October 27, 2026
+
+| Check | Result |
+| --- | --- |
+| Backend | 134 passed, including 52 mocked Responses adapter cases and 25 async orchestration cases |
+| Client | 15 passed, including actual-source/busy/usage metadata and safe diagnostic copy |
+| TypeScript + build | Passed |
+| Browser | 4 passed: private characters, scripted-default status, renderer recovery and complete synchronized case |
+| Windows launcher/upgrade | Passed with explicit environment file; prior public state and host access preserved, schema 3 restored, paid AI disabled, frontend HTTP 200 |
+| Remote CI | Pending milestone push |
+| Actual live model | Not invoked or verified; no paid requests made |
+
+Tests cover strict request/output shape, data minimization, invented/unreleased facts, duplicate keys, malformed/refused/incomplete output, provider failure/timeout, durable reservation, reset/restart, budget exhaustion, storage failure, responsive same-socket pause, stale-result discard, concurrency and shutdown cancellation. Backend tests deny real outbound HTTP; browser-server settings force paid mode off. Live account/model compatibility, billing, actual speech and human playtesting are not inferred from mocks.
+
 ## M2 local integration — October 27, 2026
 
 | Check | Result |
