@@ -193,6 +193,7 @@ def test_legacy_schema_migration_preserves_m1_room_and_commits_current_schema(tm
                   guests={"g1": {"name": "First", "token": "old-guest"}, "g2": {"name": "Second", "token": "second-token"}},
                   votes={"g1": "margot"}, revealed=["glass", "clock", "ledger", "alibi"]).record()
     legacy["schema_version"] = 1
+    legacy.pop("listener")
     for field in ("assignments", "introductions", "rationales", "ai_calls", "dialogue_source", "dialogue_reason"):
         legacy.pop(field)
     RoomStore(path).save(legacy)
@@ -208,7 +209,7 @@ def test_legacy_schema_migration_preserves_m1_room_and_commits_current_schema(tm
             assert private["character"]["id"] == "ada"
             assert private["own_vote"] == {"suspect": "margot", "rationale": ""}
     stored = RoomStore(path).load_all()[0]
-    assert stored["schema_version"] == 3 and stored["revision"] == 42
+    assert stored["schema_version"] == 4 and stored["revision"] == 42
     with TestClient(app) as client:
         assert client.get("/api/rooms/ABC123/state").json() == public
 

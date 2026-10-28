@@ -57,6 +57,11 @@ export default function App() {
     [introduction, setIntroduction] = useState(""),
     [rationale, setRationale] = useState(""),
     [assignments, setAssignments] = useState<Record<string, string>>({});
+  const [listening, setListening] = useState(false),
+    [muted, setMuted] = useState(false),
+    [listenerStatus, setListenerStatus] = useState("Microphone is off.");
+  const [observation, setObservation] = useState("");
+  const recorder = useRef<MediaRecorder | null>(null), mediaStream = useRef<MediaStream | null>(null);
   const animated = presentation === "animated";
   const privateRole = useRef(""),
     previousAct = useRef<number | null>(null);
@@ -188,6 +193,11 @@ export default function App() {
         setError("Cannot connect to the room. Check the server and room code.");
       ws.onclose = (e) => {
         setStatus("Offline");
+        recorder.current?.state === "recording" && recorder.current.stop();
+        mediaStream.current?.getTracks().forEach((track) => track.stop());
+        recorder.current = null; mediaStream.current = null;
+        setListening(false); setMuted(false);
+        setListenerStatus("Connection closed. Reconnect and opt in to listen again.");
         localSpeechStop.current();
         window.speechSynthesis?.cancel();
         setJoined(false);
@@ -209,6 +219,9 @@ export default function App() {
       closed = true;
       clearTimeout(timer);
       socket.current?.close();
+      recorder.current?.state === "recording" && recorder.current.stop();
+      mediaStream.current?.getTracks().forEach((track) => track.stop());
+      recorder.current = null; mediaStream.current = null;
       localSpeechStop.current();
       setPrivateState(null);
       setPrivateVisible(false);
@@ -225,6 +238,48 @@ export default function App() {
     setRequestNotice("Request sent. Waiting for the room to update.");
     return true;
   }
+  async function startListener(useMicrophone: boolean) {
+    if (!joined || !state || state.paused) return;
+    const consent = window.confirm("Allow the detective to process your live speech for this room? Transcript text will be shared with the table and saved with room memory. Audio is sent in short clips for transcription and is not retained.");
+    if (!consent) return;
+    if (!send({ type: "listener.start", consent: true, source: useMicrophone ? "microphone" : "typed" })) return;
+    setListening(true); setMuted(false);
+    if (!useMicrophone) { setListenerStatus("Listening for typed observations. Microphone remains off."); return; }
+    if (!state.listener?.usage.enabled) { setListenerStatus("Microphone transcription is not configured. Typed observations remain available."); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: { ideal: true }, noiseSuppression: { ideal: true }, autoGainControl: { ideal: true } } });
+      mediaStream.current = stream;
+      const options = ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus", "audio/mp4"];
+      const mimeType = options.find((type) => MediaRecorder.isTypeSupported(type)) || "";
+      const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      recorder.current = mediaRecorder;
+      const trackSettings = stream.getAudioTracks()[0]?.getSettings();
+      setListenerStatus(trackSettings?.echoCancellation ? "Microphone live · device echo cancellation enabled." : "Microphone live · use headphones or mute the TV to prevent echo.");
+      mediaRecorder.ondataavailable = async (event) => {
+        if (!event.data.size || socket.current?.readyState !== WebSocket.OPEN || mediaRecorder.state !== "recording") return;
+        try {
+          const actualMime = mediaRecorder.mimeType.split(";")[0].toLowerCase();
+          socket.current.send(JSON.stringify({ type: "listener.audio", duration_seconds: 3, mime_type: actualMime }));
+          socket.current.send(await event.data.arrayBuffer());
+        } catch { setListenerStatus("Audio could not be sent. Listening has paused."); mediaRecorder.stop(); }
+      };
+      mediaRecorder.onerror = () => setListenerStatus("Microphone capture failed. Check browser permission and retry.");
+      mediaRecorder.start(3000);
+    } catch {
+      setListenerStatus("Microphone permission was unavailable. You can continue with typed observations.");
+    }
+  }
+  function stopListener(mute = false) {
+    if (socket.current?.readyState === WebSocket.OPEN) send({ type: mute ? "listener.mute" : "listener.stop" });
+    if (recorder.current?.state === "recording") recorder.current.stop();
+    mediaStream.current?.getTracks().forEach((track) => track.stop());
+    recorder.current = null; mediaStream.current = null;
+    setListening(mute); setMuted(mute);
+    setListenerStatus(mute ? "Listening muted. Resume when ready." : "Microphone and listener stopped.");
+  }
+  useEffect(() => {
+    if (state?.paused && listening) stopListener(true);
+  }, [state?.paused]);
   async function create() {
     setBusy(true);
     setError("");
@@ -907,6 +962,28 @@ export default function App() {
                       : "Scripted responses work without an AI service."}
                   </p>
                 </section>
+                {view === "guest" && joined && state?.listener && (
+                  <section className="panel listener-panel" aria-label="Continuous listening detective">
+                    <div className="eyebrow">TABLE LISTENER</div>
+                    <h3>Detective at the table</h3>
+                    <p className="tiny">Serious, evidence-led interruptions with the occasional dry observation. Listening requires your consent. Transcripts and detective notes are visible to the table and saved; raw audio is not retained.</p>
+                    <div className="listener-controls">
+                      {!listening ? <>
+                        <button disabled={!canContribute} onClick={() => void startListener(false)}>Enable typed listening</button>
+                        <button disabled={!canContribute || !state.listener?.usage.enabled} onClick={() => void startListener(true)}>Enable microphone</button>
+                      </> : <>
+                        <button onClick={() => stopListener(!muted)}>{muted ? "Resume listening" : "Mute"}</button>
+                        <button onClick={() => stopListener(false)}>Stop</button>
+                      </>}
+                    </div>
+                    <p className="tiny" role="status">{listenerStatus}{state.listener.usage.enabled ? ` · ${state.listener.usage.audio_seconds}/${state.listener.usage.audio_limit_seconds}s · est. $${state.listener.usage.estimated_cost_usd.toFixed(4)}` : " · transcription disabled"}</p>
+                    {state.listener.follow_up && <blockquote className="guest-response" aria-live="polite"><span>WOBBLEBOTTOM · FOLLOW-UP</span><p>{state.listener.follow_up.question}</p>{state.listener.follow_up.answered && <p><strong>{state.listener.follow_up.target_name}:</strong> {state.listener.follow_up.answer}</p>}</blockquote>}
+                    {listening && <form onSubmit={(event) => { event.preventDefault(); const value = observation.trim(); if (value && send({ type: "listener.transcript", text: value })) setObservation(""); }}><label htmlFor="listener-observation">Add what you heard</label><textarea id="listener-observation" value={observation} onChange={(event) => setObservation(event.target.value)} maxLength={1200} placeholder="Ada was in the library at 9:20."/><button disabled={!observation.trim() || muted}>Share observation with detective</button></form>}
+                    <h4>Table memory</h4>
+                    <ol className="listener-transcript">{state.listener.utterances.slice(-12).map((item) => <li key={item.id}><strong>{item.speaker}{item.follow_up_answer ? " · answer" : ""}:</strong> {item.text}</li>)}</ol>
+                    <p className="tiny">Usage is estimated from audio duration. The detective’s contradiction checks are deterministic and cite released evidence only; they cannot set or reveal the solution.</p>
+                  </section>
+                )}
                 {view === "guest" && (
                   <section className="panel">
                     <div className="eyebrow">YOUR DEDUCTION</div>

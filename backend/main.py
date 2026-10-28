@@ -19,6 +19,9 @@ from .audition import router as audition_router
 from .casting import router as casting_router
 from .local_speech import LocalSpeechRenderer, create_router as local_speech_router
 from .scholar_speech import ScholarSpeechRenderer, create_router as scholar_speech_router
+from .listener import (OpenAITranscriber, TranscriptionError, empty_memory,
+                       load_transcription_config, public_usage, accept_utterance,
+                       MAX_AUDIO_BYTES)
 
 ROOT = Path(__file__).resolve().parents[1]
 @asynccontextmanager
@@ -27,7 +30,7 @@ async def lifespan(app: FastAPI):
     records = store.load_all()
     restored = {record["room_id"]: Room.from_record(record) for record in records}
     # Validate every record before committing an additive schema migration.
-    legacy = [restored[record["room_id"]].record() for record in records if record["schema_version"] in (1, 2)]
+    legacy = [restored[record["room_id"]].record() for record in records if record["schema_version"] in (1, 2, 3)]
     if legacy:
         store.save_many(legacy)
     rooms.clear()
@@ -38,6 +41,8 @@ async def lifespan(app: FastAPI):
     app.state.planner_tasks = set()
     app.state.local_speech = LocalSpeechRenderer()
     app.state.scholar_speech = ScholarSpeechRenderer()
+    app.state.transcription_config = load_transcription_config()
+    app.state.transcriber = OpenAITranscriber(app.state.transcription_config)
     try:
         yield
     finally:
@@ -74,17 +79,19 @@ class Room:
     dialogue: str = NARRATION["welcome"]
     clients: set = field(default_factory=set)
     guest_clients: dict = field(default_factory=dict)
+    listener: dict = field(default_factory=empty_memory)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
     def record(self):
         # An explicit whitelist prevents accidental serialization of live sockets/locks.
-        return copy.deepcopy({"schema_version": 3, "case_id": CASE_ID, "case_version": CASE_VERSION, "room_id": self.room_id,
+        return copy.deepcopy({"schema_version": 4, "case_id": CASE_ID, "case_version": CASE_VERSION, "room_id": self.room_id,
                               "organizer_token": self.organizer_token, "act": self.act,
                               "paused": self.paused, "revision": self.revision,
                               "guests": self.guests, "revealed": self.revealed,
                               "votes": self.votes, "dialogue": self.dialogue,
                               "assignments": self.assignments, "introductions": self.introductions, "rationales": self.rationales,
-                              "ai_calls": self.ai_calls, "dialogue_source": self.dialogue_source, "dialogue_reason": self.dialogue_reason})
+                              "ai_calls": self.ai_calls, "dialogue_source": self.dialogue_source, "dialogue_reason": self.dialogue_reason,
+                              "listener": self.listener})
 
     @classmethod
     def from_record(cls, record):
@@ -102,7 +109,10 @@ class Room:
         v2_fields = legacy_fields | {"assignments", "introductions", "rationales"}
         if record.get("schema_version") == 2 and set(record) == v2_fields:
             record.update(schema_version=3, ai_calls=0, dialogue_source="scripted", dialogue_reason="initial")
-        fields = {"ai_calls", "dialogue_source", "dialogue_reason", "assignments", "introductions", "rationales", "room_id", "organizer_token", "act", "paused", "revision", "guests", "revealed", "votes", "dialogue"}
+        v3_fields = {"ai_calls", "dialogue_source", "dialogue_reason", "assignments", "introductions", "rationales", "room_id", "organizer_token", "act", "paused", "revision", "guests", "revealed", "votes", "dialogue"}
+        if record.get("schema_version") == 3 and set(record) == v3_fields | {"schema_version", "case_id", "case_version"}:
+            record.update(schema_version=4, listener=empty_memory())
+        fields = v3_fields | {"listener"}
         metadata = {"schema_version", "case_id", "case_version"}
         known_clues = {clue["id"] for clue in EVIDENCE}
         known_suspects = {suspect["id"] for suspect in SUSPECTS}
@@ -110,7 +120,7 @@ class Room:
         text = lambda value: isinstance(value, str) and bool(value)
         valid = (
             set(record) == fields | metadata
-            and integer(record["schema_version"]) and record["schema_version"] == 3
+            and integer(record["schema_version"]) and record["schema_version"] == 4
             and integer(record["case_version"])
             and text(record["room_id"]) and len(record["room_id"]) == 6
             and all(character in "0123456789ABCDEF" for character in record["room_id"])
@@ -142,6 +152,7 @@ class Room:
                     for guest_id, intro in record["introductions"].items())
             and isinstance(record["rationales"], dict) and set(record["rationales"]) == set(record["votes"])
             and all(isinstance(reason, str) and len(reason) <= 300 for reason in record["rationales"].values())
+            and valid_listener_memory(record["listener"], record["guests"])
         )
         if not valid:
             raise StorageError("Invalid saved room record. Preserve the database for recovery; no saved data was discarded.")
@@ -175,6 +186,7 @@ class Room:
                 "busy": self.ai_busy}
 
     def snapshot(self):
+        listener_config = app.state.transcription_config if hasattr(app.state, "transcription_config") else load_transcription_config()
         return {"room_id": self.room_id, "title": TITLE, "act": self.act,
                 "phase": ["Lobby", "The discovery", "The contradictions", "The accusation", "Case closed"][self.act],
                 "paused": self.paused, "revision": self.revision,
@@ -192,9 +204,56 @@ class Room:
                 "performance": {"emotion": "thoughtful", "gesture": "notes"},
                 "votes": {s["id"]: list(self.votes.values()).count(s["id"]) for s in SUSPECTS},
                 "solution": SOLUTION if self.act == 4 else None,
-                "integrations": {"dialogue": "optional OpenAI planner" if self.dialogue_meta()["provider"] == "openai" and app.state.planner_config.enabled else "deterministic mock", "microphone": "not connected", "avatar": "procedural placeholder", "lip_sync": "not connected"}}
+                "listener": {"utterances": copy.deepcopy(self.listener["utterances"]), "theories": copy.deepcopy(self.listener["theories"]),
+                             "follow_up": copy.deepcopy(self.listener["follow_up"]), "interventions": copy.deepcopy(self.listener["interventions"]),
+                             "usage": public_usage(self.listener, listener_config)},
+                "integrations": {"dialogue": "optional OpenAI planner" if self.dialogue_meta()["provider"] == "openai" and app.state.planner_config.enabled else "deterministic mock", "microphone": "optional consent-based transcription" if listener_config.enabled else "disabled", "avatar": "procedural placeholder", "lip_sync": "not connected"}}
 
 rooms: dict[str, Room] = {}
+
+def valid_listener_memory(memory, guests):
+    if not isinstance(memory, dict) or set(memory) != {"utterances", "theories", "follow_up", "interventions", "audio_seconds", "transcription_calls"}:
+        return False
+    if type(memory["audio_seconds"]) is not int or memory["audio_seconds"] < 0 or type(memory["transcription_calls"]) is not int or memory["transcription_calls"] < 0:
+        return False
+    utterances = memory["utterances"]
+    if not isinstance(utterances, list) or len(utterances) > 120:
+        return False
+    allowed_subjects, allowed_places = {"ada", "felix", "margot"}, {"library", "music_room", "telephone", "conservatory"}
+    total_chars = 0
+    sequences = []
+    for item in utterances:
+        if (not isinstance(item, dict) or set(item) != {"id", "sequence", "guest_id", "speaker", "text", "claims", "follow_up_answer"}
+                or item["guest_id"] not in guests or not isinstance(item["text"], str) or len(item["text"]) > 1200
+                or not isinstance(item["speaker"], str) or not 1 <= len(item["speaker"]) <= 40
+                or type(item["sequence"]) is not int or item["sequence"] < 1 or item["id"] != f"u{item['sequence']}"
+                or not isinstance(item["claims"], list) or type(item["follow_up_answer"]) is not bool
+                or not all(isinstance(claim, dict) and set(claim) == {"subject", "place", "time"}
+                           and claim["subject"] in allowed_subjects and claim["place"] in allowed_places
+                           and isinstance(claim["time"], str) and len(claim["time"]) <= 12 for claim in item["claims"])):
+            return False
+        total_chars += len(item["text"])
+        sequences.append(item["sequence"])
+    if total_chars > 40_000 or sequences != sorted(set(sequences)):
+        return False
+    theories = memory["theories"]
+    if not isinstance(theories, dict) or not set(theories).issubset(allowed_subjects):
+        return False
+    utterance_ref = lambda value: isinstance(value, str) and value.startswith("u") and value[1:].isdigit()
+    for theory in theories.values():
+        if (not isinstance(theory, dict) or set(theory) != {"status", "supporting", "challenging"}
+                or theory["status"] not in {"unverified", "contested"}
+                or not isinstance(theory["supporting"], list) or not isinstance(theory["challenging"], list)
+                or not all(utterance_ref(ref) for ref in theory["supporting"] + theory["challenging"])):
+            return False
+    follow_up = memory["follow_up"]
+    if follow_up is not None and (not isinstance(follow_up, dict)
+            or not {"target_guest_id", "target_name", "question", "contradiction_id"}.issubset(follow_up)
+            or follow_up["target_guest_id"] not in guests or not isinstance(follow_up["question"], str)
+            or len(follow_up["question"]) > 1200 or type(follow_up.get("answered", False)) is not bool
+            or (follow_up.get("answered") and (not isinstance(follow_up.get("answer"), str) or not utterance_ref(follow_up.get("answer_id"))))):
+        return False
+    return isinstance(memory["interventions"], list) and len(memory["interventions"]) <= 20
 
 def token_matches(candidate: str, expected: str) -> bool:
     # compare_digest's string form rejects non-ASCII user input.
@@ -260,6 +319,7 @@ def control(room, msg):
         room.votes.clear()
         room.rationales.clear()
         room.introductions.clear()
+        room.listener = empty_memory()
         room.dialogue_source = "scripted"
         room.dialogue_reason = "reset"
         room.dialogue = NARRATION["reset"]
@@ -436,6 +496,9 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
     room.clients.add(ws)
     if identity:
         room.guest_clients[ws] = identity
+    listening = False
+    muted = False
+    pending_audio = None
     try:
         await ws.send_json({"type": "state", "data": room.snapshot()})
         if identity:
@@ -447,10 +510,100 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                 if packet["type"] == "websocket.disconnect":
                     raise WebSocketDisconnect(packet.get("code", 1000))
                 if packet.get("text") is None:
-                    raise ValueError("Send commands as JSON text, not binary data.")
-                msg = json.loads(packet["text"])
+                    if role != "guest" or not identity or not listening or muted or room.paused:
+                        raise ValueError("Start listening as a joined guest and unpause the investigation before sending audio.")
+                    if not app.state.transcription_config.enabled:
+                        raise ValueError("Microphone transcription is disabled. Use typed observation or configure paid transcription.")
+                    if pending_audio is None:
+                        raise ValueError("Audio chunks require listener.audio metadata first.")
+                    audio, metadata = packet.get("bytes"), pending_audio
+                    pending_audio = None
+                    if audio is None or len(audio) > MAX_AUDIO_BYTES:
+                        raise ValueError("Audio chunk exceeds the 512 KB limit.")
+                    duration = metadata["duration_seconds"]
+                    async with room.lock:
+                        memory = room.listener
+                        max_chunks = max(1, app.state.transcription_config.max_audio_seconds // 5)
+                        if (memory["audio_seconds"] + duration > app.state.transcription_config.max_audio_seconds
+                                or memory["transcription_calls"] >= max_chunks):
+                            raise ValueError("This room has reached its transcription time limit.")
+                        before = room.record()
+                        memory["audio_seconds"] += duration
+                        memory["transcription_calls"] += 1
+                        try:
+                            app.state.room_store.save(room.record())
+                        except StorageError:
+                            room.restore(before)
+                            raise ValueError("Usage could not be reserved. No audio was sent for transcription.")
+                    try:
+                        transcript = await app.state.transcriber.transcribe(audio, metadata["mime_type"])
+                    except TranscriptionError as exc:
+                        await ws.send_json({"type": "listener.error", "message": f"Transcription unavailable ({exc.reason}); no audio was retained."})
+                        continue
+                    # Do not accept a delayed transcription after pause or opt-out.
+                    if not listening or muted or room.paused:
+                        continue
+                    msg = {"type": "listener.transcript", "text": transcript}
+                else:
+                    msg = json.loads(packet["text"])
                 if not isinstance(msg, dict):
                     raise ValueError("Expected an object command.")
+                if msg.get("type") in ("listener.start", "listener.resume", "listener.mute", "listener.stop", "listener.audio", "listener.transcript"):
+                    if role != "guest" or not identity:
+                        raise ValueError("Join as a guest before using the listener.")
+                    kind = msg["type"]
+                    if kind == "listener.start":
+                        if msg.get("consent") is not True:
+                            raise ValueError("Explicit consent is required before listening.")
+                        listening, muted = True, False
+                    elif kind == "listener.resume":
+                        if msg.get("consent") is not True:
+                            raise ValueError("Explicit consent is required to resume listening.")
+                        listening, muted = True, False
+                    elif kind == "listener.mute":
+                        muted = True
+                    elif kind == "listener.stop":
+                        listening, muted, pending_audio = False, True, None
+                    elif kind == "listener.audio":
+                        if not listening or muted or room.paused:
+                            raise ValueError("Listening is not active.")
+                        duration = msg.get("duration_seconds")
+                        mime_type = msg.get("mime_type")
+                        if (type(duration) not in (int, float) or not 0.5 <= duration <= 5
+                                or not isinstance(mime_type, str) or mime_type.lower() not in {"audio/webm", "audio/webm;codecs=opus", "audio/ogg;codecs=opus", "audio/mp4", "audio/mpeg"}):
+                            raise ValueError("Audio metadata must specify a 0.5–5 second supported clip.")
+                        pending_audio = {"duration_seconds": int(duration + .5), "mime_type": mime_type.lower()}
+                    elif kind == "listener.transcript":
+                        if not listening or muted or room.paused:
+                            raise ValueError("Start listening before submitting a transcript.")
+                        observation = msg.get("text")
+                        if not isinstance(observation, str) or not 2 <= len(observation.strip()) <= 1200:
+                            raise ValueError("Enter an observation between 2 and 1,200 characters.")
+                        async with room.lock:
+                            before = room.record()
+                            try:
+                                result = accept_utterance(room.listener, guest_id=identity,
+                                    guest_name=room.guests[identity]["name"], text=observation,
+                                    evidence=[item for item in EVIDENCE if item["id"] in room.revealed])
+                                room.revision += 1
+                                app.state.room_store.save(room.record())
+                            except (StorageError, ValueError):
+                                room.restore(before)
+                                raise
+                            except Exception:
+                                room.restore(before)
+                                raise
+                            await broadcast(room)
+                            for event in result["events"]:
+                                for client in list(room.clients):
+                                    try:
+                                        await client.send_json(event)
+                                    except Exception:
+                                        room.clients.discard(client)
+                        continue
+                    await ws.send_json({"type": "listener.status", "listening": listening, "muted": muted,
+                                        "transcription": app.state.transcription_config.reason})
+                    continue
                 if msg.get("type") == "dialogue":
                     await handle_dialogue(room, ws, role, identity, msg)
                     continue

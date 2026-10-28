@@ -328,6 +328,10 @@ nav a.active {
 .panel h2 {
   margin-bottom: 12px;
 }
+.listener-controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+.listener-transcript { max-height: 260px; overflow: auto; padding-left: 22px; font-size: 12px; line-height: 1.7; }
+.listener-transcript li { padding: 5px 0; color: #c2cfc1; }
+.listener-panel blockquote { margin: 14px 0; }
 .muted {
   font-size: 11px;
   color: #9eafa2;
