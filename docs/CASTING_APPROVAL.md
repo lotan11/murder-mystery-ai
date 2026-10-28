@@ -2,13 +2,13 @@
 
 ## Selected direction — October 28, 2026
 
-User selected **C · The Scholar + Lewis (`bm_lewis`)** in chat. This selects the visual concept and voice direction. Next review: conversational pacing, dry-humor inflection and final delivery approval. A finished Scholar 3D rig and game activation are not yet delivered or claimed approved. Keep the working avatar and Windows speech available while preparing that milestone.
+User selected **C · The Scholar + Lewis (`bm_lewis`)** in chat. The user subsequently approved the slightly faster Lewis pace (1.05x). Proceed with The Scholar + Lewis. A finished Scholar 3D rig is not yet delivered; the approved portrait/live-voice presentation is the next incremental game integration, with existing stages preserved.
 
 Open `/?view=casting` on the running app. Compare a character concept and a voice, choose one of three identical scenes, then press **Play scene**. Nothing plays automatically. **Add to shortlist** saves only a local browser preference; it is not approval and never changes the active game character or voice.
 
 ## Lewis pacing revision
 
-User likes Lewis and requested a slight speed increase. Casting now opens on The Scholar + Lewis and defaults to a 1.05x playback preview (about 5% faster). The Lewis pace control can switch back to Original pace. Browser pitch preservation is requested; exact behavior depends on the browser. This changes preview playback, not source recordings or the active game voice. Final synthesis pacing remains an approval step. Other voice candidates remain at original playback rate.
+User likes Lewis and requested a slight speed increase. Casting now opens on The Scholar + Lewis and defaults to a 1.05x playback preview (about 5% faster). The Lewis pace control can switch back to Original pace. Browser pitch preservation is requested; exact behavior depends on the browser. This changes preview playback, not source recordings or the active game voice. The user approved this 1.05x pace; live integration retains the same generation/playback mechanism. Other voice candidates remain at original playback rate.
 
 ## Prepared candidates
 
@@ -53,4 +53,4 @@ The generator and controlled API provenance record source versions, speed, sampl
 
 ## Approval boundary
 
-Default personality has returned to respectful, playfully sarcastic dry humor under the latest user direction. No slapstick, exaggerated mouth shapes, cartoon animation, new game avatar or new active game voice has been introduced. The Scholar + Lewis pairing is selected; delivery/inflection review and finished-rig approval remain pending. After approval, production work can build/license the selected 3D rig and connect the selected voice with properly validated speech alignment; that is a separate activation step.
+Default personality has returned to respectful, playfully sarcastic dry humor under the latest user direction. No slapstick, exaggerated mouth shapes, cartoon animation, new game avatar or new active game voice has been introduced. The Scholar + Lewis pairing is selected; the +5% pace is approved, while production of the finished rig remains pending. After approval, production work can build/license the selected 3D rig and connect the selected voice with properly validated speech alignment; that is a separate activation step.

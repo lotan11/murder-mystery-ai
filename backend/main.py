@@ -18,6 +18,7 @@ from .ai_dialogue import load_config, OpenAIPlanner, PlannerError
 from .audition import router as audition_router
 from .casting import router as casting_router
 from .local_speech import LocalSpeechRenderer, create_router as local_speech_router
+from .scholar_speech import ScholarSpeechRenderer, create_router as scholar_speech_router
 
 ROOT = Path(__file__).resolve().parents[1]
 @asynccontextmanager
@@ -36,6 +37,7 @@ async def lifespan(app: FastAPI):
     app.state.planner = OpenAIPlanner(app.state.planner_config)
     app.state.planner_tasks = set()
     app.state.local_speech = LocalSpeechRenderer()
+    app.state.scholar_speech = ScholarSpeechRenderer()
     try:
         yield
     finally:
@@ -225,6 +227,7 @@ def get_room(room_id):
     return room
 
 app.include_router(local_speech_router(get_room))
+app.include_router(scholar_speech_router(get_room))
 
 @app.get("/api/rooms/{room_id}/state")
 async def read_state(room_id: str):

@@ -1,3 +1,15 @@
+# Latest delivery: approved Scholar + Lewis in the playable TV — October 28, 2026
+
+User approved The Scholar and the +5% Lewis pace. TV now defaults to the approved Scholar portrait with live Lewis narration of current public detective dialogue. Audio is muted until Enable Lewis voice; stop, mute, replay, pause/disconnect/reset and stale-state protections remain. Presentation selection preserves the original procedural stage and the existing animated sample with Windows voices. No unrelated sample is represented as the finished Scholar.
+
+A new isolated optional neural worker reuses verified cached Kokoro assets, fixed bm_lewis generation speed 0.92 and frontend 1.05x pitch-preserving playback, exactly matching the approved audition mechanism. Authenticated requests contain an empty object, never client text. Generation is outside room locks with bounded text/output/time, single-job control, cleanup and state recheck. SAPI/core dependencies and SQLite schema are unchanged; no paid service or automatic model download is added.
+
+Verification: 247 backend tests pass, two Windows privilege skips; all 15 client tests and production build pass. All eleven browser scenarios pass, covering selected Scholar pace/privacy/control flow, missing-runtime recovery and the preserved game/character/audition/animated modes. Actual Windows live TV Lewis opening played at 1.05x with pitch preservation enabled; host pause stopped it, no page errors and no mobile overflow. The actual full finale rendered a 41.56-second source clip in 17.09 seconds, within the 40-second deadline. Focused browser checks repeat after portrait-framing and cancellation polish.
+
+Remaining character production: the approved portrait is static, with no fake mouth animation or claimed lip alignment. A likeness-matched deformable Scholar 3D rig is not yet made. A detailed source-verified rig brief and inspected front/profile/three-quarter construction reference are in SCHOLAR_RIG_BRIEF.md and docs/assets/. Selected look/voice/pace are settled; the next asset work is production modeling/rigging, not another casting decision.
+
+See SCHOLAR_PERFORMANCE.md for rehearsal/setup. Source CI follows the push.
+
 # Lewis pace refinement — October 28, 2026
 
 User likes the selected Lewis voice and asks for slightly faster delivery. Casting now opens on Scholar + Lewis, with a 1.05x pitch-preserving playback preview by default and Original pace available for comparison. This is an explicitly labeled playback preview; source recordings and active game speech remain unchanged pending approval. Production build passed; focused casting checks verify voice-specific speed, pitch-preservation request and original-pace switching.

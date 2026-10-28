@@ -60,3 +60,7 @@ Keep the original TV stage available. An opt-in TalkingHead performance can spea
 ## Character and voice approval sandbox
 
 Offer three premium stylized-realistic mature detective concept portraits and three British male neural voice candidates at `?view=casting`. Compare the same three short scenes across every face/voice pairing without autoplay. Save a device-local shortlist; no candidate replaces active game assets until user approval. Distinguish concepts from rigged 3D avatars, generated voice audio from test tones, and performance direction from precise emotional control. See CASTING_APPROVAL.md.
+
+## Approved TV presentation
+
+The selected default TV presentation is The Scholar concept portrait with optional live Lewis narration at the user-approved +5% playback pace. Explicit enable/mute/stop/replay and captions remain. Original and animated-sample stages stay selectable. The concept portrait is not a finished 3D rig; production likeness/animation work is tracked separately. See SCHOLAR_PERFORMANCE.md.

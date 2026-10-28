@@ -3,6 +3,7 @@ test('TV keeps captions after a lost WebGL context', async ({ page }) => {
  const room = await (await page.request.post('/api/rooms')).json();
  await page.emulateMedia({ reducedMotion: 'reduce' });
  await page.goto(`/?view=tv&room=${room.room_id}`);
+ await page.getByLabel('TV presentation').selectOption('original');
  const canvas = page.locator('.detective-view canvas');
  await expect(canvas).toBeVisible();
  await canvas.evaluate(element => element.dispatchEvent(new Event('webglcontextlost', { cancelable: true })));

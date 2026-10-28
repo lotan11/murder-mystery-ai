@@ -1,0 +1,54 @@
+import {test,expect} from '@playwright/test';
+import {readFileSync} from 'node:fs';
+const clip=()=>readFileSync(new URL('../../data/audition-test/zira-greeting.wav',import.meta.url)).toString('base64');
+
+test('approved Scholar and Lewis speak public game dialogue at approved pace',async({page,context})=>{
+ test.setTimeout(120000);
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/');await page.getByRole('button',{name:/Create an evening/}).click();await expect(page).toHaveURL(/room=/);
+ const room=new URL(page.url()).searchParams.get('room')!;
+ const tv=await context.newPage();tv.on('pageerror',e=>errors.push(e.message));let calls=0;
+ await tv.route('**/api/scholar-speech/status',r=>r.fulfill({json:{available:true,provider:'kokoro-onnx',voice:'bm_lewis',playback_rate:1.05,message:'Offline test fixture'}}));
+ await tv.route(`**/api/rooms/${room}/scholar-speech`,async route=>{
+  calls++;expect(route.request().postDataJSON()).toEqual({});expect(route.request().headers().authorization).toMatch(/^Bearer /);
+  const state=await(await tv.request.get(`/api/rooms/${room}/state`)).json();
+  await route.fulfill({json:{provider:'kokoro-onnx',voice:'bm_lewis',text:state.dialogue,revision:state.revision,duration_ms:8000,content_type:'audio/wav',audio_base64:clip(),playback_rate:1.05}});
+ });
+ await tv.goto(`/?view=tv&room=${room}#speech=test-capability`);
+ await expect(tv.getByLabel('TV presentation')).toHaveValue('scholar');
+ await expect(tv.getByRole('button',{name:'Enable Lewis voice',exact:true})).toBeEnabled();
+ expect(calls).toBe(0);
+ const audio=tv.getByLabel('Lewis dialogue audio',{exact:true});
+ await tv.getByRole('button',{name:'Enable Lewis voice',exact:true}).click();
+ await expect.poll(()=>audio.evaluate((a:HTMLAudioElement)=>!a.paused)).toBe(true);
+ expect(await audio.evaluate((a:HTMLAudioElement)=>a.playbackRate)).toBe(1.05);
+ expect(await audio.evaluate((a:HTMLAudioElement)=>a.preservesPitch)).toBe(true);
+ await page.getByRole('button',{name:'Begin case',exact:true}).click();
+ await expect.poll(()=>calls).toBe(2);
+ await expect(tv.locator('.stage-subtitles')).toContainText('Lord Blackthorn is dead');
+ await expect.poll(()=>audio.evaluate((a:HTMLAudioElement)=>!a.paused)).toBe(true);
+ await page.getByRole('button',{name:'Pause evening',exact:true}).click();
+ await expect.poll(()=>audio.evaluate((a:HTMLAudioElement)=>a.paused)).toBe(true);
+ await page.getByRole('button',{name:'Resume evening',exact:true}).click();
+ await tv.getByRole('button',{name:'Replay dialogue',exact:true}).click();
+ await expect.poll(()=>audio.evaluate((a:HTMLAudioElement)=>!a.paused)).toBe(true);
+ await tv.getByRole('button',{name:'Mute Lewis voice',exact:true}).click();
+ const mutedCalls=calls;
+ await page.getByRole('button',{name:'Reveal next clue',exact:true}).click();
+ await expect(tv.getByLabel('Latest evidence')).toContainText('The untouched port');
+ expect(calls).toBe(mutedCalls);expect(await audio.evaluate((a:HTMLAudioElement)=>a.paused)).toBe(true);
+ await tv.getByLabel('TV presentation').selectOption('original');
+ await expect(tv.locator('.detective-view canvas')).toBeVisible();
+ expect(errors).toEqual([]);
+});
+
+test('missing approved neural runtime leaves captions and original stage available',async({page})=>{
+ const created=await(await page.request.post('/api/rooms')).json();
+ await page.route('**/api/scholar-speech/status',r=>r.fulfill({json:{available:false,provider:'kokoro-onnx',voice:'bm_lewis',playback_rate:1.05,message:'Runtime unavailable'}}));
+ await page.goto(`/?view=tv&room=${created.room_id}#speech=test-capability`);
+ await expect(page.getByRole('button',{name:'Enable Lewis voice',exact:true})).toBeDisabled();
+ await expect(page.locator('.stage-subtitles')).toContainText('Good evening');
+ await expect(page.getByLabel('Latest evidence')).toBeVisible();
+ await page.getByLabel('TV presentation').selectOption('original');
+ await expect(page.locator('.detective-view canvas')).toBeVisible();
+});

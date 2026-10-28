@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Stage from "./Stage";
+import { useScholarPerformance } from "./ScholarPerformance";
 import { useLocalDetectivePerformance } from "./TalkingDetective";
 import {
   decodePrivate,
@@ -44,7 +45,9 @@ export default function App() {
     [text, setText] = useState(""),
     [busy, setBusy] = useState(false),
     [voice, setVoice] = useState(false),
-    [animated, setAnimated] = useState(false),
+    [presentation, setPresentation] = useState<
+      "scholar" | "animated" | "original"
+    >("scholar"),
     [tvSpeechToken, setTvSpeechToken] = useState(
       () => new URLSearchParams(location.hash.slice(1)).get("speech") || "",
     ),
@@ -54,6 +57,7 @@ export default function App() {
     [introduction, setIntroduction] = useState(""),
     [rationale, setRationale] = useState(""),
     [assignments, setAssignments] = useState<Record<string, string>>({});
+  const animated = presentation === "animated";
   const privateRole = useRef(""),
     previousAct = useRef<number | null>(null);
   const localSpeechStop = useRef<() => void>(() => {}),
@@ -62,6 +66,7 @@ export default function App() {
   const socket = useRef<WebSocket | null>(null),
     voiceRef = useRef(false),
     lastSpoken = useRef("");
+  animatedRef.current = view === "tv" && presentation !== "original";
   useEffect(() => {
     voiceRef.current = voice;
     if (!voice) window.speechSynthesis?.cancel();
@@ -266,18 +271,34 @@ export default function App() {
         ? tvSpeechToken || localStorage.getItem(`organizer:${room}`) || ""
         : "",
     animated: view === "tv" && animated,
-    onAnimatedChange: (value) => {
-      animatedRef.current = value;
-      setAnimated(value);
-      localSpeechStop.current();
-      if (value) {
-        voiceRef.current = false;
-        setVoice(false);
-        window.speechSynthesis?.cancel();
-      }
-    },
+    onAnimatedChange: (value) =>
+      changePresentation(value ? "animated" : "scholar"),
   });
-  localSpeechStop.current = localPerformance.stop;
+  const scholarPerformance = useScholarPerformance({
+    room,
+    dialogue: state?.dialogue || "",
+    revision: state?.revision || 0,
+    act: state?.act || 0,
+    paused: state?.paused || false,
+    online: online && !!state,
+    token:
+      view === "tv"
+        ? tvSpeechToken || localStorage.getItem(`organizer:${room}`) || ""
+        : "",
+    active: view === "tv" && presentation === "scholar",
+  });
+  localSpeechStop.current = () => {
+    localPerformance.stop();
+    scholarPerformance.stop();
+  };
+  function changePresentation(value: "scholar" | "animated" | "original") {
+    localSpeechStop.current();
+    setPresentation(value);
+    animatedRef.current = value !== "original";
+    voiceRef.current = false;
+    setVoice(false);
+    window.speechSynthesis?.cancel();
+  }
   const control = (action: string) => send({ type: "control", action });
   function link(role: View) {
     const base = `${location.origin}/?view=${role}&room=${encodeURIComponent(room)}`;
@@ -391,12 +412,51 @@ export default function App() {
                   <span className="paused">Evening paused</span>
                 )}
               </div>
-              {view === "tv" && state && localPerformance.controls}
+              {view === "tv" && state && (
+                <>
+                  <div className="tv-presentation">
+                    <label htmlFor="tv-presentation">TV presentation</label>
+                    <select
+                      id="tv-presentation"
+                      value={presentation}
+                      onChange={(event) =>
+                        changePresentation(
+                          event.target.value as
+                            | "scholar"
+                            | "animated"
+                            | "original",
+                        )
+                      }
+                    >
+                      <option value="scholar">
+                        Scholar · approved portrait + Lewis
+                      </option>
+                      <option value="animated">
+                        Animated sample · Windows voice fallback
+                      </option>
+                      <option value="original">
+                        Original procedural stage
+                      </option>
+                    </select>
+                  </div>
+                  {localPerformance.controls}
+                  {presentation === "scholar" && scholarPerformance.controls}
+                </>
+              )}
               {view !== "guest" && state && (
                 <Stage
                   avatar={
-                    view === "tv" && animated
-                      ? localPerformance.avatar
+                    view === "tv"
+                      ? presentation === "scholar"
+                        ? scholarPerformance.avatar
+                        : animated
+                          ? localPerformance.avatar
+                          : undefined
+                      : undefined
+                  }
+                  avatarCaption={
+                    view === "tv" && presentation === "scholar"
+                      ? "APPROVED SCHOLAR CONCEPT · 3D RIG PENDING"
                       : undefined
                   }
                   evidence={state.evidence}
@@ -428,7 +488,7 @@ export default function App() {
                   <input
                     type="checkbox"
                     checked={voice}
-                    disabled={view === "tv" && animated}
+                    disabled={view === "tv" && presentation !== "original"}
                     onChange={(e) => setVoice(e.target.checked)}
                   />{" "}
                   Read dialogue aloud <span>Device voice · optional</span>

@@ -4,6 +4,7 @@ import "./stage.css";
 
 type Props = {
   avatar?: ReactNode;
+  avatarCaption?: string;
   evidence: Array<{
     id: string;
     title: string;
@@ -23,6 +24,7 @@ export default function Stage({
   act,
   paused,
   avatar,
+  avatarCaption,
 }: Props) {
   const mount = useRef<HTMLDivElement>(null);
   const pausedRef = useRef(paused);
@@ -308,9 +310,10 @@ export default function Stage({
           <em>Wobblebottom</em>
         </h2>
         <p>
-          {avatar
-            ? "LICENSED SAMPLE · NOT FINAL DETECTIVE"
-            : "PROCEDURAL AVATAR · NO LIP SYNC"}
+          {avatarCaption ||
+            (avatar
+              ? "LICENSED SAMPLE · NOT FINAL DETECTIVE"
+              : "PROCEDURAL AVATAR · NO LIP SYNC")}
         </p>
       </div>
       <aside

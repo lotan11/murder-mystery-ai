@@ -79,9 +79,17 @@ Approved animation refinement CI is green: run 40715846893. No final voice or as
 | Restore restrained dry humor | Lead | Done | Default narration, scripted framing and approved remarks; no slapstick |
 | Regression / playback checks | Lead / QA | Local pass; CI pending | 215 backend, 15 client, nine browser scenarios; actual nine-clip playback |
 | Character / voice selection | User | Selected Scholar + Lewis | User selection recorded October 28, 2026; no game activation yet |
-| Delivery / inflection approval | User / lead | Next audition pending | Refine Lewis pacing and restrained dry humor |
-| Selected 3D rig and final voice activation | Lead | Pending selection | Keep working avatar/local SAPI until approved |
+| Delivery / inflection approval | User / lead | Approved +5% pace | Proceed with Scholar and Lewis |
+| Selected 3D rig | Lead | Production pending | Approved concept; three-view construction sheet and technical brief prepared |
 
 Casting source commit `ec39e04` passed independent CI run 40769768890, including all nine browser scenarios. Next direction is The Scholar with Lewis; preserve the working game during delivery refinement and rig preparation.
 
-- Lewis pacing revision: requested slightly faster; 1.05x comparison preview prepared with original pace retained. Await user delivery approval; game activation remains pending.
+- Lewis pacing revision: requested slightly faster; 1.05x comparison preview prepared with original pace retained. User subsequently approved the +5% pace; live game integration now delivered.
+
+## Approved Scholar + Lewis integration
+
+- User approved pairing and slightly faster Lewis pace. No further selection approval is needed to implement that direction.
+- Backend: live selected Lewis neural rendering of current public dialogue; bounded isolated runtime — implemented and tested.
+- Frontend: selected Scholar portrait/voice stage, explicit audio controls, preserved original/animated modes — implemented and tested.
+- QA: auth/privacy, stale audio, pause/mute, approved pace, full existing regression — 247 backend / 15 client / eleven browser checks pass locally; CI pending.
+- Asset production: likeness-matched Scholar 3D rig remains pending; concrete brief recorded separately. Portrait mode must not be represented as the finished rig.

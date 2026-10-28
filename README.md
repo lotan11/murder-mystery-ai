@@ -107,3 +107,7 @@ The server-only [Blackthorn case package](backend/cases/blackthorn.json) contain
 ## Choose the character and voice
 
 Open `/?view=casting` to compare three original concept portraits and three real local British neural voices across identical scenes. No candidate replaces the active game avatar or voice. See [casting setup and approval boundary](docs/CASTING_APPROVAL.md), including optional regeneration and licensing provenance.
+
+## Approved Scholar + Lewis TV
+
+The TV now opens on the approved Scholar portrait with live Lewis narration at the approved faster pace. Click **Enable Lewis voice** to begin audio. Original and animated-sample stages remain selectable. See [selected performance setup and limits](docs/SCHOLAR_PERFORMANCE.md). The likeness-matched 3D rig is still in production preparation; the portrait is labeled accordingly.

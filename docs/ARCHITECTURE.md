@@ -27,3 +27,7 @@ M3 adds an explicitly enabled Responses planner that returns evidence IDs and an
 ## Separate casting approval surface
 
 `Casting.tsx` is lazy-loaded only at `?view=casting`; candidate portraits live under the dedicated public casting path. `backend/casting.py` exposes validated read-only authored manifest and WAV routes, with a strict finite set of voice/scene IDs, file bounds and symlink guards. Optional `scripts/prepare-casting.py` generates recordings from pinned verified model assets in an isolated runtime; no main-server dependency or HTTP synthesis endpoint is added. Cached recordings/models stay ignored. Casting UI selection/shortlisting has no command path to room state or active game speech.
+
+## Approved live Lewis renderer
+
+`scholar_speech.py` and its fixed local Python worker provide a separate authenticated current-public-dialogue endpoint using the optional isolated Kokoro runtime and verified cached assets. It reuses the existing host/read-only TV capability, accepts an empty request, and returns validated inline WAV with the approved 1.05 playback rate after a state recheck. No word timing is invented. `ScholarPerformance.tsx` owns selected portrait audio lifecycle; `Stage.tsx` still owns shared evidence/captions. Existing SAPI/TalkingHead and original procedural modes are preserved under explicit TV presentation selection.
