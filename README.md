@@ -91,3 +91,7 @@ This is a trusted-local-network prototype for one server process, with up to 24 
 - [Validation results](docs/VALIDATION.md)
 
 Project coordination lives in `AGENTS.md` and the linked documents. Each milestone integrates into this application and records acceptance evidence; the user does not need to transfer plans or story details between conversations.
+
+## TalkingHead audition
+
+Try the optional local voice and animated-face comparison at `/?view=audition`. Follow [Windows preparation and integration limits](docs/VOICE_AUDITION.md). The sample avatar and installed voices are placeholders; no paid service is used.

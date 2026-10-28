@@ -277,6 +277,11 @@ export default function App() {
               </div>
             </form>
           </div>
+          <p>
+            <a className="share-link" href="/?view=audition">
+              Open the voice and avatar audition ↗
+            </a>
+          </p>
           <p className="footnote">
             LOCAL PROTOTYPE · OPTIONAL AI · NO MICROPHONE CAPTURE
           </p>

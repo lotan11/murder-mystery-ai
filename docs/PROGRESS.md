@@ -1,3 +1,9 @@
+# Latest delivery: TalkingHead audition — October 28, 2026
+
+Separate local audition at `/?view=audition` now compares actual installed David/Zira speech on the CC0 TalkingHead sample. Real SAPI starts drive actual facial morphs; durations are estimated. Windows browser review observed mouth movement and stop reset with no external requests or page errors. The female sample is not final Wobblebottom; no premium voice, microphone or live game speech integration is claimed. See VOICE_AUDITION.md for Windows preparation.
+
+Local verification: 157 backend tests passed, one Windows symlink privilege skip; 15 client tests and production build passed. All six browser scenarios passed, covering the existing game and new audition. Remote CI follows the source push.
+
 # Project progress and handoff
 
 Updated October 27, 2026. Authoritative handoff for the integrated repository. Read SPECIFICATION.md, TASK_BOARD.md, DECISIONS.md, AI_INTEGRATION.md and the spoiler-marked GAME_DESIGN.md.

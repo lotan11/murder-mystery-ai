@@ -48,3 +48,7 @@ One case, 3 authored suspects, 1–24 connected guest identities, trusted local 
 ## Quality gate
 
 Backend tests cover progression, persistence, access separation, malformed input and spoiler protection. Client tests cover snapshot validation and transport. Browser tests cover a full cross-screen case, restored identity, no horizontal overflow and avatar failure recovery. Build and CI must pass. Record failures and manual checks honestly in `VALIDATION.md` and `PROGRESS.md`.
+
+## Optional voice audition
+
+A separate `?view=audition` route compares locally prepared David/Zira speech on a licensed TalkingHead sample. Must support explicit play/stop, voice changes, honest placeholder labels and audio-only failure recovery. It does not require or enable paid AI, microphone access or live game speech. See VOICE_AUDITION.md.

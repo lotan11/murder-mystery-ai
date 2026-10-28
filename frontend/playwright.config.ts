@@ -12,6 +12,7 @@ const localPython = fileURLToPath(
   ),
 );
 const python = existsSync(localPython) ? localPython : "python";
+const auditionTestDirectory = fileURLToPath(new URL("../data/audition-test", import.meta.url));
 
 export default defineConfig({
   testDir: "./e2e",
@@ -26,7 +27,7 @@ export default defineConfig({
   },
   reporter: "list",
   webServer: {
-    command: `"${python}" -m uvicorn backend.main:app --host 127.0.0.1 --port 8001 --ws-max-size 16384 --no-access-log --log-level warning`,
+    command: `"${python}" scripts/prepare-audition-test.py --output "${auditionTestDirectory}" && "${python}" -m uvicorn backend.main:app --host 127.0.0.1 --port 8001 --ws-max-size 16384 --no-access-log --log-level warning`,
     cwd: root,
     url: "http://127.0.0.1:8001/health",
     reuseExistingServer: false,
@@ -36,6 +37,7 @@ export default defineConfig({
       MYSTERY_ALLOW_PAID_AI: "false",
       OPENAI_API_KEY: "",
       MYSTERY_OPENAI_MODEL: "",
+      MYSTERY_AUDITION_DIR: auditionTestDirectory,
       MYSTERY_DB_PATH: fileURLToPath(
         new URL(
           `./.e2e-data/${Date.now()}-${process.pid}.sqlite3`,

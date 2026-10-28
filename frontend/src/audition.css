@@ -1,0 +1,259 @@
+.audition-page {
+  min-height: 100svh;
+  background:
+    radial-gradient(ellipse at 30% 35%, #24413b66, transparent 70%), #0d1817;
+  color: #e8e4d7;
+}
+.audition-header {
+  height: 90px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5%;
+  gap: 20px;
+}
+.audition-back {
+  font-size: 12px;
+  color: var(--gold);
+  text-decoration: none;
+}
+.audition-layout {
+  max-width: 1600px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 40px;
+  padding: 38px 5% 55px;
+}
+.audition-stage-panel h1 {
+  font-size: 61px;
+  margin: 15px 0;
+}
+.audition-intro {
+  font-size: 13px;
+  line-height: 1.9;
+  color: #a8b9ad;
+  max-width: 650px;
+}
+.audition-portrait {
+  position: relative;
+  min-height: 530px;
+  height: 58svh;
+  max-height: 720px;
+  overflow: hidden;
+  border: 1px solid #8a7c4a77;
+  border-radius: 5px;
+  background: radial-gradient(
+    ellipse at 50% 35%,
+    #52665c,
+    #1a302f 57%,
+    #0d1c1e 90%
+  );
+}
+.audition-portrait:before {
+  content: "";
+  position: absolute;
+  inset: 8% 8%;
+  border: 1px solid #c8a56b22;
+  border-radius: 180px 180px 0 0;
+  pointer-events: none;
+}
+.audition-avatar {
+  position: absolute;
+  inset: 0;
+}
+.audition-avatar canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.audition-model-label {
+  position: absolute;
+  left: 25px;
+  right: 20px;
+  bottom: 20px;
+  color: #e8d2aa;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 6px #000;
+  pointer-events: none;
+}
+.audition-model-label span {
+  display: block;
+  font-size: 9px;
+  color: #a5b9ac;
+  margin-top: 7px;
+}
+.audition-loading {
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  top: 43%;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #dfcfac;
+  background: #10201cdd;
+  padding: 22px;
+}
+.audition-caption {
+  padding: 24px 15px 0;
+  text-align: center;
+  min-height: 145px;
+}
+.audition-caption p {
+  font-family: Georgia, serif;
+  font-size: 23px;
+  line-height: 1.6;
+  margin: 13px auto;
+  max-width: 850px;
+}
+.audition-current-word {
+  font-size: 10px;
+  color: #a6bcab;
+}
+.audition-controls {
+  padding-top: 37px;
+}
+.audition-controls .panel {
+  padding: 26px;
+  margin-bottom: 18px;
+}
+.audition-note {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #a9bbae;
+}
+.audition-controls select {
+  width: 100%;
+  padding: 12px;
+  color: #e6e8da;
+  background: #10211b;
+  border: 1px solid #506247;
+  font: inherit;
+  font-size: 12px;
+  border-radius: 3px;
+}
+.audition-controls select:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.audition-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 23px;
+}
+.audition-actions button {
+  font-size: 12px;
+}
+.audition-status {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #c2d1bf;
+  border-top: 1px solid var(--border);
+  padding-top: 15px;
+  margin-top: 20px;
+}
+.audition-error {
+  font-size: 12px;
+  line-height: 1.8;
+  border-left: 2px solid #c09371;
+  padding: 10px 12px;
+  color: #e0bea7;
+  background: #362820;
+}
+.audition-controls .share-link {
+  font-size: 12px;
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+.audition-page > audio {
+  display: none;
+}
+@media (max-width: 1000px) {
+  .audition-layout {
+    gap: 24px;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    padding-left: 4%;
+    padding-right: 4%;
+  }
+  .audition-stage-panel h1 {
+    font-size: 48px;
+  }
+  .audition-portrait {
+    min-height: 450px;
+  }
+  .audition-controls .panel {
+    padding: 22px;
+  }
+}
+@media (max-width: 760px) {
+  .audition-header {
+    height: 78px;
+    padding: 0 5%;
+  }
+  .audition-back {
+    font-size: 10px;
+    text-align: right;
+  }
+  .audition-layout {
+    display: flex;
+    flex-direction: column;
+    padding-top: 28px;
+  }
+  .audition-stage-panel h1 {
+    font-size: 42px;
+  }
+  .audition-portrait {
+    height: 480px;
+    min-height: 0;
+  }
+  .audition-controls {
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .audition-controls .panel:first-child {
+    grid-column: 1/-1;
+  }
+  .audition-controls .panel {
+    margin: 0;
+  }
+  .audition-caption p {
+    font-size: 21px;
+  }
+}
+@media (max-width: 500px) {
+  .audition-controls {
+    display: block;
+  }
+  .audition-controls .panel {
+    margin-bottom: 15px;
+  }
+  .audition-portrait {
+    height: 410px;
+  }
+  .audition-header .brand {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .audition-header .brand-sub {
+    font-size: 7px;
+    letter-spacing: 1.5px;
+  }
+  .audition-stage-panel h1 {
+    font-size: 39px;
+  }
+  .audition-back {
+    max-width: 90px;
+  }
+  .audition-caption p {
+    font-size: 20px;
+  }
+  .audition-note {
+    font-size: 12px;
+  }
+}

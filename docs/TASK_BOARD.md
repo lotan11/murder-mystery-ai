@@ -38,3 +38,13 @@ Updated October 27, 2026. Lead/integrator owns this board. Status reflects commi
 The lead resolves architecture and implementation choices within the accepted scope. External model/voice spend, avatar licensing or public hosting need a concrete proposed integration before user input. A paid provider adapter exists but remains disabled by default; no paid invocation, recording, purchased asset or public deployment is enabled in the current rehearsal.
 
 Planning context: earlier availability was three weeks part-time, roughly 10–12 hours/week. M1 supplies reliable recovery; M2 now supplies playable character participation. M3 now adds optional bounded planning; human rehearsal and deliberate live-provider validation remain next. Production-quality voice, avatar and hosting are separate milestones, not an implied three-week promise.
+
+## TalkingHead audition — October 28, 2026
+
+| ID | Owner | Status | Acceptance |
+| --- | --- | --- | --- |
+| M4-A1 | Backend | Implemented | Local Windows recording generator; validated fixed sample API |
+| M4-A2 | Frontend | Implemented | Lazy TalkingHead audition, actual word-timed visemes, stop/change and audio fallback |
+| M4-A3 | Assets | Done | CC0 sample provenance; MIT library notices |
+| M4-A4 | Lead / QA | Local checks passed; CI pending | Game regression, browser mouth movement, real Windows playback, CI |
+| M4-A5 | Product | Pending later | Select final British voice and detective asset; live game speech integration |
