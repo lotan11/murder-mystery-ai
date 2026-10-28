@@ -28,8 +28,14 @@ test('casting compares all nine pairings without autoplay or activating game ass
   await page.getByRole('button',{name:'Play scene',exact:true}).click();
   await expect.poll(()=>page.locator('audio').evaluate((a:HTMLAudioElement)=>!a.paused)).toBe(true);
   await expect(page.locator('audio')).toHaveAttribute('src',`/api/casting/audio/${ids[v]}/arrival`);
+  expect(await page.locator('audio').evaluate((a:HTMLAudioElement)=>a.playbackRate)).toBe(v===2?1.05:1);
+  expect(await page.locator('audio').evaluate((a:HTMLAudioElement)=>a.preservesPitch)).toBe(true);
   await expect(page.getByLabel('Current casting script')).toContainText(sceneText.arrival);
  }
+ await page.getByLabel('Lewis pace').selectOption('1');
+ await expect.poll(()=>page.locator('audio').evaluate((a:HTMLAudioElement)=>a.paused)).toBe(true);
+ await page.getByRole('button',{name:'Play scene',exact:true}).click();
+ await expect.poll(()=>page.locator('audio').evaluate((a:HTMLAudioElement)=>a.playbackRate)).toBe(1);
  await page.getByLabel('Audition scene').selectOption('evidence');
  await expect.poll(()=>page.locator('audio').evaluate((a:HTMLAudioElement)=>a.paused)).toBe(true);
  await expect(page.getByLabel('Current casting script')).toContainText(sceneText.evidence);

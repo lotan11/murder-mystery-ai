@@ -1,3 +1,7 @@
+# Lewis pace refinement — October 28, 2026
+
+User likes the selected Lewis voice and asks for slightly faster delivery. Casting now opens on Scholar + Lewis, with a 1.05x pitch-preserving playback preview by default and Original pace available for comparison. This is an explicitly labeled playback preview; source recordings and active game speech remain unchanged pending approval. Production build passed; focused casting checks verify voice-specific speed, pitch-preservation request and original-pace switching.
+
 # Selected character and voice — October 28, 2026
 
 User selected **The Scholar + Lewis (`bm_lewis`)**. Record this as the chosen concept/voice direction, not approval of an undelivered 3D rig or final inflection. Next milestone: a focused Lewis delivery audition with measured natural pacing and restrained dry humor, then the selected character’s production rig/activation after the applicable approval. Existing playable avatar and local Windows speech remain available.

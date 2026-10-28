@@ -83,3 +83,5 @@ Approved animation refinement CI is green: run 40715846893. No final voice or as
 | Selected 3D rig and final voice activation | Lead | Pending selection | Keep working avatar/local SAPI until approved |
 
 Casting source commit `ec39e04` passed independent CI run 40769768890, including all nine browser scenarios. Next direction is The Scholar with Lewis; preserve the working game during delivery refinement and rig preparation.
+
+- Lewis pacing revision: requested slightly faster; 1.05x comparison preview prepared with original pace retained. Await user delivery approval; game activation remains pending.

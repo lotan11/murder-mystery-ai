@@ -6,6 +6,10 @@ User selected **C · The Scholar + Lewis (`bm_lewis`)** in chat. This selects th
 
 Open `/?view=casting` on the running app. Compare a character concept and a voice, choose one of three identical scenes, then press **Play scene**. Nothing plays automatically. **Add to shortlist** saves only a local browser preference; it is not approval and never changes the active game character or voice.
 
+## Lewis pacing revision
+
+User likes Lewis and requested a slight speed increase. Casting now opens on The Scholar + Lewis and defaults to a 1.05x playback preview (about 5% faster). The Lewis pace control can switch back to Original pace. Browser pitch preservation is requested; exact behavior depends on the browser. This changes preview playback, not source recordings or the active game voice. Final synthesis pacing remains an approval step. Other voice candidates remain at original playback rate.
+
 ## Prepared candidates
 
 | Character | Art direction | Asset |

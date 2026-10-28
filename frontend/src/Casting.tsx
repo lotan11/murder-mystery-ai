@@ -136,9 +136,10 @@ function validManifest(value: unknown): value is Manifest {
 }
 
 export default function Casting() {
-  const [characterId, setCharacterId] = useState<CharacterId>("ashford"),
-    [voiceId, setVoiceId] = useState<VoiceId>("bm_george"),
+  const [characterId, setCharacterId] = useState<CharacterId>("vale"),
+    [voiceId, setVoiceId] = useState<VoiceId>("bm_lewis"),
     [sceneId, setSceneId] = useState<SceneId>("arrival");
+  const [lewisPace, setLewisPace] = useState(1.05);
   const [manifest, setManifest] = useState<Manifest | null>(null),
     [loading, setLoading] = useState(true),
     [error, setError] = useState("");
@@ -240,6 +241,8 @@ export default function Casting() {
     const ownGeneration = generation.current;
     try {
       audio.current.src = clip.audio_url;
+      audio.current.preservesPitch = true;
+      audio.current.playbackRate = voiceId === "bm_lewis" ? lewisPace : 1;
       await audio.current.play();
       if (!mounted.current || ownGeneration !== generation.current) return;
       setPlaying(true);
@@ -381,6 +384,19 @@ export default function Casting() {
                   </option>
                 ))}
               </select>
+              {voiceId === "bm_lewis" && (
+                <>
+                  <label htmlFor="lewis-pace">Lewis pace</label>
+                  <select id="lewis-pace" value={lewisPace} onChange={event => {
+                    stop("Pace changed. Press Play scene to compare.");
+                    setLewisPace(Number(event.target.value));
+                  }}>
+                    <option value={1}>Original pace</option>
+                    <option value={1.05}>Slightly faster (+5%)</option>
+                  </select>
+                  <p className="casting-note">Pace preview uses pitch-preserving playback where supported. The original recording remains available; final synthesis pacing follows approval.</p>
+                </>
+              )}
               <div className="casting-actions">
                 <button
                   className="primary"
