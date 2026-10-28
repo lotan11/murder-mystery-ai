@@ -15,9 +15,9 @@ ROOT = Path(__file__).resolve().parents[1]
 router = APIRouter(prefix="/api/audition", tags=["local voice audition"])
 VOICE_IDS = {"david", "zira"}
 SAMPLES = {
-    "greeting": ("An impeccable introduction", "Good evening. I am Detective Reginald P. Wobblebottom. Kindly keep your theories sharp, and your fingerprints to yourself."),
-    "observation": ("A dry observation", "An intriguing observation. Let us distinguish evidence from a stylish suspicion."),
-    "pause": ("A considered pause", "Something is amiss. A careful question is worth several impressive guesses."),
+    "greeting": ("A formal introduction", "Good evening. I am Detective Reginald P. Wobblebottom. We will examine the evidence carefully and establish the facts."),
+    "observation": ("An evidence review", "We should examine that observation carefully and distinguish established evidence from suspicion."),
+    "pause": ("A considered pause", "Something is amiss. A careful question helps us distinguish fact from assumption."),
 }
 TIMING_SOURCE = "SAPI SpeakProgress word starts; word durations estimated"
 SYNTHETIC_TIMING_SOURCE = "Synthetic test waveform and timings; not recorded speech"

@@ -126,9 +126,9 @@ $voiceDefinitions = @(
     @{ Id = 'zira'; Match = 'Microsoft Zira*'; Gender = 'Female' }
 )
 $samples = @(
-    @{ Id = 'greeting'; Title = 'An impeccable introduction'; First = 'Good evening. I am Detective Reginald P. Wobblebottom. Kindly keep your theories sharp, and your fingerprints to yourself.'; Second = '' },
-    @{ Id = 'observation'; Title = 'A dry observation'; First = 'An intriguing observation. Let us distinguish evidence from a stylish suspicion.'; Second = '' },
-    @{ Id = 'pause'; Title = 'A considered pause'; First = 'Something is amiss.'; Second = 'A careful question is worth several impressive guesses.' }
+    @{ Id = 'greeting'; Title = 'A formal introduction'; First = 'Good evening. I am Detective Reginald P. Wobblebottom. We will examine the evidence carefully and establish the facts.'; Second = '' },
+    @{ Id = 'observation'; Title = 'An evidence review'; First = 'We should examine that observation carefully and distinguish established evidence from suspicion.'; Second = '' },
+    @{ Id = 'pause'; Title = 'A considered pause'; First = 'Something is amiss.'; Second = 'A careful question helps us distinguish fact from assumption.' }
 )
 $voices = @()
 foreach ($definition in $voiceDefinitions) {

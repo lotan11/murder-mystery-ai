@@ -6,7 +6,7 @@ Status: authoritative working specification, updated October 27, 2026.
 
 Let an organizer run a dinner mystery from a host desk while guests participate on phones and a shared television presents Detective Reginald P. Wobblebottom, dialogue, and cinematic evidence. The user should test complete milestones rather than assemble work from separate conversations.
 
-Launch case: **The Last Toast at Blackthorn Manor**. Tone: elegant intrigue with a dry, playfully sarcastic detective. Wobblebottom punctures weak deductions without humiliating guests. No slapstick host performance is required. The case must have an authored, consistent solution independent of an AI model.
+Launch case: **The Last Toast at Blackthorn Manor**. Tone: serious intrigue with a composed, respectful detective. Wobblebottom explains evidence methodically, without sarcasm, jokes or comic asides. The case must have an authored, consistent solution independent of an AI model.
 
 ## Users and surfaces
 

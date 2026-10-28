@@ -308,7 +308,7 @@ export default function App() {
           <h1>The Last Toast</h1>
           <p className="intro">
             One extraordinary evening. Three questionable alibis.
-            <br />A detective with an entirely unreasonable name.
+            <br />A careful investigation. A reasoned conclusion.
           </p>
           <div className="welcome-card">
             <h2>Gather your suspects</h2>

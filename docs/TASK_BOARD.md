@@ -61,3 +61,10 @@ Planning context: earlier availability was three weeks part-time, roughly 10–1
 | M4-T4 | Lead | Implemented | Windows setup, limits, decisions and verification record |
 
 Approved animation refinement CI is green: run 40715846893. No final voice or asset purchase is authorized or needed for this increment.
+
+## Serious detective and editable case — October 28, 2026
+
+- Implemented: serious, respectful detective throughout game narration, scripted replies, approved AI remarks and local audition recordings. Known earlier saved narration is normalized on restore.
+- Implemented: one server-only JSON case package, validated at startup, with facts, suspects, private cards, hints, topic aliases and event narration. Compatibility exports preserve the engine.
+- Pending later: multiple-case selection, arbitrary role IDs/rosters, editor UI and reusable visual themes. The current prototype keeps fixed role IDs and three investigation acts.
+- Verification: 197 backend tests pass (one Windows privilege skip); production build and all seven browser checks pass locally; current CI pending.

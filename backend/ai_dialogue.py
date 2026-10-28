@@ -17,10 +17,10 @@ import httpx
 
 ENDPOINT = "https://api.openai.com/v1/responses"
 REMARKS = {
-    "facts_first": "Facts first; dramatic pointing can follow.",
-    "careful_now": "A careful question is worth several impressive guesses.",
-    "no_theatrics": "Let us give the evidence a turn before the theatrics.",
-    "steady_on": "Steady reasoning remains a remarkably unfashionable advantage.",
+    "facts_first": "We will base our conclusions on the evidence.",
+    "careful_now": "A careful question helps us distinguish fact from assumption.",
+    "no_theatrics": "Let us review the evidence before drawing a conclusion.",
+    "steady_on": "We should proceed methodically and verify each inference.",
 }
 
 

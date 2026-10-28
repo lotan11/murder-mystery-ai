@@ -10,10 +10,11 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from .mystery import CASE_ID, CASE_VERSION, TITLE, SUSPECTS, EVIDENCE, SOLUTION
+from .mystery import CASE_ID, CASE_VERSION, TITLE, SUSPECTS, EVIDENCE, SOLUTION, NARRATION
 from .dialogue import DialogueProvider, MockDialogueProvider
 from .storage import RoomStore, StorageError
 from .characters import CHARACTERS
+from .legacy_tone import serious_saved_dialogue
 from .ai_dialogue import load_config, OpenAIPlanner, PlannerError
 from .audition import router as audition_router
 from .local_speech import LocalSpeechRenderer, create_router as local_speech_router
@@ -67,7 +68,7 @@ class Room:
     dialogue_reason: str = "initial"
     ai_busy: bool = False
     ai_request_id: str | None = None
-    dialogue: str = "Good evening. Welcome to Blackthorn Manor. Keep your theories sharp and your fingerprints to yourself."
+    dialogue: str = NARRATION["welcome"]
     clients: set = field(default_factory=set)
     guest_clients: dict = field(default_factory=dict)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
@@ -141,7 +142,9 @@ class Room:
         )
         if not valid:
             raise StorageError("Invalid saved room record. Preserve the database for recovery; no saved data was discarded.")
-        return cls(**{key: copy.deepcopy(record[key]) for key in fields})
+        restored = cls(**{key: copy.deepcopy(record[key]) for key in fields})
+        restored.dialogue = serious_saved_dialogue(restored.dialogue)
+        return restored
 
     def restore(self, record):
         for key, value in record.items():
@@ -256,7 +259,7 @@ def control(room, msg):
         room.introductions.clear()
         room.dialogue_source = "scripted"
         room.dialogue_reason = "reset"
-        room.dialogue = "A fresh investigation. Try to look surprised this time."
+        room.dialogue = NARRATION["reset"]
         return
     if room.paused:
         raise ValueError("Resume the room before progressing the case.")
@@ -277,7 +280,7 @@ def control(room, msg):
             raise ValueError("The case has already started.")
         room.dialogue_source, room.dialogue_reason = "scripted", "case_event"
         room.act = 1
-        room.dialogue = "Lord Blackthorn is dead. The tea is cold, the guests are nervous, and I have missed pudding. Let us begin."
+        room.dialogue = NARRATION["start"]
     elif action == "reveal":
         candidates = [e for e in EVIDENCE if e["act"] == room.act and e["id"] not in room.revealed]
         evidence_id = msg.get("evidence_id")
@@ -286,7 +289,7 @@ def control(room, msg):
             raise ValueError("That clue is unavailable in this act.")
         room.dialogue_source, room.dialogue_reason = "scripted", "case_event"
         room.revealed.append(clue["id"])
-        room.dialogue = f"{clue['title']}. {clue['description']} Do resist the urge to lick the evidence."
+        room.dialogue = f"{clue['title']}. {clue['description']}"
     elif action == "advance":
         if room.act not in (1, 2, 3):
             raise ValueError("There is no act to advance.")
@@ -294,7 +297,7 @@ def control(room, msg):
             raise ValueError("Reveal every clue in this act before advancing.")
         room.dialogue_source, room.dialogue_reason = "scripted", "case_event"
         room.act += 1
-        room.dialogue = SOLUTION if room.act == 4 else "The plot thickens. Unlike the soup, it now has substance. Examine the next evidence."
+        room.dialogue = SOLUTION if room.act == 4 else NARRATION["advance"]
     else:
         raise ValueError("Unknown organizer action.")
 

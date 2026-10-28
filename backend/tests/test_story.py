@@ -48,7 +48,7 @@ def test_requests_for_hidden_truth_cannot_inject_canonical_facts(prompt):
     reply = MockDialogueProvider().respond(prompt, public_state(("glass", "clock")))
     assert "forged invoices" not in reply
     assert "sole key" not in reply
-    assert "reserve the culprit" in reply
+    assert "final reconstruction" in reply
 
 
 def test_unreleased_topic_is_not_confirmed():
@@ -81,14 +81,14 @@ def test_recap_is_grounded_and_provider_does_not_mutate_state():
 
 def test_empty_record_and_final_reconstruction_have_distinct_boundaries():
     provider = MockDialogueProvider()
-    assert "reveal a clue" in provider.respond("Tell me about the tea", public_state())
+    assert "reveal the first clue" in provider.respond("Tell me about the tea", public_state())
     assert SOLUTION in provider.respond("Recap", public_state(act=4))
 
 
 def test_complete_evidence_still_does_not_allow_early_reconstruction():
     state = public_state(tuple(clue["id"] for clue in EVIDENCE), act=3)
     reply = MockDialogueProvider().respond("Who is the culprit?", state)
-    assert "reserve the culprit" in reply
+    assert "final reconstruction" in reply
     assert SOLUTION not in reply
 
 

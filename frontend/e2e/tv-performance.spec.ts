@@ -27,7 +27,7 @@ test('TV performance is opt-in, speaks public dialogue, and stops on pause', asy
     const words = state.dialogue.split(/\s+/);
     await route.fulfill({json: {
       text:state.dialogue, revision:state.revision, voice:request.postDataJSON().voice, audio_base64:audioBase64(),
-      words, wtimes:words.map((_:string,i:number)=>i*100), wdurations:words.map(()=>80), duration_ms:8000, content_type:'audio/wav', provider:'windows-sapi', timing_source:'Synthetic test waveform and timings; not recorded speech'
+      words, wtimes:words.map((_:string,i:number)=>i*250), wdurations:words.map(()=>180), duration_ms:8000, content_type:'audio/wav', provider:'windows-sapi', timing_source:'Synthetic test waveform and timings; not recorded speech'
     }});
   });
   await tv.goto(`/?view=tv&room=${room}#speech=test-read-only-capability`);

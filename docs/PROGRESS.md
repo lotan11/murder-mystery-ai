@@ -1,3 +1,11 @@
+# Latest direction: serious detective and case authoring — October 28, 2026
+
+User requested a serious detective without sarcasm and asked for easier story changes. Scripted framing, all event narration, approved AI remarks and local audition lines now use a composed, factual delivery. Existing local David/Zira samples were regenerated. Known earlier authored phrases in saved narration normalize on restore; case facts, credentials and private player data are preserved. Approved restrained avatar animation is unchanged.
+
+Case facts, suspect profiles, role cards, hints, topic aliases and case-event narration now live in the single server-only `backend/cases/blackthorn.json` package, validated at startup. Existing Python exports preserve the engine and case identity. See CASE_AUTHORING.md. This is an authoring foundation, not a multi-case selector/editor: fixed role IDs, three investigation acts and the Blackthorn visual theme remain explicit limits. Material plot edits require fresh-room rehearsal and a versioning/migration decision before use with active saves.
+
+197 backend tests pass, with one Windows symlink privilege skip. Production build and all seven browser scenarios pass. Real Windows speech generated the new serious opening successfully (9.895 seconds). Focused animation checks are repeated after spacing the synthetic fixture transitions for slow CI runners. Previous TV performance source passed independent CI in run 40720750631 (same code as the earlier source run; the earlier run missed closely spaced synthetic mouth transitions on a slow runner; current fixtures spread word timings across the clip to improve observation without weakening assertions). Current milestone CI follows its push.
+
 # Latest delivery: playable local TV performance — October 28, 2026
 
 The approved TalkingHead animation now speaks the game’s current public detective dialogue in optional TV mode. The original evidence stage remains the default; one shared renderer serves both the audition and TV. Explicit enable, voice selection, stop, mute and replay are available. Pause, disconnect, revision change and navigation cancel audio and invalidate delayed responses. Identical dialogue is not repeated for unrelated room updates.

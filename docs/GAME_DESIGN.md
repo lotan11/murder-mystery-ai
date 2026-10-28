@@ -4,7 +4,7 @@
 
 ## Playable milestone
 
-`backend/mystery.py` is the authoritative case: `last-toast-blackthorn`, version 1. The intended first rehearsal takes 20–30 minutes with a host and 2–6 guests, expandable to the prototype's room limit. M2 adds private role cards in `backend/characters.py`: the first three guest identities receive Ada, Felix and Margot in join order; additional guests become visiting investigators. Named roles are exclusive, while investigators are deliberately non-exclusive. The host may reassign roles only in the unpaused lobby. With fewer than three guests, unassigned suspects still exist in the authored case; every role need not have a performer.
+`backend/cases/blackthorn.json` is the authoritative case package (`backend/mystery.py` provides compatibility exports): `last-toast-blackthorn`, version 1. The intended first rehearsal takes 20–30 minutes with a host and 2–6 guests, expandable to the prototype's room limit. M2 adds private role cards in the same package (`backend/characters.py` provides compatibility exports): the first three guest identities receive Ada, Felix and Margot in join order; additional guests become visiting investigators. Named roles are exclusive, while investigators are deliberately non-exclusive. The host may reassign roles only in the unpaused lobby. With fewer than three guests, unassigned suspects still exist in the authored case; every role need not have a performer.
 
 The host opens acts and releases clues. Wobblebottom explains already released facts, provides progressively useful hints, and performs the final reconstruction. The host's role is facilitation rather than improvising missing facts. A guest may accuse during act three, replace their vote, and compare their deduction with the fixed outcome. Votes never alter the culprit.
 
@@ -12,7 +12,7 @@ The host opens acts and releases clues. Wobblebottom explains already released f
 
 Lord Blackthorn collapses during a dinner at his manor. His untouched port invites an obvious theory; his tea provides the less convenient truth. Ada Blackthorn has fought with her father over the estate. Felix Finch owes him money. Dr. Margot Vale has been trusted with the family's medical supplies for years.
 
-Detective Reginald P. Wobblebottom is competent, observant and quietly theatrical. His name supplies enough absurdity; he does not need constant food jokes or slapstick. His sarcasm punctures weak reasoning without humiliating a guest. He never invents testimony, announces a culprit early, or treats the loudest accusation as proof. Example: “Means and opportunity deserve separate columns; an unfortunate personality is not a third column.”
+Detective Reginald P. Wobblebottom is serious, composed, observant and respectful. He uses measured, direct language without sarcasm, comic asides or remarks at the guests’ expense. He distinguishes evidence from assumptions and explains uncertainty clearly. He never invents testimony or announces a culprit before the final reconstruction.
 
 ## Fair-play contract
 

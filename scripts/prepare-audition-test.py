@@ -20,10 +20,10 @@ def prepare(output: Path) -> None:
         samples = []
         for sample_id, (title, text) in SAMPLES.items():
             words = text.split()
-            duration_seconds = max(8.0, len(words) * 0.13 + 0.2)
+            duration_seconds = max(8.0, len(words) * 0.35 + 0.8)
             sample = {"id": sample_id, "title": title, "text": text,
                       "words": words,
-                      "wtimes": [index * 130 for index in range(len(words))], "wdurations": [110] * len(words),
+                      "wtimes": [index * 350 for index in range(len(words))], "wdurations": [260] * len(words),
                       "duration_ms": duration_seconds * 1000}
             with wave.open(str(output / f"{voice_id}-{sample_id}.wav"), "wb") as audio:
                 audio.setnchannels(1)

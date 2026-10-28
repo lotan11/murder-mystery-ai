@@ -99,3 +99,7 @@ Try the optional local voice and animated-face comparison at `/?view=audition`. 
 ## Optional animated TV performance
 
 The TV can opt into the approved TalkingHead sample and local Windows speech for public detective dialogue. No paid credentials or microphone are needed. See [TV setup, controls and limitations](docs/TV_PERFORMANCE.md). The ordinary evidence stage remains the default.
+
+## Editing the story
+
+The server-only [Blackthorn case package](backend/cases/blackthorn.json) contains the story, clues, private cards, hints and narration. Read [case authoring and current limits](docs/CASE_AUTHORING.md) before editing. The detective now uses a serious, respectful style without sarcasm.

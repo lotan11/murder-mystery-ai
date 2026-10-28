@@ -1,0 +1,178 @@
+{
+  "format_version": 1,
+  "id": "last-toast-blackthorn",
+  "version": 1,
+  "title": "The Last Toast at Blackthorn Manor",
+  "suspects": [
+    {
+      "id": "ada",
+      "name": "Ada Blackthorn",
+      "description": "The heir who argued with her father over the family estate.",
+      "topics": [
+        "ada",
+        "heir"
+      ]
+    },
+    {
+      "id": "felix",
+      "name": "Felix Finch",
+      "description": "A pianist whose unpaid debts made Blackthorn a difficult patron.",
+      "topics": [
+        "felix",
+        "finch",
+        "pianist"
+      ]
+    },
+    {
+      "id": "margot",
+      "name": "Dr. Margot Vale",
+      "description": "The family physician, trusted with the household's medical supplies.",
+      "topics": [
+        "margot",
+        "vale",
+        "physician",
+        "doctor"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "glass",
+      "summary": "Poison is in the tea, not the port; tea drunk at 9:23, collapse at 9:27.",
+      "title": "The untouched port",
+      "description": "The laboratory report finds no poison in Lord Blackthorn's port, but identifies poison in his teacup. The steward saw him drink newly delivered tea at 9:23 and collapse at 9:27.",
+      "act": 1,
+      "topics": [
+        "glass",
+        "port",
+        "cup",
+        "tea",
+        "poison",
+        "collapse",
+        "death window"
+      ],
+      "hint": "Follow the vessel the victim actually drank from. A dramatic-looking glass need not be the important one. Follow the physical evidence rather than appearances."
+    },
+    {
+      "id": "clock",
+      "summary": "Alive in the 9:20 photograph; the broken 9:10 clock cannot date the death.",
+      "title": "The stopped clock",
+      "description": "The library clock reads 9:10, but a timestamped photograph shows Blackthorn alive at 9:20. Its service card records a broken winding spring that morning; the stopped hands do not establish his time of death.",
+      "act": 1,
+      "topics": [
+        "clock",
+        "photograph",
+        "photo",
+        "time of death",
+        "9:10",
+        "9:20"
+      ],
+      "hint": "Separate the drink offered from the drink consumed. Then compare the clock with the photograph. Establish which source can reliably place the events in time."
+    },
+    {
+      "id": "ledger",
+      "summary": "Vale holds the only dispensary key; the missing compound has no medical use.",
+      "title": "A physician's ledger",
+      "description": "Dr. Vale signed for a cyanide compound on Tuesday. The locked dispensary ledger records her as its sole key holder and lists no legitimate use for the missing compound.",
+      "act": 2,
+      "topics": [
+        "ledger",
+        "dispensary",
+        "key",
+        "compound",
+        "cyanide"
+      ],
+      "hint": "Access is one question; opportunity is another. List what this ledger proves, and what it does not. Distinguish established facts from unresolved questions."
+    },
+    {
+      "id": "alibi",
+      "summary": "Ada and Felix remain recorded in the music room throughout 9:15 to 9:30.",
+      "title": "The music-room recording",
+      "description": "A continuous, timestamped music-room recording captures Ada and Felix speaking throughout 9:15 to 9:30. Both remained there while Blackthorn's tea was delivered and drunk.",
+      "act": 2,
+      "topics": [
+        "recording",
+        "alibi",
+        "music",
+        "pianist",
+        "ada",
+        "felix"
+      ],
+      "hint": "Compare the released evidence for access with the released alibi. Consider means and opportunity separately, and support each conclusion with a released fact."
+    },
+    {
+      "id": "note",
+      "summary": "Vale faced exposure for forged invoices and had sole tray custody at 9:22.",
+      "title": "The dismissal letter",
+      "description": "Blackthorn's signed letter says he will expose Vale's forged invoices the next morning; she acknowledged it that afternoon. The steward observed fresh tea poured at 9:21. Vale signed for the tray at 9:22 and alone carried it to Blackthorn before he drank at 9:23.",
+      "act": 3,
+      "topics": [
+        "letter",
+        "dismissal",
+        "invoice",
+        "motive",
+        "tray",
+        "receipt",
+        "9:22"
+      ],
+      "hint": "Build one chain from the released clues: the vessel, access, the delivery window, and a reason to act. Explain the two distractions before you accuse. Support your conclusion with the evidence."
+    }
+  ],
+  "solution": "Dr. Margot Vale poisoned Lord Blackthorn's tea to prevent exposure of her forged invoices. The teacup establishes the means, and the dispensary ledger establishes her access. Ada and Felix's continuous recording clears them during the delivery. Vale's acknowledged dismissal letter supplies the motive, and her sole custody of the freshly poured tea at 9:22 supplies the opportunity before Blackthorn drank at 9:23 and collapsed at 9:27. The clean port was the wrong vessel; the broken clock was an unreliable time cue, not evidence of an earlier death.",
+  "characters": {
+    "ada": {
+      "id": "ada",
+      "name": "Ada Blackthorn",
+      "public_intro": "I am Ada Blackthorn, Lord Blackthorn's daughter, and I would appreciate an evening without assumptions about my inheritance.",
+      "private_brief": "You did not kill your father. You regret how publicly you argued about the estate, but you also resent being treated as an inheritance with a pulse. Your private aim is to let someone see the person behind the family name. Discuss your feelings freely; do not invent a witness, an alibi or a document. Let the released evidence establish what happened.",
+      "objectives": [
+        "Introduce yourself without making your inheritance your whole identity.",
+        "Ask another guest to separate family conflict from proof of guilt.",
+        "Explain your final deduction using two released clues."
+      ],
+      "performance_notes": "Be composed, then allow a little hurt to show. You may pass on personal questions; no acting skill is required."
+    },
+    "felix": {
+      "id": "felix",
+      "name": "Felix Finch",
+      "public_intro": "I am Felix Finch, the evening's pianist, and I hope my financial reputation will not be mistaken for evidence.",
+      "private_brief": "You did not kill Blackthorn. You owe him money and are embarrassed that everyone seems to know it. You would like one person to remember your musicianship before your debts. Acknowledge the financial pressure if asked; embarrassment is not a confession. Do not invent a payment, a new witness or an alibi. Your final theory should come from the evidence the host releases.",
+      "objectives": [
+        "Give the table a glimpse of your life beyond the debts.",
+        "Ask which released facts establish opportunity rather than suspicion.",
+        "Offer a reasoned accusation without relying on another guest's manner."
+      ],
+      "performance_notes": "Use dry charm rather than a comic accent. An awkward pause is optional; fabricated testimony is not."
+    },
+    "margot": {
+      "id": "margot",
+      "name": "Dr. Margot Vale",
+      "public_intro": "I am Dr. Margot Vale, the family physician, and I suggest we approach this distressing evening with precision.",
+      "private_brief": "You are the culprit: you poisoned Lord Blackthorn's tea to stop him exposing your forged invoices. This is your actor's knowledge, not a fair guessing contest for you. Keep that knowledge private until the reconstruction. You may remain guarded or decline a question; you need not lie. Never invent an accomplice, falsify a released clue or change the solution. Help the others enjoy an earned deduction.",
+      "objectives": [
+        "Introduce your professional composure without revealing your private brief.",
+        "Invite the table to distinguish proven facts from accusations.",
+        "At the finale, acknowledge how the released evidence establishes your guilt."
+      ],
+      "performance_notes": "Play controlled concern, not a conspicuous villain. You may decline loaded questions; the game never requires a false statement."
+    },
+    "investigator": {
+      "id": "investigator",
+      "name": "Visiting investigator",
+      "public_intro": "I am a visiting investigator, here to listen carefully and ask the question everyone else has politely avoided.",
+      "private_brief": "You are an independent investigator, not a fourth suspect. You have no secret evidence and no advance knowledge of the culprit. Your contribution is careful listening: invite quieter guests in, ask what a clue actually proves, and keep a distinction between motive and opportunity. More than one guest may hold this role, and each may reach an independent conclusion.",
+      "objectives": [
+        "Invite another guest to share an observation.",
+        "Ask Wobblebottom about one released clue or request a hint.",
+        "Submit an accusation that connects motive, access and opportunity."
+      ],
+      "performance_notes": "Curiosity is sufficient; no costume or performance is required. Help the conversation rather than competing for airtime."
+    }
+  },
+  "narration": {
+    "welcome": "Good evening. I am Detective Reginald P. Wobblebottom. We will examine the evidence carefully and establish what happened at Blackthorn Manor.",
+    "reset": "The investigation has been reset. We will review the evidence from the beginning.",
+    "start": "Lord Blackthorn has died. We must establish the circumstances, examine the evidence, and account for each guest’s movements.",
+    "advance": "We will now examine the next stage of the investigation."
+  }
+}
