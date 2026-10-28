@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { TalkingHead } from "@met4citizen/talkinghead";
-import { LipsyncEn } from "@met4citizen/talkinghead/modules/lipsync-en.mjs";
+import TalkingDetective, {
+  type TalkingDetectiveHandle,
+} from "./TalkingDetective";
 import "./audition.css";
 
 type Sample = {
@@ -67,10 +68,8 @@ function validManifest(value: unknown): value is Manifest {
 }
 
 export default function VoiceAudition() {
-  const mount = useRef<HTMLDivElement>(null),
+  const viewer = useRef<TalkingDetectiveHandle>(null),
     fallbackAudio = useRef<HTMLAudioElement>(null);
-  const headRef = useRef<TalkingHead | null>(null),
-    contextRef = useRef<AudioContext | null>(null);
   const requestRef = useRef<AbortController | null>(null),
     generation = useRef(0),
     playingRef = useRef(false),
@@ -98,17 +97,12 @@ export default function VoiceAudition() {
     generation.current += 1;
     requestRef.current?.abort();
     requestRef.current = null;
-    headRef.current?.stopSpeaking();
+    viewer.current?.stop();
     if (fallbackAudio.current) {
       fallbackAudio.current.pause();
       fallbackAudio.current.currentTime = 0;
     }
     playingRef.current = false;
-    if (mount.current) {
-      mount.current.dataset.speaking = "false";
-      mount.current.dataset.visemeMax = "0";
-      mount.current.dataset.visemeActiveCount = "0";
-    }
     setPlaying(false);
     setLoadingAudio(false);
     setCurrentWord("");
@@ -121,7 +115,7 @@ export default function VoiceAudition() {
     const abort = new AbortController();
     // Defer work so StrictMode's rehearsal cleanup cannot leave a loading renderer behind.
     queueMicrotask(async () => {
-      if (disposed || !mount.current) return;
+      if (disposed) return;
       fetch("/api/audition", { signal: abort.signal })
         .then((response) => {
           if (!response.ok) throw Error("manifest");
@@ -142,131 +136,6 @@ export default function VoiceAudition() {
               "The local voice samples could not be loaded. Check that the server and audition files are ready.",
             );
         });
-      let head: TalkingHead | null = null;
-      try {
-        const context = new AudioContext();
-        contextRef.current = context;
-        const host = mount.current;
-        let motions = 0,
-          previous = 0,
-          expressionTime = 0,
-          expressionWeight = 0,
-          observedSpeaking = false,
-          observedGeneration = generation.current;
-        head = new TalkingHead(host, {
-          audioCtx: context,
-          lipsyncLang: "en",
-          lipsyncModules: [],
-          cameraView: "head",
-          modelFPS: 30,
-          modelPixelRatio:
-            Math.min(window.devicePixelRatio || 1, 1.5) /
-            (window.devicePixelRatio || 1),
-          cameraRotateEnable: false,
-          lightAmbientColor: 0xf0e5cf,
-          lightAmbientIntensity: 1.7,
-          lightDirectColor: 0xb5c8c5,
-          lightDirectIntensity: 7,
-          avatarIdleEyeContact: 0.7,
-          avatarSpeakingEyeContact: 0.8,
-          avatarIdleHeadMove: 0.2,
-          avatarSpeakingHeadMove: 0.38,
-          update: (dt: number) => {
-            if (disposed || !head) return;
-            expressionTime += Math.min(dt, 100) / 1000;
-            expressionWeight += ((head.isSpeaking ? 1 : 0) - expressionWeight) * (1 - Math.exp(-dt / 300));
-            // Restrained upper-face acting; speech keeps control of the lips.
-            const expressions: Record<string, number> = {
-              browInnerUp: 0.10 + 0.06 * Math.sin(expressionTime * 1.2),
-              browOuterUpLeft: 0.08 + 0.06 * Math.sin(expressionTime * 0.9),
-              browOuterUpRight: 0.04 + 0.03 * Math.sin(expressionTime * 0.9 + 1),
-              eyeSquintLeft: 0.04, eyeSquintRight: 0.04,
-            };
-            for (const [name, value] of Object.entries(expressions)) {
-              if (head.mtAvatar[name]) head.mtAvatar[name].realtime = value * expressionWeight;
-            }
-            if (observedGeneration !== generation.current) {
-              observedSpeaking = false;
-              observedGeneration = generation.current;
-            }
-            if (head.isSpeaking) observedSpeaking = true;
-            host.dataset.expressionWeight = expressionWeight.toFixed(3);
-            let maximum = 0,
-              active = 0;
-            for (const [name, target] of Object.entries(head.mtAvatar)) {
-              if (!name.startsWith("viseme_")) continue;
-              let actual = 0;
-              target.ms.forEach((values, index) => {
-                actual = Math.max(
-                  actual,
-                  Math.abs(values[target.is[index]] || 0),
-                );
-              });
-              maximum = Math.max(maximum, actual);
-              if (actual > 0.02) active += 1;
-            }
-            if (head.isSpeaking && Math.abs(maximum - previous) > 0.005)
-              motions += 1;
-            previous = maximum;
-            host.dataset.visemeMax = maximum.toFixed(3);
-            host.dataset.visemeActiveCount = String(active);
-            host.dataset.visemeMotionCount = String(motions);
-            host.dataset.speaking = String(head.isSpeaking);
-            if (
-              playingRef.current &&
-              observedSpeaking &&
-              !head.isSpeaking &&
-              !head.isAudioPlaying
-            ) {
-              playingRef.current = false;
-              observedSpeaking = false;
-              setPlaying(false);
-              setCurrentWord("");
-              setStatus(
-                "Audition complete. Compare the other voice on the same line.",
-              );
-            }
-          },
-        });
-        // Direct import is bundled by Vite; no variable URL language-module request or CDN.
-        head.lipsync.en = new LipsyncEn();
-        headRef.current = head;
-        await head.showAvatar(
-          {
-            url: "/audition/mpfb.glb",
-            body: "F",
-            lipsyncLang: "en",
-            avatarMood: "neutral",
-          },
-          (event) => {
-            if (!disposed && event.total > 0)
-              setProgress(Math.round((event.loaded / event.total) * 100));
-          },
-        );
-        if (disposed) {
-          head.dispose();
-          return;
-        }
-        // Scale the final applied shapes, preserving the library's timing and easing.
-        for (const [name, target] of Object.entries(head.mtAvatar)) {
-          if (name.startsWith("viseme_")) {
-            target.limit = (value: number) => Math.max(0, Math.min(0.38, value * 0.45));
-          }
-        }
-        host.querySelector("canvas")?.setAttribute("aria-hidden", "true");
-        setModelState("ready");
-        setStatus("Ready. Choose a voice and line, then play the audition.");
-      } catch {
-        if (disposed) return;
-        head?.dispose();
-        headRef.current = null;
-        void contextRef.current?.close();
-        contextRef.current = null;
-        setModelState("failed");
-        setStatus(
-          "Avatar unavailable. Prepared voice samples can still play as audio only.",
-        );
-      }
     });
     return () => {
       disposed = true;
@@ -280,11 +149,7 @@ export default function VoiceAudition() {
         fallbackAudio.current.removeAttribute("src");
         fallbackAudio.current.load();
       }
-      headRef.current?.dispose();
-      headRef.current = null;
-      if (contextRef.current && contextRef.current.state !== "closed")
-        void contextRef.current.close();
-      contextRef.current = null;
+      viewer.current?.stop();
     };
   }, []);
 
@@ -294,7 +159,7 @@ export default function VoiceAudition() {
     setError("");
     setLoadingAudio(true);
     const ownGeneration = generation.current;
-    if (modelState !== "ready" || !headRef.current || !contextRef.current) {
+    if (modelState !== "ready" || !viewer.current) {
       try {
         const audio = fallbackAudio.current;
         if (!audio) throw Error("audio");
@@ -318,30 +183,23 @@ export default function VoiceAudition() {
       return;
     }
     try {
-      const head = headRef.current,
-        context = contextRef.current;
-      await context.resume();
+      const currentViewer = viewer.current;
+      await currentViewer.unlock();
       const request = new AbortController();
       requestRef.current = request;
       const response = await fetch(selectedSample.audio_url, {
         signal: request.signal,
       });
       if (!response.ok) throw Error("audio");
-      const audio = await context.decodeAudioData(await response.arrayBuffer());
+      const bytes = await response.arrayBuffer();
       if (generation.current !== ownGeneration || !mounted.current) return;
-      head.speakAudio(
-        {
-          audio,
-          words: selectedSample.words,
-          wtimes: selectedSample.wtimes,
-          wdurations: selectedSample.wdurations,
-        },
-        { lipsyncLang: "en" },
-        (word) => {
-          if (generation.current === ownGeneration && mounted.current)
-            setCurrentWord(word.trim());
-        },
-      );
+      const started = await currentViewer.speakAudio(bytes, {
+        words: selectedSample.words,
+        wtimes: selectedSample.wtimes,
+        wdurations: selectedSample.wdurations,
+      });
+      if (!started || generation.current !== ownGeneration || !mounted.current)
+        return;
       playingRef.current = true;
       setPlaying(true);
       setStatus(`Playing ${selectedVoice.name} with word-timed lip sync.`);
@@ -378,15 +236,31 @@ export default function VoiceAudition() {
             Watch the recorded words drive real avatar mouth shapes.
           </p>
           <div className="audition-portrait">
-            <div
-              ref={mount}
+            <TalkingDetective
+              ref={viewer}
+              label="TalkingHead audition avatar"
               className="audition-avatar"
-              role="img"
-              aria-label="TalkingHead audition avatar"
-              data-model-state={modelState}
-              data-speaking="false"
-              data-viseme-max="0"
-              data-viseme-motion-count="0"
+              onModelState={(state) => {
+                setModelState(state);
+                if (state === "ready")
+                  setStatus(
+                    "Ready. Choose a voice and line, then play the audition.",
+                  );
+              }}
+              onProgress={setProgress}
+              onSpeakingChange={setPlaying}
+              onWord={setCurrentWord}
+              onComplete={() => {
+                playingRef.current = false;
+                setStatus(
+                  "Audition complete. Compare the other voice on the same line.",
+                );
+              }}
+              onError={() =>
+                setStatus(
+                  "Avatar unavailable. Prepared voice samples can still play as audio only.",
+                )
+              }
             />
             {modelState === "loading" && (
               <div className="audition-loading" role="status">

@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import * as THREE from "three";
 import "./stage.css";
 
 type Props = {
+  avatar?: ReactNode;
   evidence: Array<{
     id: string;
     title: string;
@@ -16,7 +17,13 @@ type Props = {
 };
 
 /** Procedural stand-in for a future licensed, rigged character. No audio or visemes. */
-export default function Stage({ evidence, dialogue, act, paused }: Props) {
+export default function Stage({
+  evidence,
+  dialogue,
+  act,
+  paused,
+  avatar,
+}: Props) {
   const mount = useRef<HTMLDivElement>(null);
   const pausedRef = useRef(paused);
   const [fallback, setFallback] = useState(false);
@@ -25,7 +32,7 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
   }, [paused]);
   useEffect(() => {
     const host = mount.current;
-    if (!host) return;
+    if (avatar || !host) return;
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -250,7 +257,7 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
       renderer.domElement.removeEventListener("webglcontextlost", contextLost);
       dispose();
     };
-  }, []);
+  }, [!!avatar]);
 
   const latest = evidence[evidence.length - 1];
   const longDialogue = dialogue.length > 300;
@@ -271,13 +278,17 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
         <i />
         <i />
       </div>
-      <div
-        className="detective-view"
-        ref={mount}
-        role="img"
-        aria-label="Procedural 3D detective wearing a tailored coat, hat and monocle"
-      />
-      {fallback && (
+      {avatar ? (
+        <div className="stage-custom-avatar">{avatar}</div>
+      ) : (
+        <div
+          className="detective-view"
+          ref={mount}
+          role="img"
+          aria-label="Procedural 3D detective wearing a tailored coat, hat and monocle"
+        />
+      )}
+      {!avatar && fallback && (
         <div
           className="detective-fallback"
           aria-label="Detective portrait fallback"
@@ -296,7 +307,11 @@ export default function Stage({ evidence, dialogue, act, paused }: Props) {
           <br />
           <em>Wobblebottom</em>
         </h2>
-        <p>PROCEDURAL AVATAR · NO LIP SYNC</p>
+        <p>
+          {avatar
+            ? "LICENSED SAMPLE · NOT FINAL DETECTIVE"
+            : "PROCEDURAL AVATAR · NO LIP SYNC"}
+        </p>
       </div>
       <aside
         className={`evidence-spotlight ${latest ? "has-evidence" : ""}`}

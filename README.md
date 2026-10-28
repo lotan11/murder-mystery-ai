@@ -95,3 +95,7 @@ Project coordination lives in `AGENTS.md` and the linked documents. Each milesto
 ## TalkingHead audition
 
 Try the optional local voice and animated-face comparison at `/?view=audition`. Follow [Windows preparation and integration limits](docs/VOICE_AUDITION.md). The sample avatar and installed voices are placeholders; no paid service is used.
+
+## Optional animated TV performance
+
+The TV can opt into the approved TalkingHead sample and local Windows speech for public detective dialogue. No paid credentials or microphone are needed. See [TV setup, controls and limitations](docs/TV_PERFORMANCE.md). The ordinary evidence stage remains the default.

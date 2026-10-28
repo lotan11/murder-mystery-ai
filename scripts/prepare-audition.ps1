@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([string]$OutputDirectory = '')
+param([string]$OutputDirectory = '', [switch]$RendererOnly)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -105,6 +105,8 @@ public static class WobblebottomAuditionRenderer {
     }
 }
 '@
+
+if ($RendererOnly) { return }
 
 $repository = Split-Path -Parent $PSScriptRoot
 if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {

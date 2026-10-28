@@ -16,6 +16,7 @@ from .storage import RoomStore, StorageError
 from .characters import CHARACTERS
 from .ai_dialogue import load_config, OpenAIPlanner, PlannerError
 from .audition import router as audition_router
+from .local_speech import LocalSpeechRenderer, create_router as local_speech_router
 
 ROOT = Path(__file__).resolve().parents[1]
 @asynccontextmanager
@@ -33,6 +34,7 @@ async def lifespan(app: FastAPI):
     app.state.planner_config = load_config()
     app.state.planner = OpenAIPlanner(app.state.planner_config)
     app.state.planner_tasks = set()
+    app.state.local_speech = LocalSpeechRenderer()
     try:
         yield
     finally:
@@ -218,6 +220,8 @@ def get_room(room_id):
     if room is None:
         raise HTTPException(404, "Room not found")
     return room
+
+app.include_router(local_speech_router(get_room))
 
 @app.get("/api/rooms/{room_id}/state")
 async def read_state(room_id: str):

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Stage from "./Stage";
+import { useLocalDetectivePerformance } from "./TalkingDetective";
 import {
   decodePrivate,
   decodeState,
@@ -43,6 +44,10 @@ export default function App() {
     [text, setText] = useState(""),
     [busy, setBusy] = useState(false),
     [voice, setVoice] = useState(false),
+    [animated, setAnimated] = useState(false),
+    [tvSpeechToken, setTvSpeechToken] = useState(
+      () => new URLSearchParams(location.hash.slice(1)).get("speech") || "",
+    ),
     [joined, setJoined] = useState(false),
     [privateState, setPrivateState] = useState<PrivateState | null>(null),
     [privateVisible, setPrivateVisible] = useState(false),
@@ -51,6 +56,9 @@ export default function App() {
     [assignments, setAssignments] = useState<Record<string, string>>({});
   const privateRole = useRef(""),
     previousAct = useRef<number | null>(null);
+  const localSpeechStop = useRef<() => void>(() => {}),
+    lastSpeechRevision = useRef<number | null>(null),
+    animatedRef = useRef(false);
   const socket = useRef<WebSocket | null>(null),
     voiceRef = useRef(false),
     lastSpoken = useRef("");
@@ -58,6 +66,23 @@ export default function App() {
     voiceRef.current = voice;
     if (!voice) window.speechSynthesis?.cancel();
   }, [voice]);
+  useEffect(() => {
+    if (!room || (view !== "organizer" && view !== "tv")) return;
+    const organizerToken = localStorage.getItem(`organizer:${room}`);
+    if (!organizerToken || (view === "tv" && tvSpeechToken)) return;
+    const abort = new AbortController();
+    fetch(`/api/rooms/${encodeURIComponent(room)}/speech/config`, {
+      headers: { Authorization: `Bearer ${organizerToken}` },
+      signal: abort.signal,
+    })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((config) => {
+        if (!abort.signal.aborted && typeof config?.tv_token === "string")
+          setTvSpeechToken(config.tv_token);
+      })
+      .catch(() => {});
+    return () => abort.abort();
+  }, [room, view]);
   useEffect(() => {
     if (!room) return;
     let closed = false,
@@ -121,6 +146,13 @@ export default function App() {
         }
         if (result.state) {
           if (
+            lastSpeechRevision.current !== result.state.revision ||
+            result.state.paused
+          )
+            localSpeechStop.current();
+          lastSpeechRevision.current = result.state.revision;
+          if (result.state.paused) window.speechSynthesis?.cancel();
+          if (
             previousAct.current !== null &&
             previousAct.current !== 0 &&
             result.state.act === 0
@@ -134,6 +166,8 @@ export default function App() {
           setRequestNotice("");
           if (
             voiceRef.current &&
+            !animatedRef.current &&
+            !result.state.paused &&
             result.state.dialogue !== lastSpoken.current &&
             "speechSynthesis" in window
           ) {
@@ -149,6 +183,8 @@ export default function App() {
         setError("Cannot connect to the room. Check the server and room code.");
       ws.onclose = (e) => {
         setStatus("Offline");
+        localSpeechStop.current();
+        window.speechSynthesis?.cancel();
         setJoined(false);
         setPrivateState(null);
         setPrivateVisible(false);
@@ -168,6 +204,7 @@ export default function App() {
       closed = true;
       clearTimeout(timer);
       socket.current?.close();
+      localSpeechStop.current();
       setPrivateState(null);
       setPrivateVisible(false);
       window.speechSynthesis?.cancel();
@@ -218,9 +255,35 @@ export default function App() {
   const detectiveLabel = detective.busy
     ? "Detective is considering…"
     : detective.label;
+  const localPerformance = useLocalDetectivePerformance({
+    room,
+    dialogue: state?.dialogue || "",
+    revision: state?.revision || 0,
+    paused: state?.paused || false,
+    online: online && !!state,
+    token:
+      view === "tv"
+        ? tvSpeechToken || localStorage.getItem(`organizer:${room}`) || ""
+        : "",
+    animated: view === "tv" && animated,
+    onAnimatedChange: (value) => {
+      animatedRef.current = value;
+      setAnimated(value);
+      localSpeechStop.current();
+      if (value) {
+        voiceRef.current = false;
+        setVoice(false);
+        window.speechSynthesis?.cancel();
+      }
+    },
+  });
+  localSpeechStop.current = localPerformance.stop;
   const control = (action: string) => send({ type: "control", action });
   function link(role: View) {
-    return `${location.origin}/?view=${role}&room=${encodeURIComponent(room)}`;
+    const base = `${location.origin}/?view=${role}&room=${encodeURIComponent(room)}`;
+    return role === "tv" && tvSpeechToken
+      ? `${base}#speech=${encodeURIComponent(tvSpeechToken)}`
+      : base;
   }
   return (
     <div className={`app view-${view}`}>
@@ -325,8 +388,14 @@ export default function App() {
                   <span className="paused">Evening paused</span>
                 )}
               </div>
+              {view === "tv" && state && localPerformance.controls}
               {view !== "guest" && state && (
                 <Stage
+                  avatar={
+                    view === "tv" && animated
+                      ? localPerformance.avatar
+                      : undefined
+                  }
                   evidence={state.evidence}
                   dialogue={state.dialogue}
                   act={state.act}
@@ -356,6 +425,7 @@ export default function App() {
                   <input
                     type="checkbox"
                     checked={voice}
+                    disabled={view === "tv" && animated}
                     onChange={(e) => setVoice(e.target.checked)}
                   />{" "}
                   Read dialogue aloud <span>Device voice · optional</span>

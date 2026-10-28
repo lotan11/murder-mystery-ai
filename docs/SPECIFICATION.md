@@ -52,3 +52,7 @@ Backend tests cover progression, persistence, access separation, malformed input
 ## Optional voice audition
 
 A separate `?view=audition` route compares locally prepared David/Zira speech on a licensed TalkingHead sample. Must support explicit play/stop, voice changes, honest placeholder labels and audio-only failure recovery. It does not require or enable paid AI, microphone access or live game speech. See VOICE_AUDITION.md.
+
+## Optional TV local performance
+
+Keep the original TV stage available. An opt-in TalkingHead performance can speak current server-selected public dialogue with installed Windows voices, explicit enable/mute/replay, pause and disconnect cancellation, captions and clear sample-avatar labels. Guest private material and arbitrary request text must never reach synthesis. Stale generation must not play after state changes. Final British voice, bespoke detective rig, microphone and premium services are outside this increment.

@@ -1,3 +1,13 @@
+# Latest delivery: playable local TV performance — October 28, 2026
+
+The approved TalkingHead animation now speaks the game’s current public detective dialogue in optional TV mode. The original evidence stage remains the default; one shared renderer serves both the audition and TV. Explicit enable, voice selection, stop, mute and replay are available. Pause, disconnect, revision change and navigation cancel audio and invalidate delayed responses. Identical dialogue is not repeated for unrelated room updates.
+
+A bounded hidden Windows PowerShell subprocess uses installed David/Zira voices and the existing SAPI timing helper. The HTTP request accepts only a voice choice, not text. A derived read-only TV capability travels in the TV link fragment and Authorization header, leaving organizer control credentials separate. Generated files are temporary and responses are no-store. No database migration, microphone, paid speech provider or final detective appearance is added.
+
+Verification: 188 backend tests pass (one Windows symlink privilege skip); 15 client tests and production build pass. Audition and new TV browser scenarios pass. Real Windows API generation and real TV playback were separately exercised: actual mouth influence 0.252, moving visemes and active upper-face expression observed; host pause stopped playback; no page errors. Screenshot reviewed in the local work folder. All seven browser regression scenarios pass. Remote CI follows the source push.
+
+Try it: open the organizer, create an evening, follow its TV stage link, select Animated detective and Enable local voice. Use the host tab to advance/pause. See TV_PERFORMANCE.md for setup and limitations. Final British voice, bespoke detective rig and microphone remain future choices; existing US voices and female CC0 sample are explicitly provisional.
+
 # Performance refinement — October 28, 2026
 
 User accepted TalkingHead but requested smaller lip movement and more expression. Reduced final viseme strength to 45%, capped at 0.38; added subtle speech-weighted upper-face acting and modest head motion. Playback completion now waits until speech has actually begun, addressing a race exposed by prior remote CI. Synthetic browser recordings last at least eight seconds so slow CI can test interruption during playback. Real local Windows samples remain unchanged. Production build and all six browser flows passed; live Windows playback observed mouth influence 0.209 with upper-face expression active. Screenshot reviewed. Latest audition checks rerun after generation-reset guard.

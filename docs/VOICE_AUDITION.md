@@ -28,3 +28,7 @@ Asset provenance and redistribution terms are in [AVATAR_ASSETS.md](AVATAR_ASSET
 ## Restrained performance revision
 
 User feedback accepted the TalkingHead approach but found the lips exaggerated. Audition visemes now use 45% of library strength, capped at 0.38, while keeping original word timing and easing. Gentle speech-weighted eyebrow/eye expression fades back at rest; head movement is slightly increased. These are artistic adjustments, not improved phoneme timing or a final character rig.
+
+## Next playable integration
+
+The shared approved renderer is also used by the optional [TV performance](TV_PERFORMANCE.md). Its local Windows speech speaks server-selected current public game dialogue; the standalone audition remains available for comparison. Neither surface selects the final face or British voice.

@@ -83,3 +83,9 @@ The added browser regression for WebGL context loss also passed; captions and ev
 ## TalkingHead audition — October 28, 2026
 
 157 backend tests passed, one Windows symlink privilege skip; 15 client tests passed; production build passed; all six browser scenarios passed. Actual SAPI Windows playback reviewed separately from clearly labeled synthetic browser fixtures: real mesh motion and stop reset observed, no page errors or external requests. Existing full case and privacy flows remain green. Premium voice quality and final detective asset remain untested/unselected.
+
+## Local TV performance — October 28, 2026
+
+188 backend tests pass; one Windows symlink privilege skip. Fifteen client tests and production build pass. New TV browser scenario verifies opt-in, actual mesh motion, pause, replay and mute across real WebSocket host changes; browser audio fixture is a synthetic tone. Shared audition regression passes. Real Windows SAPI generation and TV WAV playback are checked separately: actual moving visemes, restrained peak 0.252, expression weight 0.913, host pause stopped audio, no page errors. Public-only speech, scoped authorization, malformed bodies, stale state, timeouts, cancellation and output bounds are tested with injected renderers. Premium voice realism, final character art and physical TV/phone dinner rehearsal remain manual acceptance work.
+
+Full integrated regression: all seven browser scenarios pass, including complete host/TV/guest case and private-character flow. No paid integration was invoked.

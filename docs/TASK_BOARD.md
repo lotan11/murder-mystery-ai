@@ -50,3 +50,14 @@ Planning context: earlier availability was three weeks part-time, roughly 10–1
 | M4-A5 | Product | Pending later | Select final British voice and detective asset; live game speech integration |
 
 - M4-A6: Implemented restrained lip strength and gentle upper-face expression from user feedback; production build and browser verification passed locally; remote CI pending. Final voice/face remain open.
+
+## Current increment: playable local TV performance
+
+| ID | Owner | Status | Acceptance |
+| --- | --- | --- | --- |
+| M4-T1 | Backend | Implemented; local tests pass | Bounded Windows local speech for authenticated current public dialogue only |
+| M4-T2 | Frontend | Implemented; local playback pass | Shared approved renderer; opt-in TV speech and interruption |
+| M4-T3 | Lead / QA | All seven browser tests pass; CI pending | Browser playback/pause/mute/stale/error and privacy regression |
+| M4-T4 | Lead | Implemented | Windows setup, limits, decisions and verification record |
+
+Approved animation refinement CI is green: run 40715846893. No final voice or asset purchase is authorized or needed for this increment.
