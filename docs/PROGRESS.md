@@ -1,3 +1,9 @@
+# Selected character and voice — October 28, 2026
+
+User selected **The Scholar + Lewis (`bm_lewis`)**. Record this as the chosen concept/voice direction, not approval of an undelivered 3D rig or final inflection. Next milestone: a focused Lewis delivery audition with measured natural pacing and restrained dry humor, then the selected character’s production rig/activation after the applicable approval. Existing playable avatar and local Windows speech remain available.
+
+Casting commit `ec39e04` independently passed GitHub CI run 40769768890: backend/client/build and all nine browser scenarios.
+
 # Latest delivery: character and British voice approval audition — October 28, 2026
 
 User requested three premium stylized-realistic detective candidates, three mature British voice candidates and restored playfully sarcastic dry humor. The separate `?view=casting` page now presents three original generated concept portraits (Classic/Modern/Scholar), George/Daniel/Lewis British male Kokoro neural recordings, three identical scene scripts, all nine face/voice pairings, captions, explicit play/stop and a device-local shortlist. The portraits are concepts, not rigged 3D avatars. The shortlist is not approval and cannot activate anything in the game.

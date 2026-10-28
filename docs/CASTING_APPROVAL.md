@@ -1,5 +1,9 @@
 # Character and voice approval audition
 
+## Selected direction — October 28, 2026
+
+User selected **C · The Scholar + Lewis (`bm_lewis`)** in chat. This selects the visual concept and voice direction. Next review: conversational pacing, dry-humor inflection and final delivery approval. A finished Scholar 3D rig and game activation are not yet delivered or claimed approved. Keep the working avatar and Windows speech available while preparing that milestone.
+
 Open `/?view=casting` on the running app. Compare a character concept and a voice, choose one of three identical scenes, then press **Play scene**. Nothing plays automatically. **Add to shortlist** saves only a local browser preference; it is not approval and never changes the active game character or voice.
 
 ## Prepared candidates
@@ -45,4 +49,4 @@ The generator and controlled API provenance record source versions, speed, sampl
 
 ## Approval boundary
 
-Default personality has returned to respectful, playfully sarcastic dry humor under the latest user direction. No slapstick, exaggerated mouth shapes, cartoon animation, new game avatar or new active game voice has been introduced. Candidate selection is still pending. After approval, production work can build/license the selected 3D rig and connect the selected voice with properly validated speech alignment; that is a separate activation step.
+Default personality has returned to respectful, playfully sarcastic dry humor under the latest user direction. No slapstick, exaggerated mouth shapes, cartoon animation, new game avatar or new active game voice has been introduced. The Scholar + Lewis pairing is selected; delivery/inflection review and finished-rig approval remain pending. After approval, production work can build/license the selected 3D rig and connect the selected voice with properly validated speech alignment; that is a separate activation step.
