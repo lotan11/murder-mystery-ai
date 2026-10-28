@@ -11,6 +11,8 @@ test('local TalkingHead plays timed mouth shapes and stops on voice change', asy
   await page.getByRole('button', { name: 'Play audition', exact: true }).click();
   await expect(avatar).toHaveAttribute('data-speaking', 'true');
   await expect.poll(async () => Number(await avatar.getAttribute('data-viseme-motion-count'))).toBeGreaterThan(2);
+  await expect.poll(async () => Number(await avatar.getAttribute('data-viseme-max'))).toBeLessThanOrEqual(0.38);
+  await expect.poll(async () => Number(await avatar.getAttribute('data-expression-weight'))).toBeGreaterThan(0.2);
   await page.getByLabel('Existing voice').selectOption('david');
   await expect(avatar).toHaveAttribute('data-speaking', 'false');
   await expect.poll(async () => Number(await avatar.getAttribute('data-viseme-max'))).toBeLessThan(0.02);

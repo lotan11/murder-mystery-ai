@@ -20,7 +20,7 @@ def prepare(output: Path) -> None:
         samples = []
         for sample_id, (title, text) in SAMPLES.items():
             words = text.split()
-            duration_seconds = max(2.2, len(words) * 0.13 + 0.2)
+            duration_seconds = max(8.0, len(words) * 0.13 + 0.2)
             sample = {"id": sample_id, "title": title, "text": text,
                       "words": words,
                       "wtimes": [index * 130 for index in range(len(words))], "wdurations": [110] * len(words),

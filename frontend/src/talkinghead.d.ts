@@ -11,7 +11,7 @@ declare module "@met4citizen/talkinghead" {
     lipsync: Record<string, unknown>;
     isSpeaking: boolean;
     isAudioPlaying: boolean;
-    mtAvatar: Record<string, { applied: number; ms: number[][]; is: number[] }>;
+    mtAvatar: Record<string, { applied: number; realtime: number | null; limit: ((value: number) => number) | null; ms: number[][]; is: number[] }>;
     showAvatar(
       avatar: AvatarOptions,
       progress?: (event: ProgressEvent) => void,

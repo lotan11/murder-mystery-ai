@@ -24,3 +24,7 @@ The preparation script uses installed Microsoft David Desktop and Zira Desktop v
 The clothed female sample is an animation compatibility placeholder, **not Reginald's final appearance**. David and Zira are installed US English demonstration voices, not the proposed premium British detective voice. This separate audition does not replace the game's procedural detective or connect live AI replies to TalkingHead. External voice-reference links do not generate audio or incur charges. No microphone or live premium voice provider is configured.
 
 Asset provenance and redistribution terms are in [AVATAR_ASSETS.md](AVATAR_ASSETS.md). The test preparation script deliberately creates synthetic tones, not speech; browser tests use those isolated files to verify actual mesh movement without paid services or Windows-only voices. Listen to the real Windows recordings for a subjective voice/synchronization review.
+
+## Restrained performance revision
+
+User feedback accepted the TalkingHead approach but found the lips exaggerated. Audition visemes now use 45% of library strength, capped at 0.38, while keeping original word timing and easing. Gentle speech-weighted eyebrow/eye expression fades back at rest; head movement is slightly increased. These are artistic adjustments, not improved phoneme timing or a final character rig.

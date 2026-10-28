@@ -148,7 +148,11 @@ export default function VoiceAudition() {
         contextRef.current = context;
         const host = mount.current;
         let motions = 0,
-          previous = 0;
+          previous = 0,
+          expressionTime = 0,
+          expressionWeight = 0,
+          observedSpeaking = false,
+          observedGeneration = generation.current;
         head = new TalkingHead(host, {
           audioCtx: context,
           lipsyncLang: "en",
@@ -166,9 +170,27 @@ export default function VoiceAudition() {
           avatarIdleEyeContact: 0.7,
           avatarSpeakingEyeContact: 0.8,
           avatarIdleHeadMove: 0.2,
-          avatarSpeakingHeadMove: 0.3,
-          update: () => {
+          avatarSpeakingHeadMove: 0.38,
+          update: (dt: number) => {
             if (disposed || !head) return;
+            expressionTime += Math.min(dt, 100) / 1000;
+            expressionWeight += ((head.isSpeaking ? 1 : 0) - expressionWeight) * (1 - Math.exp(-dt / 300));
+            // Restrained upper-face acting; speech keeps control of the lips.
+            const expressions: Record<string, number> = {
+              browInnerUp: 0.10 + 0.06 * Math.sin(expressionTime * 1.2),
+              browOuterUpLeft: 0.08 + 0.06 * Math.sin(expressionTime * 0.9),
+              browOuterUpRight: 0.04 + 0.03 * Math.sin(expressionTime * 0.9 + 1),
+              eyeSquintLeft: 0.04, eyeSquintRight: 0.04,
+            };
+            for (const [name, value] of Object.entries(expressions)) {
+              if (head.mtAvatar[name]) head.mtAvatar[name].realtime = value * expressionWeight;
+            }
+            if (observedGeneration !== generation.current) {
+              observedSpeaking = false;
+              observedGeneration = generation.current;
+            }
+            if (head.isSpeaking) observedSpeaking = true;
+            host.dataset.expressionWeight = expressionWeight.toFixed(3);
             let maximum = 0,
               active = 0;
             for (const [name, target] of Object.entries(head.mtAvatar)) {
@@ -192,10 +214,12 @@ export default function VoiceAudition() {
             host.dataset.speaking = String(head.isSpeaking);
             if (
               playingRef.current &&
+              observedSpeaking &&
               !head.isSpeaking &&
               !head.isAudioPlaying
             ) {
               playingRef.current = false;
+              observedSpeaking = false;
               setPlaying(false);
               setCurrentWord("");
               setStatus(
@@ -222,6 +246,12 @@ export default function VoiceAudition() {
         if (disposed) {
           head.dispose();
           return;
+        }
+        // Scale the final applied shapes, preserving the library's timing and easing.
+        for (const [name, target] of Object.entries(head.mtAvatar)) {
+          if (name.startsWith("viseme_")) {
+            target.limit = (value: number) => Math.max(0, Math.min(0.38, value * 0.45));
+          }
         }
         host.querySelector("canvas")?.setAttribute("aria-hidden", "true");
         setModelState("ready");

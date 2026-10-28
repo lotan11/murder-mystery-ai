@@ -1,3 +1,7 @@
+# Performance refinement — October 28, 2026
+
+User accepted TalkingHead but requested smaller lip movement and more expression. Reduced final viseme strength to 45%, capped at 0.38; added subtle speech-weighted upper-face acting and modest head motion. Playback completion now waits until speech has actually begun, addressing a race exposed by prior remote CI. Synthetic browser recordings last at least eight seconds so slow CI can test interruption during playback. Real local Windows samples remain unchanged. Production build and all six browser flows passed; live Windows playback observed mouth influence 0.209 with upper-face expression active. Screenshot reviewed. Latest audition checks rerun after generation-reset guard.
+
 # Latest delivery: TalkingHead audition — October 28, 2026
 
 Separate local audition at `/?view=audition` now compares actual installed David/Zira speech on the CC0 TalkingHead sample. Real SAPI starts drive actual facial morphs; durations are estimated. Windows browser review observed mouth movement and stop reset with no external requests or page errors. The female sample is not final Wobblebottom; no premium voice, microphone or live game speech integration is claimed. See VOICE_AUDITION.md for Windows preparation.

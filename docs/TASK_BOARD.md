@@ -48,3 +48,5 @@ Planning context: earlier availability was three weeks part-time, roughly 10–1
 | M4-A3 | Assets | Done | CC0 sample provenance; MIT library notices |
 | M4-A4 | Lead / QA | Local checks passed; CI pending | Game regression, browser mouth movement, real Windows playback, CI |
 | M4-A5 | Product | Pending later | Select final British voice and detective asset; live game speech integration |
+
+- M4-A6: Implemented restrained lip strength and gentle upper-face expression from user feedback; production build and browser verification passed locally; remote CI pending. Final voice/face remain open.
