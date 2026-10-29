@@ -109,3 +109,7 @@ Continue using the approved portrait/live-voice milestone and existing animated 
 ## Construction reference prepared
 
 A front/profile/three-quarter [construction reference sheet](assets/scholar-construction-reference.png) was generated from the approved portrait with the built-in image tool and inspected. It preserves the selected glasses, silver hair/beard, tailoring and mature proportions. It is 2D guidance only, not a mesh, measured scan or animation rig. The approved original portrait remains the likeness authority if the generated unseen view differs. Exact generation prompt is in SCHOLAR_REFERENCE_PROMPT.md.
+
+## Authoring foundation update
+
+Portable Blender 4.5.15 and a pinned MPFB source checkout are now available locally under ignored data/character-tools. The earlier environment limitation above is historical. An actual anatomical development bust, editable Blender source, build settings and separate browser workbench now establish the modeling/export path. This is a blockout, not a completed likeness or facial rig. See CHARACTER_AUTHORING.md for reproduction and current gates; keep the approved portrait/live Lewis in the game.

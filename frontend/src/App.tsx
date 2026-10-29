@@ -362,6 +362,9 @@ export default function App() {
             </form>
           </div>
           <p>
+            <a className="share-link" href="/?view=character-lab">
+              Inspect the Scholar 3D workbench ↗
+            </a>
             <a className="share-link" href="/?view=casting">
               Compare detective looks and British voices ↗
             </a>

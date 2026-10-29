@@ -1,3 +1,13 @@
+# Latest delivery: actual Scholar anatomical blockout and authoring workbench — October 28, 2026
+
+Prepared verified portable Blender 4.5.15 and pinned MPFB 2.0.18 source locally, without system-wide installation or paid services. Built an actual anatomical MakeHuman-based Scholar development bust with glasses, grey hair/beard guides, jacket/waistcoat/shirt/tie blocking and an embedded procedural weave tile. The editable compressed Blender scene, parametric settings, reproducible script, GLB and actual front/profile renders are checked in. Iterated visible skin/clothing intersections and reduced 736 static objects to 15 meshes.
+
+A separate `?view=character-lab` workbench loads the real GLB beside the approved portrait, with front/profile/three-quarter/orbit inspection, measured mesh/joint/morph counts and missing/context-loss recovery. The active TV portrait/Lewis presentation and existing animation modes are unchanged; the development model has no voice or activation path.
+
+This is a modeling foundation, not the finished premium Scholar. Current export: 3,689,448 bytes, 15 meshes, 87,772 exported vertices, 144,575 triangles, embedded texture, no external resources, zero skeleton joints and zero facial morphs. Inspection reports the missing TalkingHead inventory rather than fabricating it. Hair/scalp proxy gaps, sparse beard, heavy eyelids, exact likeness, wardrobe finish, production materials and facial rigging remain explicit next art gates. No new casting decision is needed; selected look/Lewis/+5% pace stay settled.
+
+Verification: 251 backend tests pass (two Windows symlink privilege skips), 15 client tests pass, production build and all thirteen browser scenarios pass, including actual model loading/camera controls, no accidental speech, missing asset and graphics-context loss. Real browser front/profile inspection succeeded without page errors; model inventory measured 15 meshes/0 joints/0 morphs. Authoring bundles are excluded from project pytest discovery to preserve the normal test command. Source CI follows the push. See CHARACTER_AUTHORING.md and assets/character-production/README.md.
+
 # Latest delivery: approved Scholar + Lewis in the playable TV — October 28, 2026
 
 User approved The Scholar and the +5% Lewis pace. TV now defaults to the approved Scholar portrait with live Lewis narration of current public detective dialogue. Audio is muted until Enable Lewis voice; stop, mute, replay, pause/disconnect/reset and stale-state protections remain. Presentation selection preserves the original procedural stage and the existing animated sample with Windows voices. No unrelated sample is represented as the finished Scholar.

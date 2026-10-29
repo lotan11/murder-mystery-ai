@@ -93,3 +93,11 @@ Casting source commit `ec39e04` passed independent CI run 40769768890, including
 - Frontend: selected Scholar portrait/voice stage, explicit audio controls, preserved original/animated modes — implemented and tested.
 - QA: auth/privacy, stale audio, pause/mute, approved pace, full existing regression — 247 backend / 15 client / eleven browser checks pass locally; CI pending.
 - Asset production: likeness-matched Scholar 3D rig remains pending; concrete brief recorded separately. Portrait mode must not be represented as the finished rig.
+
+## Scholar 3D authoring foundation
+
+- Done: verified portable Blender and pinned anatomical MPFB authoring environment, no paid service/system install.
+- Done: actual editable development bust, reproducible settings/build, exported 15-mesh GLB and front/profile renders; zero rig joints/facial morphs explicitly recorded.
+- Done: separate character workbench with actual geometry inventory and camera/failure controls; active TV remains approved portrait + Lewis.
+- Local checks: 251 backend / 15 client / thirteen browser scenarios and production build pass; source CI pending.
+- Next: improve likeness, eyelids, hair/scalp/beard and wardrobe materials, then create real facial topology/targets and compatible rig. This blockout is not awaiting another casting decision and is not production ready.

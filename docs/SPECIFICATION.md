@@ -64,3 +64,7 @@ Offer three premium stylized-realistic mature detective concept portraits and th
 ## Approved TV presentation
 
 The selected default TV presentation is The Scholar concept portrait with optional live Lewis narration at the user-approved +5% playback pace. Explicit enable/mute/stop/replay and captions remain. Original and animated-sample stages stay selectable. The concept portrait is not a finished 3D rig; production likeness/animation work is tracked separately. See SCHOLAR_PERFORMANCE.md.
+
+## Character asset development
+
+A separate `?view=character-lab` loads the actual anatomical development GLB beside the approved portrait with camera presets, measured geometry/rig inventory and failure recovery. It has no speech or activation path. The editable source/configuration/build script are versioned; portable authoring tools stay optional and ignored. Likeness, production materials and facial rig quality gates remain mandatory before replacing the approved portrait presentation.

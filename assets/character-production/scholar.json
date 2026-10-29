@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "name": "Scholar anatomical blockout",
+  "status": "Work in progress; not approved likeness, not facially rigged, not active in TV",
+  "approximate_age_years": 67,
+  "mpfb": {
+    "repository": "https://github.com/makehumancommunity/mpfb2",
+    "commit": "6ff1eb358f6c1959ced77e79e6dd2406d9a71f49",
+    "source_path": "data/character-tools/mpfb",
+    "code_license": "GPL-3.0-or-later",
+    "asset_license": "CC0-1.0",
+    "base_obj_sha256": "bea00279464133e86b634220cd2774ebf3b470de280d11222a6b2269e4a8d950"
+  },
+  "macro": {
+    "gender": 1.0,
+    "age": 0.82,
+    "muscle": 0.35,
+    "weight": 0.45,
+    "proportions": 0.5,
+    "height": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "race": {
+      "caucasian": 1.0,
+      "asian": 0.0,
+      "african": 0.0
+    }
+  },
+  "targets": {
+    "head/head-age-incr.target.gz": 0.22,
+    "head/head-scale-vert-incr.target.gz": 0.1,
+    "head/head-fat-decr.target.gz": 0.12,
+    "nose/nose-scale-depth-incr.target.gz": 0.2,
+    "nose/nose-scale-vert-incr.target.gz": 0.12,
+    "nose/nose-curve-convex.target.gz": 0.1,
+    "chin/chin-prominent-incr.target.gz": 0.05,
+    "forehead/forehead-scale-vert-incr.target.gz": 0.1,
+    "eyes/l-eye-bag-incr.target.gz": 0.2,
+    "eyes/r-eye-bag-incr.target.gz": 0.2
+  },
+  "procedural": {
+    "hair_strands": 360,
+    "beard_strands": 400,
+    "seed": 67,
+    "glasses_radius": 0.0225,
+    "bust_skin_cutoff": 1.46
+  },
+  "outputs": {
+    "glb": "frontend/public/character-lab/scholar-blockout.glb",
+    "blend": "assets/character-production/scholar-blockout.blend",
+    "front": "docs/assets/scholar-blockout-front.png",
+    "profile": "docs/assets/scholar-blockout-profile.png",
+    "inventory": "assets/character-production/scholar-blockout-inventory.json"
+  }
+}

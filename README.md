@@ -111,3 +111,7 @@ Open `/?view=casting` to compare three original concept portraits and three real
 ## Approved Scholar + Lewis TV
 
 The TV now opens on the approved Scholar portrait with live Lewis narration at the approved faster pace. Click **Enable Lewis voice** to begin audio. Original and animated-sample stages remain selectable. See [selected performance setup and limits](docs/SCHOLAR_PERFORMANCE.md). The likeness-matched 3D rig is still in production preparation; the portrait is labeled accordingly.
+
+## Scholar 3D development
+
+The separate `/?view=character-lab` workbench inspects the actual anatomical development model beside the approved portrait. It does not replace the live game character. See [authoring setup and model limits](docs/CHARACTER_AUTHORING.md); the final likeness and facial rig remain under development.
