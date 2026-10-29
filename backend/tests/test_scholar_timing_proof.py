@@ -48,3 +48,19 @@ def test_packaged_lab_clip_matches_its_own_model_cues_and_approved_voice():
     cues=probe.validate_timings(manifest['phonemes'],manifest['duration_seconds'])
     proof=json.loads((ROOT/'assets/character-production/lewis-timing-proof.json').read_text(encoding='utf-8'))
     assert cues==proof['phonemes'] and manifest['audio_sha256']==proof['timed_wav_sha256']
+
+
+def test_longer_proof_is_tied_to_only_canonical_public_narration():
+    import hashlib
+    case_bytes=(ROOT/'backend/cases/blackthorn.json').read_bytes()
+    case=json.loads(case_bytes)
+    report=json.loads((ROOT/'assets/character-production/lewis-long-timing-proof.json').read_text(encoding='utf-8'))
+    assert report['source_sha256']==hashlib.sha256(case_bytes).hexdigest()
+    assert report['public_source_fields']==['narration.welcome','narration.start','narration.advance']
+    assert report['text']==' '.join(case['narration'][name] for name in ['welcome','start','advance'])
+    assert 40<=report['word_count']==len(report['text'].split())<=80
+    assert report['voice']=='bm_lewis' and report['generation_speed']==.92 and report['approved_playback_rate']==1.05
+    assert abs(report['duration_seconds']-report['frames']/report['sample_rate'])<.000001
+    assert report['phoneme_count']>73 and report['out_of_bounds_cues']==report['overlapping_cues']==0
+    assert report['sidecar_bytes']<512*1024 and report['worker_elapsed_seconds_observed']<report['worker_timeout_seconds']==40
+    assert report['downloads'] is False and report['paid_calls'] is False and report['live_game_modified'] is False

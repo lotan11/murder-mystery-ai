@@ -149,3 +149,7 @@ Hosted CI confirmation: run40836345515 passes for code commit7385b78. All browse
 Final local regression: all19 browser scenarios pass,291 backend tests pass/three Windows permission skips,21 client checks and production build pass. Actual fixed-study screenshot reviewed locally; routine CI retains failure screenshots. Hosted CI follows push.
 
 Hosted CI40843961780 passes for code commit5a7ccca, including all19 browser scenarios. The timed lab study and existing playable game regression are green.
+
+## October29 oral lining and longer narration
+
+293 backend tests pass/three Windows permission skips,21 client checks, production build and all19 browser scenarios pass. Material test verifies the existing weighted cavity primitive, anatomical mask bounds and unchanged vertices/triangles plus jaw/blink displacement magnitude/count. Extra primitive reflects material separation only. Actual mouth-lining open-jaw render reviewed. Realworker59-word public narration:25.0606s/391cues, zerooverlap/outofbounds,21.096s observedgeneration under40s budget; source/hash/public-fields recorded. One sample is not maximum-length or perceptual/performance certification. Windows testserver still emits known Proactor socket-close logs during disconnection scenarios; scenarios pass. New source CI follows push.

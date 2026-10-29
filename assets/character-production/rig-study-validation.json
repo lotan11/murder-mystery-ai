@@ -1,4 +1,25 @@
 {
+  "mouth_lining": {
+    "mask_sha256": "dc3e5b39e677351e3bb4c60653dc4d3516f585690076ec4c749e04402db3bf05",
+    "mask_source": "data/character-tools/mpfb/src/mpfb/data/textures/mpfb_inside-mouth.jpg",
+    "polygons": 398,
+    "vertices": 418,
+    "method": "Existing anatomical UV mouth mask, face-center threshold0.5; material assignment only",
+    "world_bounds_m": {
+      "min": [
+        -0.0389426052570343,
+        -0.14473479986190796,
+        1.506661057472229
+      ],
+      "max": [
+        0.0389426052570343,
+        -0.04537982493638992,
+        1.5950859785079956
+      ]
+    },
+    "new_geometry": false,
+    "teeth_or_tongue_added": false
+  },
   "expression_controls": {
     "browInnerUp": {
       "source_affected_height_m": [

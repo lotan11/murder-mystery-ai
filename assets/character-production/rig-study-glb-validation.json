@@ -1,6 +1,6 @@
 {
   "file": "scholar-rig-study.glb",
-  "bytes": 10655288,
+  "bytes": 10663228,
   "mesh_count": 15,
   "vertices": 101835,
   "triangles": 165239,
@@ -77,57 +77,57 @@
     "jawOpen": {
       "affected_vertices": 25081,
       "max_displacement": 0.01795706955374988,
-      "primitive_count": 6
+      "primitive_count": 7
     },
     "browInnerUp": {
       "affected_vertices": 2974,
       "max_displacement": 0.005154604408660352,
-      "primitive_count": 6
+      "primitive_count": 7
     },
     "browOuterUpLeft": {
       "affected_vertices": 1552,
       "max_displacement": 0.008538120474753028,
-      "primitive_count": 6
+      "primitive_count": 7
     },
     "browOuterUpRight": {
       "affected_vertices": 1213,
       "max_displacement": 0.008538120474753028,
-      "primitive_count": 6
+      "primitive_count": 7
     },
     "browDownLeft": {
       "affected_vertices": 1074,
       "max_displacement": 0.00651151752036045,
-      "primitive_count": 6
+      "primitive_count": 7
     },
     "browDownRight": {
       "affected_vertices": 1196,
       "max_displacement": 0.00651151752036045,
-      "primitive_count": 6
+      "primitive_count": 7
     },
     "mouthPucker": {
       "affected_vertices": 17914,
       "max_displacement": 0.016341668115327935,
-      "primitive_count": 6
+      "primitive_count": 7
     },
     "lipPress": {
       "affected_vertices": 17610,
       "max_displacement": 0.008728716353907711,
-      "primitive_count": 6
+      "primitive_count": 7
     },
     "mouthSmile": {
       "affected_vertices": 17094,
       "max_displacement": 0.012816805325969039,
-      "primitive_count": 6
+      "primitive_count": 7
     },
     "eyeBlinkLeft": {
       "affected_vertices": 348,
       "max_displacement": 0.005803928646891762,
-      "primitive_count": 1
+      "primitive_count": 2
     },
     "eyeBlinkRight": {
       "affected_vertices": 346,
       "max_displacement": 0.005803928646891762,
-      "primitive_count": 1
+      "primitive_count": 2
     }
   }
 }

@@ -49,3 +49,5 @@ Open `?view=character-lab`, choose **Rig study**, and select **Play Lewis timing
 The preview uses model-predicted phoneme spans and a deliberately simplified small mouth mapping, not a finished full-viseme TalkingHead performance. Audio SHA256, PCM format and duration are checked before playback. Source-clock cues follow audio.currentTime and are not accelerated twice. The game remains approved portrait/live Lewis.
 
 To reproduce the sample, first run the same-inference timing probe with the optional runtime, then `.\.venv\Scripts\python.exe scripts/prepare-scholar-timing-study.py`. Packaging validates that the local WAV matches the recorded proof before copying it into the lab. No synthesis/download occurs during packaging or browser playback.
+
+October29 oral refinement: the weighted study uses the existing anatomical UV mouth mask to assign lining to398 cavity faces. Vertex/triangle counts and neutral shape are unchanged; skin now has a second material primitive. See docs/assets/rig-study-mouth-lining.png for the actual restrained open-jaw render. No teeth/tongue or new cavity geometry was created. Full interior and face quality remain under development.

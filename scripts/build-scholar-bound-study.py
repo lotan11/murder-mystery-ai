@@ -2,6 +2,7 @@
 Run after build-scholar-face-controls.py with portable Blender. Never activates TV.
 """
 from pathlib import Path
+from array import array
 import hashlib,json,math,subprocess
 import bpy
 import addon_utils
@@ -46,6 +47,34 @@ if actual_commit!=config['mpfb']['commit']:raise RuntimeError('MPFB checkout dif
 bpy.context.preferences.extensions.repos.new(name='Scholar MPFB source',module='scholar_mpfb',custom_directory=str(mpfb/'src'))
 if addon_utils.enable('bl_ext.scholar_mpfb.mpfb',default_set=True) is None:raise RuntimeError('Pinned MPFB unavailable')
 from bl_ext.scholar_mpfb.mpfb.services.targetservice import TargetService
+# Identify the existing anatomical mouth cavity using its upstream UV mask.
+# Assign lining material only; do not add a fake black plane, teeth or new geometry.
+head_mesh=next(obj for obj in objects if 'skin blockout' in obj.name)
+mask_path=mpfb/'src/mpfb/data/textures/mpfb_inside-mouth.jpg'
+mask=bpy.data.images.load(str(mask_path),check_existing=True)
+pixels=array('f',[0])*len(mask.pixels);mask.pixels.foreach_get(pixels);width,height=mask.size
+uv=head_mesh.data.uv_layers.active
+if uv is None:raise RuntimeError('Anatomical UV map missing; cannot identify mouth lining')
+inside=[]
+for polygon in head_mesh.data.polygons:
+    center=sum((uv.data[index].uv for index in polygon.loop_indices),Vector((0,0)))/len(polygon.loop_indices)
+    x=min(width-1,max(0,int(center.x*width)));y=min(height-1,max(0,int(center.y*height)))
+    if pixels[(y*width+x)*4]>.5:inside.append(polygon)
+if not 8<=len(inside)<=400:raise RuntimeError('Unexpected anatomical mouth mask coverage: '+str(len(inside)))
+lining=bpy.data.materials.new('Scholar anatomical oral lining study');lining.use_nodes=True
+lining.diffuse_color=(.028,.006,.009,1)
+shader=lining.node_tree.nodes.get('Principled BSDF');shader.inputs['Base Color'].default_value=lining.diffuse_color
+shader.inputs['Roughness'].default_value=.85
+head_mesh.data.materials.append(lining);lining_index=len(head_mesh.data.materials)-1
+for polygon in inside:polygon.material_index=lining_index
+selected_vertices={index for polygon in inside for index in polygon.vertices}
+lining_points=[head_mesh.matrix_world@head_mesh.data.vertices[index].co for index in selected_vertices]
+mouth_lining_report={'mask_sha256':hashlib.sha256(mask_path.read_bytes()).hexdigest(),'mask_source':mask_path.relative_to(ROOT).as_posix(),
+ 'polygons':len(inside),'vertices':len(selected_vertices),'method':'Existing anatomical UV mouth mask, face-center threshold0.5; material assignment only',
+ 'world_bounds_m':{'min':[min(point[axis] for point in lining_points) for axis in range(3)],'max':[max(point[axis] for point in lining_points) for axis in range(3)]},
+ 'new_geometry':False,'teeth_or_tongue_added':False}
+if not 1.4<min(point.z for point in lining_points)<=max(point.z for point in lining_points)<1.7:raise RuntimeError('Mouth mask selected geometry outside mouth region')
+
 source_rest=positions(source);expression_tree=KDTree(len(source_rest))
 for index,point in enumerate(source_rest):expression_tree.insert(point,index)
 expression_tree.balance()
@@ -90,7 +119,7 @@ for name,files in expressions.items():
     expression_report[name]=measured
 
 rest={obj.name:positions(obj) for obj in objects}
-report={'expression_controls':expression_report,'source_face_study_sha256':source_hash,'bone_count':len(bone_names),'meshes':{},'speech_connected':False,
+report={'mouth_lining':mouth_lining_report,'expression_controls':expression_report,'source_face_study_sha256':source_hash,'bone_count':len(bone_names),'meshes':{},'speech_connected':False,
         'status':'Experimental weighted bust; not finished likeness, full facial rig or production speech avatar',
         'method':'Exact-nearest source weights for skin; inverse-distance four-neighbour transfer for groom; rigid Head accessories and Spine2 wardrobe. Normalized strongest four influences.'}
 for obj in objects:
@@ -168,6 +197,13 @@ for name,limit in report['mouth_preview_limits'].items():
     scene.render.filepath=str(ROOT/f'docs/assets/rig-study-{name}.png');bpy.ops.render.render(write_still=True)
     for obj in objects:
         if obj.data.shape_keys and name in obj.data.shape_keys.key_blocks:obj.data.shape_keys.key_blocks[name].value=0
+
+# Review a restrained open-jaw pose to expose the actual cavity material.
+for obj in objects:
+    if obj.data.shape_keys and 'jawOpen' in obj.data.shape_keys.key_blocks:obj.data.shape_keys.key_blocks['jawOpen'].value=.38
+scene.render.filepath=str(ROOT/'docs/assets/rig-study-mouth-lining.png');bpy.ops.render.render(write_still=True)
+for obj in objects:
+    if obj.data.shape_keys and 'jawOpen' in obj.data.shape_keys.key_blocks:obj.data.shape_keys.key_blocks['jawOpen'].value=0
 
 restored={obj.name:positions(obj) for obj in objects}
 report['restored_max_error_m']=max((a-b).length for name in rest for a,b in zip(rest[name],restored[name]))

@@ -98,7 +98,10 @@ def test_brow_controls_are_local_real_targets_and_preserve_existing_face_study()
     rig=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb',measure=True)
     face=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-face-study.glb',measure=True)
     for name,measured in face['morph_deformations'].items():
-        assert rig['morph_deformations'][name]==measured
+        assert rig['morph_deformations'][name]['affected_vertices']==measured['affected_vertices']
+        assert rig['morph_deformations'][name]['max_displacement']==measured['max_displacement']
+        # Oral lining splits the head into two material primitives, not new deformation geometry.
+        assert rig['morph_deformations'][name]['primitive_count']==measured['primitive_count']+1
     expected={'browInnerUp','browOuterUpLeft','browOuterUpRight','browDownLeft','browDownRight'}
     assert {name for name in rig['morph_deformations'] if name.startswith('brow')}==expected
     evidence=json.loads((ROOT/'assets/character-production/rig-study-validation.json').read_text())
@@ -136,3 +139,29 @@ def test_mouth_units_have_real_local_deformation_and_restrained_preview_limits()
     assert len(hashes)==len(set(hashes))==3
     assert evidence['speech_connected'] is False
     assert not rig['talkinghead_inventory_complete'] and rig['missing_visemes']
+
+
+def test_oral_lining_uses_existing_anatomical_cavity_without_new_geometry():
+    import json
+    data=(ROOT/'frontend/public/character-lab/scholar-rig-study.glb').read_bytes()
+    size,kind=struct.unpack_from('<II',data,12)
+    assert kind==0x4e4f534a
+    document=json.loads(data[20:20+size])
+    materials=document['materials']
+    indexes=[i for i,material in enumerate(materials) if material.get('name')=='Scholar anatomical oral lining study']
+    assert len(indexes)==1
+    lining=materials[indexes[0]]['pbrMetallicRoughness']
+    assert max(lining['baseColorFactor'][:3])<.05 and lining['roughnessFactor']>.8
+    primitives=[primitive for mesh in document['meshes'] for primitive in mesh['primitives'] if primitive.get('material')==indexes[0]]
+    assert len(primitives)==1
+    assert 'JOINTS_0' in primitives[0]['attributes'] and 'WEIGHTS_0' in primitives[0]['attributes']
+    evidence=json.loads((ROOT/'assets/character-production/rig-study-validation.json').read_text())
+    mouth=evidence['mouth_lining']
+    assert mouth['polygons']==398 and mouth['vertices']==418
+    assert mouth['new_geometry'] is False and mouth['teeth_or_tongue_added'] is False
+    assert len(mouth['mask_sha256'])==64
+    assert mouth['world_bounds_m']['min'][2]>1.5 and mouth['world_bounds_m']['max'][2]<1.6
+    rig=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')
+    original=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-face-study.glb')
+    assert rig['vertices']==original['vertices'] and rig['triangles']==original['triangles']
+    assert evidence['binding_neutral_max_error_m']<.000001 and evidence['restored_max_error_m']<.000001

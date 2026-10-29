@@ -1,3 +1,13 @@
+## Anatomical oral lining and longer narration evidence — October 29, 2026
+
+Refined the weighted Scholar study's existing mouth cavity using the pinned anatomical inside-mouth UV mask. Assigned a dark rough oral-lining material to398 existing faces/418 vertices, with source hash and bounds recorded. No new geometry, fake black plane, teeth or tongue were added. Actual vertex/triangle counts, neutral shape and original jaw/blink displacement counts/magnitudes remain unchanged; only the head's material primitives split. Reviewed the actual open-jaw render. Detailed teeth/tongue, groom, wardrobe, likeness and natural speech shapes remain unfinished; the approved game portrait/live Lewis remains the default.
+
+Ran the actual local worker on59 words/378 characters concatenated from canonical public welcome/start/advance narration. It produced25.0606s/391 model cues with zero overlap/out-of-bounds results, preserving Lewis0.92 synthesis and1.05 playback. The same-waveform sidecar passed backend validation. Generation took21.096s on this machine within the unchanged40s bound. This is one observed sample, not a max-length, internal-batch, perception or performance guarantee. Longer clips can have noticeable preparation latency; caching/prefetch/performance evaluation is now a tracked integration task. No paid calls/downloads or live-room changes.
+
+Next: detailed mouth/face quality and perceived speech review, plus measured latency improvement before live3D integration. November10 risk remains final character quality and long-dialogue responsiveness. No new casting/voice decision is needed; preserve the working fallback.
+
+Verification:293 backend tests pass (three Windows permission skips),21 client checks, production build and all19 browser scenarios pass. Reviewed actual open-jaw lining render; no production appearance approval implied. Prior code CI40843961780 passed; new source CI follows push.
+
 ## First opt-in timed Scholar speech study — October 29, 2026
 
 The weighted rig can now perform a fixed real Lewis line in the separate character lab. Choose Rig study and Play Lewis timing study. No autoplay. The clip is the verified5.502-second same-inference proof, at approved1.05 playback; its73 model-predicted cues follow audio.currentTime. A restrained, explicitly approximate phoneme-to-existing-mouth mapping drives real morph influences. Unknown symbols/gaps stay neutral. This is a speaking deformation study, not a complete viseme rig or finished natural lip-sync/likeness.
