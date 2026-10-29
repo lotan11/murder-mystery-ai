@@ -74,3 +74,20 @@ def test_case_content_evidence_hash_is_portable_but_detects_changed_facts():
     assert module.case_content_hash(lf)==module.case_content_hash(lf.replace(b'\n',b'\r\n'))
     changed=lf.replace(b'Public line.',b'Changed line.')
     assert module.case_content_hash(lf)!=module.case_content_hash(changed)
+
+
+def test_cache_probe_reuses_one_validated_public_clip_within_memory_budget():
+    import hashlib
+    case_bytes=(ROOT/'backend/cases/blackthorn.json').read_bytes();case=json.loads(case_bytes)
+    report=json.loads((ROOT/'assets/character-production/lewis-cache-proof.json').read_text(encoding='utf-8'))
+    canonical=json.dumps(case,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode('utf-8')
+    assert report['source_content_sha256']==hashlib.sha256(canonical).hexdigest()
+    assert report['text']==' '.join(case['narration'][name] for name in ['welcome','start','advance'])
+    assert report['worker_spawns_cold']==report['worker_spawns_total_after_warm']==1
+    assert report['identical_result'] and report['fresh_warm_result_copy']
+    assert report['cache_info_observed']['entries']==1
+    assert 0<report['cache_info_observed']['payload_bytes']<=report['configured_cache_limits']['cache_max_bytes']
+    assert report['generation_files_remaining'] is False and report['live_game_modified'] is False
+    assert report['room_authorization_changed'] is False and report['http_cache_policy_changed'] is False
+    assert report['voice']=='bm_lewis' and report['generation_speed']==.92 and report['playback_rate']==1.05
+    assert report['phoneme_count']>73 and len(report['audio_sha256'])==len(report['matching_timing_sha256'])==64

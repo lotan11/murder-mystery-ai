@@ -159,3 +159,7 @@ CI portability correction: run40850873555 found a raw source-hash mismatch betwe
 After portability correction:294 backend tests pass/three Windows permission skips. The application/asset code is unchanged from the passing21client/build/19browser local run. New CI follows the evidence-hash fix.
 
 Hosted CI40851331046 passes for corrected code commitaf0d1a8, including backend/client/build/all19 browser scenarios. Prior40850873555 evidence-hash failure resolved without changing game/voice behavior.
+
+## October29 bounded speech cache
+
+310 backend tests pass/three Windows permission skips,21 client checks/build/all19 browser scenarios pass. Tests cover successful repeatedworker avoidance, pairedtiming/audio identity, freshcopies, exact UTF8payload budget, count/LRU/TTL, unavailable/textchecks beforelookup, warmhits duringothercoldgeneration, oversized/error/timeout/cancellation nonretention, cachefaultfallback and unchanged auth/pause/currentrevision/staleprojection. Realprobe:59publicwords,391cues/25.06s,12.107123s initialcachemiss/0.005724s immediatehit,oneworker,1,630,999retainedbytes and no generationfiles left. Local observation only; misses stillcold. Artreview documentsactualmissing skinmaps and remaininglikeness/groom/wardrobe/oral quality. New source CI follows push.

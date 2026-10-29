@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import hashlib
 import io
 import json
 import os
@@ -10,11 +11,13 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 import wave
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
+from .speech_cache import SpeechCache
 from .local_speech import _authorize
 from .speech_timing import MAX_TIMING_BYTES, validate_phoneme_timing
 
@@ -70,7 +73,8 @@ def _read_render(directory, text):
 
 
 class ScholarSpeechRenderer:
-    def __init__(self, base_dir=None, model_dir=None, executable=None, timeout=PROCESS_TIMEOUT):
+    def __init__(self, base_dir=None, model_dir=None, executable=None, timeout=PROCESS_TIMEOUT, *,
+                 cache_max_entries=4, cache_max_bytes=32 * 1024 * 1024, cache_ttl=900.0, clock=time.monotonic):
         self.base_dir = Path(base_dir) if base_dir is not None else ROOT / "data" / "scholar-speech"
         self.model_dir = Path(model_dir) if model_dir is not None else ROOT / "data" / "casting-models"
         self.executable = Path(executable) if executable is not None else ROOT / "data" / "casting-runtime" / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
@@ -82,12 +86,27 @@ class ScholarSpeechRenderer:
         except OSError:
             self.available = False
         self._busy = False
+        self._cache = SpeechCache(cache_max_entries, cache_max_bytes, cache_ttl, clock)
 
     async def render(self, text):
         if not self.available:
             raise ScholarSpeechError("unavailable")
         if not isinstance(text, str) or not text.strip() or len(text) > MAX_TEXT_CHARS:
             raise ScholarSpeechError("text_too_long")
+        # Cache is per renderer/process and stores no room revision or credentials.
+        # Bump this namespace if approved model/runtime/voice/rendering identity changes.
+        identity = 'kokoro-onnx:0.6.1:model-v1.0:bm_lewis:0.92:1.05:24000:timing-v1'
+        try:
+            key = hashlib.sha256((identity + '\0' + text).encode('utf-8')).hexdigest()
+        except UnicodeError:
+            raise ScholarSpeechError('generation_failed') from None
+        try:
+            cached = self._cache.get(key)
+        except Exception:
+            # Acceleration is best-effort; cache failures must not disable valid speech.
+            cached = None
+        if cached is not None:
+            return cached
         if self._busy:
             raise ScholarSpeechError("busy")
         self._busy = True
@@ -112,7 +131,7 @@ class ScholarSpeechRenderer:
                         raise ScholarSpeechError("timeout") from None
                     if process.returncode != 0:
                         raise ScholarSpeechError("generation_failed")
-                    return _read_render(directory, text)
+                    result = _read_render(directory, text)
                 finally:
                     if process is not None and process.returncode is None:
                         try:
@@ -123,6 +142,13 @@ class ScholarSpeechRenderer:
                             await asyncio.wait_for(process.wait(), timeout=2)
                         except TimeoutError:
                             raise ScholarSpeechError("timeout") from None
+            # Store only after successful child validation AND temporary-file cleanup.
+            try:
+                self._cache.put(key, result)
+            except Exception:
+                # The clip is already validated; preserve it if optional storage fails.
+                pass
+            return result
         except asyncio.CancelledError:
             raise
         except ScholarSpeechError:

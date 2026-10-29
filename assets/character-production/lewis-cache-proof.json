@@ -1,0 +1,50 @@
+{
+  "cache_info_observed": {
+    "entries": 1,
+    "payload_bytes": 1630999,
+    "max_entries": 4,
+    "max_bytes": 33554432,
+    "ttl_seconds": 900.0
+  },
+  "probe": "real isolated approved Lewis renderer cold/warm cache",
+  "source": "backend/cases/blackthorn.json",
+  "source_content_sha256": "446cacb6fa44cc365196797cb0bf98de5bdf7161d9535deec041bea05d812f79",
+  "public_source_fields": [
+    "narration.welcome",
+    "narration.start",
+    "narration.advance"
+  ],
+  "text": "Good evening. I am Detective Reginald P. Wobblebottom. Let us establish the facts before the theories become too attached to themselves. Lord Blackthorn is dead. We will examine the evidence carefully. First impressions are useful; they are also quite capable of being wrong. Let us examine the next evidence. A promising theory should welcome the inconvenience of being tested.",
+  "word_count": 59,
+  "character_count": 378,
+  "voice": "bm_lewis",
+  "generation_speed": 0.92,
+  "playback_rate": 1.05,
+  "duration_ms": 25060.58,
+  "phoneme_count": 391,
+  "cold_seconds_observed": 12.107123,
+  "warm_seconds_observed": 0.005724,
+  "worker_spawns_cold": 1,
+  "worker_spawns_total_after_warm": 1,
+  "identical_result": true,
+  "fresh_warm_result_copy": true,
+  "audio_sha256": "a3770fcf80eb5b65548131f071803323fe7daee265de982acd6c2d71f3fc6853",
+  "matching_timing_sha256": "2fb6aa7b56bfbfdeb4766a73f61cd1e6185b0ab60afd48d4cbe4a26d69ee50ad",
+  "configured_cache_limits": {
+    "cache_max_entries": 4,
+    "cache_max_bytes": 33554432,
+    "cache_ttl": 900.0
+  },
+  "worker_timeout_seconds": 40.0,
+  "generation_files_remaining": false,
+  "http_cache_policy_changed": false,
+  "room_authorization_changed": false,
+  "paid_calls": false,
+  "downloads": false,
+  "live_game_modified": false,
+  "limitations": [
+    "One local cold/warm observation, not an interactive or cross-device performance guarantee.",
+    "A warm cache helps repeated identical public dialogue only; first generation, misses and expired/evicted entries remain cold.",
+    "This does not change avatar quality, model timing accuracy, voice identity, pace or live-game activation."
+  ]
+}

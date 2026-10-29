@@ -4,6 +4,19 @@
 
 Updated October 29, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
 
+## Current priorities — October 29, 2026
+
+| Priority | Work | Current state / next gate |
+| --- | --- | --- |
+| P0 | Premium Scholar likeness and groom | Development model only; refine matched-view face/hair/beard against approved portrait |
+| P0 | Browser-delivered materials | Blender procedural skin detail is absent from GLB; bake supported maps and verify actual runtime output |
+| P0 | Speech deformation and oral detail | Fixed real Lewis lab study works; full natural visemes, teeth/tongue and perceptual review unfinished |
+| P1 | First-generation speech latency | Warm replay cache implemented; new/expired/evicted text still needs generation; no prefetch yet |
+| Done this increment | Bounded public replay cache | Four entries/32MiB/15-minute reuse lifetime; actual local cold12.107s/warm0.005724s, one worker |
+| Protected baseline | Playable Blackthorn case | Approved portrait/live Lewis, private roles, recovery and existing modes preserved |
+
+November4 is the animated-character readiness gate; November10 remains integration deadline. See SCHOLAR_QUALITY_REVIEW.md for concrete visual priorities. Historical milestone records follow.
+
 ## Accepted foundation: M1 — reliable Blackthorn rehearsal
 
 | ID | Priority | Stream / owner | Status | Deliverable / acceptance |
@@ -168,3 +181,15 @@ Ran the actual local worker on59 words/378 characters concatenated from canonica
 Next: detailed mouth/face quality and perceived speech review, plus measured latency improvement before live3D integration. November10 risk remains final character quality and long-dialogue responsiveness. No new casting/voice decision is needed; preserve the working fallback.
 
 Next performance task: evaluate bounded public-dialogue voice caching/prefetch without changing voice/pace, privacy, stale-state guards or the40s worker policy. Record cold/warm observations rather than assuming every1500-character input meets interactive latency.
+
+## Bounded public speech replay cache and art quality review — October 29, 2026
+
+Added a process-local memory cache for successful validated Lewis clips and their matching model timing. Default bounds: four entries,32MiB of immutable serialized payloads,15-minute non-sliding reuse lifetime. Expired entries are pruned on cache activity, not a background deletion timer. Hits decode a fresh result copy; oversized results, failures, timeouts and cancellations are not retained. Cache faults fall back to normal valid rendering. No extra audio files persist after the existing temporary-worker cleanup.
+
+Authorization, current-public-text selection, pause/revision/stale checks and HTTP no-store remain on every endpoint request; room credentials/revisions are not cached. Approved voice,0.92 synthesis/1.05 playback and40s worker bound remain unchanged. A warm clip may be served while a different cold clip is preparing, without another worker.
+
+Real isolated59-word renderer probe: one25.06s/391-cue clip took12.107s on the first cache miss and0.005724s on immediate replay, with one worker total and identical waveform/timing data. Retained payload was1,630,999bytes; generation directory was empty afterward. These are local observations for an empty renderer cache followed by one hit, not cold-machine or cross-device guarantees. New, expired or evicted lines remain cold; no prefetch is implemented. The new backend cache takes effect when the server is started with this source.
+
+A separate actual-asset review confirms the model is not yet premium-ready: hair/beard silhouette, matched-camera likeness, materials and tailoring remain substantial gaps. Procedural Blender skin detail is absent from the actual GLB; supported baked PBR maps need explicit export/browser verification. See SCHOLAR_QUALITY_REVIEW.md. No new model, voice, casting request, purchase or game presentation change was made. Next visual priority: groom/likeness and browser-delivered skin detail, while preserving the playable portrait/Lewis fallback. November10 risk remains final art/perceived speech quality and first-generation latency; no input is required now.
+
+Next P0visual task: use matched camera/lighting, refine silver hair/beard silhouette and deliver baked supported skin maps in the actual GLB/browser. Require visual comparison, deformation regressions and measured runtime texture inventory; source-only procedural detail is not completion. Cache miss/first-generation latency remains a separate performance task.

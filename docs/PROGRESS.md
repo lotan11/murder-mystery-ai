@@ -1,3 +1,15 @@
+## Bounded public speech replay cache and art quality review — October 29, 2026
+
+Added a process-local memory cache for successful validated Lewis clips and their matching model timing. Default bounds: four entries,32MiB of immutable serialized payloads,15-minute non-sliding reuse lifetime. Expired entries are pruned on cache activity, not a background deletion timer. Hits decode a fresh result copy; oversized results, failures, timeouts and cancellations are not retained. Cache faults fall back to normal valid rendering. No extra audio files persist after the existing temporary-worker cleanup.
+
+Authorization, current-public-text selection, pause/revision/stale checks and HTTP no-store remain on every endpoint request; room credentials/revisions are not cached. Approved voice,0.92 synthesis/1.05 playback and40s worker bound remain unchanged. A warm clip may be served while a different cold clip is preparing, without another worker.
+
+Real isolated59-word renderer probe: one25.06s/391-cue clip took12.107s on the first cache miss and0.005724s on immediate replay, with one worker total and identical waveform/timing data. Retained payload was1,630,999bytes; generation directory was empty afterward. These are local observations for an empty renderer cache followed by one hit, not cold-machine or cross-device guarantees. New, expired or evicted lines remain cold; no prefetch is implemented. The new backend cache takes effect when the server is started with this source.
+
+A separate actual-asset review confirms the model is not yet premium-ready: hair/beard silhouette, matched-camera likeness, materials and tailoring remain substantial gaps. Procedural Blender skin detail is absent from the actual GLB; supported baked PBR maps need explicit export/browser verification. See SCHOLAR_QUALITY_REVIEW.md. No new model, voice, casting request, purchase or game presentation change was made. Next visual priority: groom/likeness and browser-delivered skin detail, while preserving the playable portrait/Lewis fallback. November10 risk remains final art/perceived speech quality and first-generation latency; no input is required now.
+
+Verification:310 backend tests pass (three Windows permission skips),21 client checks, production build and all19 browser scenarios pass. Actual cache probe confirms one worker, identical audio/cues and bounded retained payload. Prior code CI40851331046 passed; new source CI follows push.
+
 ## Anatomical oral lining and longer narration evidence — October 29, 2026
 
 Refined the weighted Scholar study's existing mouth cavity using the pinned anatomical inside-mouth UV mask. Assigned a dark rough oral-lining material to398 existing faces/418 vertices, with source hash and bounds recorded. No new geometry, fake black plane, teeth or tongue were added. Actual vertex/triangle counts, neutral shape and original jaw/blink displacement counts/magnitudes remain unchanged; only the head's material primitives split. Reviewed the actual open-jaw render. Detailed teeth/tongue, groom, wardrobe, likeness and natural speech shapes remain unfinished; the approved game portrait/live Lewis remains the default.
