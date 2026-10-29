@@ -169,3 +169,5 @@ Hosted CI40859619619 passes for source commitb17ee59, including new cache bounda
 ## October29 baked runtime skin maps
 
 311 backend tests pass/three Windows permission skips,21 client checks/build/all19 browser scenarios pass. Actual1K Cycles color-only/roughness/normal bakes, bump-disablednormalbaselineRMSXY0.009305 over259045 coveredpixels. Embeddednormal/basecolorSHA matchsourcePNGbytes; inspectorverifies actualskin base/normal/ORM references andfour embeddedimages. Browsermaterialcheckcountsthree decoded1Ktextures(static/face-onlyzero). Actualbrowsercloseup+openjawrender reviewed: subtlegrain only, no finishedskin/groom/likeness claim. Geometry101835vertices/165239triangles,64joints/11targets preserved; oral material andapprovedspeech intact. New source CI follows push.
+
+Hosted CI40867962436 passes for source commit5659c0e, including actual texture-binding checks and all19 browser scenarios.
