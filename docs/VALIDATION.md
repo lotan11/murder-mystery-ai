@@ -139,3 +139,5 @@ Final mouth-increment regression: all fifteen browser scenarios pass, production
 ## October29 CI performance correction and timing probe
 
 Prior CI40829947023 failed only the90s rig browser budget (fourteen others passed). Root cause was unnecessary continuous drawing of the static dense model. New actual render-count tests prove idle settling and camera/pose redraw; no timeout relaxation.264 backend tests pass/two Windows skips, client15/build pass, all15 browser scenarios pass locally (rig5.7s). Optional real local timing probe:73 model spans/5.502s, same-inference audio object and PCM unchanged. Rejects empty, nonfinite, overlapping, out-of-range or extra-field timing data. Live voice worker untouched; no paid calls. New source CI follows push.
+
+Hosted CI confirmation: run40836345515 passes for code commit7385b78. All browser scenarios pass without timeout relaxation; prior40829947023 rig timeout resolved.

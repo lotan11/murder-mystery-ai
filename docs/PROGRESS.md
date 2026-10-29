@@ -6,6 +6,8 @@ Direct inspection confirmed the approved pinned ONNX model exposes duration outp
 
 Verification:264 backend tests pass (two Windows permission skips),15 client checks, production build and all15 browser scenarios pass. No paid calls/downloads or presentation/schema changes. New CI follows push; prior failed run is explicitly recorded rather than reported green. Next: bounded worker/sidecar timing integration and lab-only speech deformation, plus mouth interior/likeness/groom polish. Final animated-character quality remains the main November10 risk; portrait/live Lewis stays playable. No user decision needed.
 
+CI confirmation: source commit7385b78 passed run40836345515, including all fifteen browser scenarios on the hosted runner. The earlier90-second rig timeout is resolved. This follow-up changes documentation only.
+
 ## Restrained mouth-shape study — October 29, 2026
 
 Added three real anatomical mouth units to the existing weighted Scholar study: lip rounding (0.25 cap), compression (0.25 cap) and slight bilateral smile (0.20 cap). Source target hashes are recorded; skin and nearby beard guides receive actual geometry deltas. The rig now has 64 joints and eleven facial controls. All eight earlier morph displacement inventories match the preceding commit exactly. Neutral/rest geometry is preserved.
