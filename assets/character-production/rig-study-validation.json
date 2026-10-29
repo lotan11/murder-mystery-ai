@@ -1,4 +1,102 @@
 {
+  "expression_controls": {
+    "browInnerUp": {
+      "source_affected_height_m": [
+        1.6159532070159912,
+        1.6734933853149414
+      ],
+      "source_targets_sha256": {
+        "data/character-tools/mpfb/src/mpfb/data/targets/expression/units/caucasian/eyebrows-left-inner-up.target.gz": "bcbc99d31303df7855734d74dde0c1625e3a301dcdd9392d6b407616fd7679a8",
+        "data/character-tools/mpfb/src/mpfb/data/targets/expression/units/caucasian/eyebrows-right-inner-up.target.gz": "b5da946cba48308969c3f63a5d590e1ad5c0c47975b92f485b63526d42c2df92"
+      },
+      "changed_vertices": 2563,
+      "max_delta_m": 0.005154604381369761,
+      "meshes": [
+        "Scholar Grey strand 0",
+        "Scholar Grey strand 1",
+        "Scholar Grey strand 2",
+        "Scholar Grey strand 3",
+        "Scholar Grey strand 4",
+        "Scholar Neutral aged skin blockout"
+      ]
+    },
+    "browOuterUpLeft": {
+      "source_affected_height_m": [
+        1.6174005270004272,
+        1.6676902770996094
+      ],
+      "source_targets_sha256": {
+        "data/character-tools/mpfb/src/mpfb/data/targets/expression/units/caucasian/eyebrows-left-extern-up.target.gz": "3c475b2d4f600b9c1c42d9f37e7e63e81644891e4bd21817d72ed460ef7cbc4a"
+      },
+      "changed_vertices": 1341,
+      "max_delta_m": 0.00853812059331233,
+      "meshes": [
+        "Scholar Grey strand 0",
+        "Scholar Grey strand 1",
+        "Scholar Grey strand 2",
+        "Scholar Grey strand 3",
+        "Scholar Grey strand 4",
+        "Scholar Neutral aged skin blockout"
+      ]
+    },
+    "browOuterUpRight": {
+      "source_affected_height_m": [
+        1.6164592504501343,
+        1.6676902770996094
+      ],
+      "source_targets_sha256": {
+        "data/character-tools/mpfb/src/mpfb/data/targets/expression/units/caucasian/eyebrows-right-extern-up.target.gz": "6acb23ce8972c33d8e8c6db3d9bc3c4ef6104dd53d8338a12e250c338d14e57e"
+      },
+      "changed_vertices": 1052,
+      "max_delta_m": 0.00853812059331233,
+      "meshes": [
+        "Scholar Grey strand 0",
+        "Scholar Grey strand 1",
+        "Scholar Grey strand 2",
+        "Scholar Grey strand 3",
+        "Scholar Grey strand 4",
+        "Scholar Neutral aged skin blockout"
+      ]
+    },
+    "browDownLeft": {
+      "source_affected_height_m": [
+        1.6108214855194092,
+        1.651078701019287
+      ],
+      "source_targets_sha256": {
+        "data/character-tools/mpfb/src/mpfb/data/targets/expression/units/caucasian/eyebrows-left-down.target.gz": "f0cabdd8a225779806b8faabb1afcc4ee830a3eb3c6b1abe045d797328cff323"
+      },
+      "changed_vertices": 928,
+      "max_delta_m": 0.0065115175695519755,
+      "meshes": [
+        "Scholar Grey strand 0",
+        "Scholar Grey strand 1",
+        "Scholar Grey strand 2",
+        "Scholar Grey strand 3",
+        "Scholar Grey strand 4",
+        "Scholar Neutral aged skin blockout"
+      ]
+    },
+    "browDownRight": {
+      "source_affected_height_m": [
+        1.6108214855194092,
+        1.651078701019287
+      ],
+      "source_targets_sha256": {
+        "data/character-tools/mpfb/src/mpfb/data/targets/expression/units/caucasian/eyebrows-right-down.target.gz": "ac4ad201d160f1eb7dc076e012bccd41e191d2886fc1b327c8409d8b77d63082"
+      },
+      "changed_vertices": 1033,
+      "max_delta_m": 0.0065115175695519755,
+      "meshes": [
+        "Scholar Grey strand 0",
+        "Scholar Grey strand 1",
+        "Scholar Grey strand 2",
+        "Scholar Grey strand 3",
+        "Scholar Grey strand 4",
+        "Scholar Neutral aged skin blockout"
+      ]
+    }
+  },
   "source_face_study_sha256": "9824ffa51275815d3d7fe252e76dbd31d0fd992e40e02ecb2ec21f9110ee5153",
   "bone_count": 64,
   "meshes": {
@@ -148,7 +246,7 @@
   "head_turn_degrees": 10,
   "limitations": [
     "Head/neck binding proof only; eye gaze, jaw bone, shoulders and combined extreme poses are not approved.",
-    "Three facial morphs only; full expressive/viseme set, speech alignment, mouth interior, groom and materials remain unfinished.",
+    "Eight facial morphs only; full expressive/viseme set, speech alignment, mouth interior, groom and materials remain unfinished.",
     "Wardrobe intentionally rigid to Spine2; no cloth simulation or shoulder deformation claim."
   ]
 }

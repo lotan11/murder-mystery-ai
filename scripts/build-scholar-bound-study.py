@@ -2,8 +2,9 @@
 Run after build-scholar-face-controls.py with portable Blender. Never activates TV.
 """
 from pathlib import Path
-import hashlib,json,math
+import hashlib,json,math,subprocess
 import bpy
+import addon_utils
 from mathutils import Vector
 from mathutils.kdtree import KDTree
 
@@ -37,8 +38,58 @@ def positions(obj):
     try:return [evaluated.matrix_world@v.co for v in mesh.vertices]
     finally:evaluated.to_mesh_clear()
 
+# Load real bundled expression-unit geometry; do not synthesize empty compatibility keys.
+config=json.loads((ROOT/'assets/character-production/scholar.json').read_text(encoding='utf-8'))
+mpfb=ROOT/config['mpfb']['source_path']
+actual_commit=subprocess.check_output(['git','-C',str(mpfb),'rev-parse','HEAD'],text=True).strip()
+if actual_commit!=config['mpfb']['commit']:raise RuntimeError('MPFB checkout differs from pinned authoring source')
+bpy.context.preferences.extensions.repos.new(name='Scholar MPFB source',module='scholar_mpfb',custom_directory=str(mpfb/'src'))
+if addon_utils.enable('bl_ext.scholar_mpfb.mpfb',default_set=True) is None:raise RuntimeError('Pinned MPFB unavailable')
+from bl_ext.scholar_mpfb.mpfb.services.targetservice import TargetService
+source_rest=positions(source);expression_tree=KDTree(len(source_rest))
+for index,point in enumerate(source_rest):expression_tree.insert(point,index)
+expression_tree.balance()
+units=mpfb/'src/mpfb/data/targets/expression/units/caucasian'
+expressions={'browInnerUp':['eyebrows-left-inner-up','eyebrows-right-inner-up'],
+ 'browOuterUpLeft':['eyebrows-left-extern-up'],'browOuterUpRight':['eyebrows-right-extern-up'],
+ 'browDownLeft':['eyebrows-left-down'],'browDownRight':['eyebrows-right-down']}
+expression_report={}
+for name,files in expressions.items():
+    keys=[];hashes={}
+    for file in files:
+        path=units/(file+'.target.gz');hashes[path.relative_to(ROOT).as_posix()]=hashlib.sha256(path.read_bytes()).hexdigest()
+        keys.append(TargetService.load_target(source,str(path),weight=1,name='StudySource_'+file))
+    changed_source=positions(source)
+    delta=[point-base for point,base in zip(changed_source,source_rest)]
+    for key in keys:key.value=0
+    bpy.context.view_layer.update()
+    affected=[point.z for point,move in zip(source_rest,delta) if move.length>1e-7]
+    if not affected:raise RuntimeError('Empty source expression')
+    measured={'source_affected_height_m':[min(affected),max(affected)],'source_targets_sha256':hashes,'changed_vertices':0,'max_delta_m':0,'meshes':[]}
+    for obj in objects:
+        skin='skin blockout' in obj.name
+        groom=any('Grey strand' in mat.name for mat in obj.data.materials if mat)
+        if not(skin or groom):continue
+        inverse=obj.matrix_world.inverted().to_3x3();movements=[]
+        for vertex in obj.data.vertices:
+            neighbours=expression_tree.find_n(obj.matrix_world@vertex.co,1 if skin else 4)
+            if neighbours[0][2]>(0.00002 if skin else .012):move=Vector((0,0,0))
+            else:
+                factors=[1/max(distance,.00001)**2 for _,_,distance in neighbours];total=sum(factors)
+                move=sum((delta[index]*factor/total for (_,index,_),factor in zip(neighbours,factors)),Vector())
+            movements.append(inverse@move)
+        count=sum(move.length>1e-7 for move in movements)
+        if not count:continue
+        if obj.data.shape_keys is None:obj.shape_key_add(name='Basis')
+        key=obj.shape_key_add(name=name)
+        for index,move in enumerate(movements):key.data[index].co=obj.data.vertices[index].co+move
+        key.value=0
+        measured['changed_vertices']+=count;measured['max_delta_m']=max(measured['max_delta_m'],max(move.length for move in movements));measured['meshes'].append(obj.name)
+    if measured['changed_vertices']<20 or measured['max_delta_m']<.0001:raise RuntimeError('Expression produced no meaningful geometry: '+name)
+    expression_report[name]=measured
+
 rest={obj.name:positions(obj) for obj in objects}
-report={'source_face_study_sha256':source_hash,'bone_count':len(bone_names),'meshes':{},'speech_connected':False,
+report={'expression_controls':expression_report,'source_face_study_sha256':source_hash,'bone_count':len(bone_names),'meshes':{},'speech_connected':False,
         'status':'Experimental weighted bust; not finished likeness, full facial rig or production speech avatar',
         'method':'Exact-nearest source weights for skin; inverse-distance four-neighbour transfer for groom; rigid Head accessories and Spine2 wardrobe. Normalized strongest four influences.'}
 for obj in objects:
@@ -89,6 +140,7 @@ for obj in objects:
         for key in obj.data.shape_keys.key_blocks:
             if key.name=='jawOpen':key.value=.38
             elif key.name.startswith('eyeBlink'):key.value=1
+            elif key.name in ['browInnerUp','browOuterUpLeft','browOuterUpRight']:key.value=.35
 combined={obj.name:positions(obj) for obj in objects}
 report['combined_pose_max_delta_m']=max((a-b).length for name in rest for a,b in zip(rest[name],combined[name]))
 for values in combined.values():
@@ -98,6 +150,15 @@ for obj in objects:
         for key in obj.data.shape_keys.key_blocks:
             if key.name!='Basis':key.value=0
 head.rotation_euler=(0,0,0)
+for obj in objects:
+    if obj.data.shape_keys:
+        for key in obj.data.shape_keys.key_blocks:
+            if key.name in ['browInnerUp','browOuterUpLeft','browOuterUpRight']:key.value=.35
+scene.render.filepath=str(ROOT/'docs/assets/rig-study-brow-lift.png');bpy.ops.render.render(write_still=True)
+for obj in objects:
+    if obj.data.shape_keys:
+        for key in obj.data.shape_keys.key_blocks:
+            if key.name!='Basis':key.value=0
 restored={obj.name:positions(obj) for obj in objects}
 report['restored_max_error_m']=max((a-b).length for name in rest for a,b in zip(rest[name],restored[name]))
 if report['restored_max_error_m']>0.00001:raise RuntimeError('Rig failed to restore rest pose')
@@ -111,7 +172,7 @@ bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'assets/character-production/rig-study.blend'),compress=True)
 report['head_turn_degrees']=10
 report['limitations']=['Head/neck binding proof only; eye gaze, jaw bone, shoulders and combined extreme poses are not approved.',
- 'Three facial morphs only; full expressive/viseme set, speech alignment, mouth interior, groom and materials remain unfinished.',
+ 'Eight facial morphs only; full expressive/viseme set, speech alignment, mouth interior, groom and materials remain unfinished.',
  'Wardrobe intentionally rigid to Spine2; no cloth simulation or shoulder deformation claim.']
 (ROOT/'assets/character-production/rig-study-validation.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
 print('RIG STUDY COMPLETE '+json.dumps(report))

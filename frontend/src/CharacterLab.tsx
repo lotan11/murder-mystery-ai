@@ -6,18 +6,33 @@ import "./character-lab.css";
 
 type Preset = "front" | "profile" | "three-quarter";
 type DevelopmentModel = "blockout" | "face-study" | "rig-study";
-type FacialControl = "jawOpen" | "eyeBlinkLeft" | "eyeBlinkRight";
+type FacialControl =
+  | "jawOpen"
+  | "eyeBlinkLeft"
+  | "eyeBlinkRight"
+  | "browInnerUp"
+  | "browOuterUpLeft"
+  | "browOuterUpRight"
+  | "browDownLeft"
+  | "browDownRight";
 const facialControls: { name: FacialControl; label: string; max: number }[] = [
   { name: "jawOpen", label: "Jaw opening", max: 0.38 },
   { name: "eyeBlinkLeft", label: "Left blink", max: 1 },
   { name: "eyeBlinkRight", label: "Right blink", max: 1 },
+  { name: "browInnerUp", label: "Inner brow lift", max: 0.35 },
+  { name: "browOuterUpLeft", label: "Left brow lift", max: 0.35 },
+  { name: "browOuterUpRight", label: "Right brow lift", max: 0.35 },
+  { name: "browDownLeft", label: "Left brow lower", max: 0.25 },
+  { name: "browDownRight", label: "Right brow lower", max: 0.25 },
 ];
 const modelFiles: Record<DevelopmentModel, string> = {
   blockout: "scholar-blockout.glb",
   "face-study": "scholar-face-study.glb",
   "rig-study": "scholar-rig-study.glb",
 };
-const neutralFace = { jawOpen: 0, eyeBlinkLeft: 0, eyeBlinkRight: 0 };
+const neutralFace = Object.fromEntries(
+  facialControls.map((control) => [control.name, 0]),
+) as Record<FacialControl, number>;
 type MorphBinding = { influences: number[]; index: number };
 type Inventory = {
   meshes: number;
@@ -556,7 +571,9 @@ export default function CharacterLab() {
                 <p>
                   These controls drive real morph targets found in the selected
                   file. Jaw opening is capped at 0.38; blinks can close fully.
-                  This does not establish a usable speech rig.
+                  {model === "rig-study" &&
+                    " Brow lifts are limited to 0.35 and lowering to 0.25."}
+                  {" "}This does not establish a usable speech rig.
                 </p>
                 {state === "ready" && discoveredControls.length > 0 ? (
                   <>
@@ -592,7 +609,7 @@ export default function CharacterLab() {
                         </div>
                       ))}
                     <button onClick={resetFace}>Reset facial controls</button>
-                    {discoveredControls.length < 3 && (
+                    {discoveredControls.length < (model === "rig-study" ? 8 : 3) && (
                       <p>
                         Only the controls actually present in this file are
                         shown.

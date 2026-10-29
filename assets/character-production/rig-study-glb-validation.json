@@ -1,19 +1,14 @@
 {
   "file": "scholar-rig-study.glb",
-  "bytes": 7191356,
+  "bytes": 8598144,
   "mesh_count": 15,
   "vertices": 101835,
   "triangles": 165239,
   "skin_count": 1,
   "joint_count": 64,
-  "morph_target_count": 3,
+  "morph_target_count": 8,
   "missing_bones": [],
   "missing_expressions": [
-    "browDownLeft",
-    "browDownRight",
-    "browInnerUp",
-    "browOuterUpLeft",
-    "browOuterUpRight",
     "cheekPuff",
     "cheekSquintLeft",
     "cheekSquintRight",
@@ -83,6 +78,31 @@
     "jawOpen": {
       "affected_vertices": 25081,
       "max_displacement": 0.01795706955374988,
+      "primitive_count": 6
+    },
+    "browInnerUp": {
+      "affected_vertices": 2974,
+      "max_displacement": 0.005154604408660352,
+      "primitive_count": 6
+    },
+    "browOuterUpLeft": {
+      "affected_vertices": 1552,
+      "max_displacement": 0.008538120474753028,
+      "primitive_count": 6
+    },
+    "browOuterUpRight": {
+      "affected_vertices": 1213,
+      "max_displacement": 0.008538120474753028,
+      "primitive_count": 6
+    },
+    "browDownLeft": {
+      "affected_vertices": 1074,
+      "max_displacement": 0.00651151752036045,
+      "primitive_count": 6
+    },
+    "browDownRight": {
+      "affected_vertices": 1196,
+      "max_displacement": 0.00651151752036045,
       "primitive_count": 6
     },
     "eyeBlinkLeft": {

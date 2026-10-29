@@ -6,7 +6,7 @@
 
 The delivery must retain a runnable, complete Blackthorn case with synchronized organizer/guest/TV interfaces, private character isolation, saved-room recovery, the approved Scholar identity and Lewis voice at the approved +5% pace, responsive interruption and readable captions. The existing portrait + real Lewis mode is already playable and must remain the reliable fallback.
 
-The custom animated Scholar is the main schedule risk: the canonical blockout stays static; the separate development rig now has **64 weighted joints and three facial morphs**, with full expression/viseme controls and production deformation quality still missing. A finished likeness, compatible deformable rig, actual voice alignment and quality review are not delivered by a file-loading test. These remain the priority work rather than more casting alternatives.
+The custom animated Scholar is the main schedule risk: the canonical blockout stays static; the separate development rig now has **64 weighted joints and eight facial morphs**, with full expression/viseme controls and production deformation quality still missing. A finished likeness, compatible deformable rig, actual voice alignment and quality review are not delivered by a file-loading test. These remain the priority work rather than more casting alternatives.
 
 ## Internal checkpoints
 
@@ -37,3 +37,5 @@ Hourly progress updates are configured in this chat. Report actual completed wor
 Weighted source proof now passes (64 bones); separate face study has actual jaw and two blink morphs with exact neutral preservation. Canonical bust remains static; the face-study export has no skeleton and no speech connection. Full expressions/visemes, production materials/groom, bust/accessory binding and real Lewis alignment remain on the critical path. This proof does not satisfy the November 4 animated-character readiness gate.
 
 October 28 binding checkpoint: separate bust now exports actual skin weights and 64 joints with three facial morphs, restrained head control and combined-pose/rest checks. This advances the rig proof but does not satisfy full speech/quality readiness.
+
+October 28 expression checkpoint: five real brow controls added to the weighted bust (eight total); upper-face localization, unchanged jaw/blinks and restrained lab controls verified. Mouth/lip shaping, full expression/viseme quality and real voice alignment remain incomplete.

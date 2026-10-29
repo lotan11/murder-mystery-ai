@@ -117,3 +117,5 @@ Portable Blender 4.5.15 and a pinned MPFB source checkout are now available loca
 ## Deadline-critical rig inspection — October 28, 2026
 
 Pinned MPFB source includes actual `rig.mixamo_unity.json` and corresponding `weights.mixamo_unity.json`; HumanService.add_builtin_rig can create/fit a real weighted rig to the full parametric base (this availability is not proof that the exported bust is rigged). Its bundled `data/expressions/README.md` explicitly says that expression directory is currently empty. Do not assume the installed addon supplies ARKit/viseme controls. Next rig work must preserve geometry correspondence when deriving the bust, fit/test real weights or an explicitly designed bust rig, and author/validate actual facial deformation. No labels-only rig or invented timing can meet the November 10 gate.
+
+Inventory correction after direct asset inspection: although data/expressions is empty, raw data/targets/expression/units includes legacy facial target geometry. Five of these now drive real manual brow controls on the development rig. This is a partial authored mapping, not a complete ARKit/viseme pack or finished facial performance.

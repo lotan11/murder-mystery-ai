@@ -2,7 +2,7 @@
 
 **Integration deadline: November 10, 2026 (America/Denver).** Track the avatar critical path and readiness gates in INTEGRATION_PLAN.md. The approved portrait + Lewis remains the runnable fallback.
 
-Updated October 27, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
+Updated October 28, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
 
 ## Accepted foundation: M1 — reliable Blackthorn rehearsal
 
@@ -124,3 +124,11 @@ The separate character lab now selects the face study and exposes real sliders: 
 Bound a separate copy of the Scholar face study to the actual imported MPFB skeleton. Public GLB now contains 15 skinned meshes, one skin, 64 joints and the same three real facial morphs. Every exported vertex has normalized positive weights and valid joint references. Skin uses anatomical source weights; groom uses four-neighbour weight transfer; glasses/eyes/scalp attach rigidly to Head and wardrobe to Spine2. This intentionally avoids claiming cloth or shoulder deformation.
 
 Measured positive/negative ten-degree head turns, combined head/jaw/blink evaluation, neutral preservation and rest restoration. A real close-up render verifies head accessories following the head. Character lab adds a separate weighted-rig choice and manual restrained head-turn control, while static and face-only studies remain available. Browser validation measures both the actual bone quaternion and a skinned spectacle vertex. No live game activation, paid provider, speech connection or saved-room change. Likeness, groom/materials, mouth interior, complete facial controls and Lewis alignment remain unfinished and the main November 10 risk. Approved portrait/Lewis +5% remains the playable baseline.
+
+## Restrained Scholar brow expressions — October 28, 2026
+
+Added five actual brow morphs to the existing weighted rig study: inner lift, independent outer lifts and independent lowering. These derive from pinned MPFB legacy expression-unit target geometry, with source hashes recorded and deltas transferred to skin and nearby brow/hair guides. This corrects an earlier incomplete tool inventory: data/expressions is empty, but raw targets/expression/units contains usable units. It is not a supplied complete ARKit/viseme package.
+
+Rig study now has 64 weighted joints and eight real facial controls. Manual lifts cap at 0.35 and lowering at 0.25. Reviewed an actual close-up brow-lift render. Binary checks measure nonzero displacement and confirm the three original jaw/blink deformations are unchanged; source checks locate brow motion above 1.5m and neutral/rest errors remain below one micrometre. The original static and three-control face-only studies remain intact. Game portrait/Lewis at 1.05x, interfaces and saved rooms are unchanged. No paid provider or speech connection was added.
+
+Next: mouth interior/lip shaping and complete speech deformation, followed by actual Lewis alignment. Likeness/groom/materials still need substantial polish. The animated Scholar remains the main November 10 risk; portrait/live Lewis stays the stable playable baseline. No user decision is required for this increment.

@@ -121,3 +121,9 @@ Final local verification: all three character-lab browser scenarios pass after t
 253 backend tests pass with two Windows symlink privilege skips; 15 client checks and production build pass. Four focused character-lab browser scenarios pass, including measured movement of an actual skinned spectacle vertex, plus/minus ten-degree bone rotation and reset. Binary export test checks every mesh vertex has normalized weights and valid joint references; 15 meshes, one skin, 64 joints and three nonzero morphs. Blender checks neutral preservation/restoration within 0.000001m, fixed wardrobe under head turn and finite combined head/jaw/blink pose. Actual head-turn render visually inspected. Full browser regression and new push CI recorded after completion; preceding main CI 40812785651 is green. No paid calls.
 
 Final local verification for the bound study: 253 backend tests pass (two Windows permission skips), 15 client checks pass, production build and all fifteen browser scenarios pass. Live local app health is good with scripted dialogue and paid AI disabled. Previous main CI 40812785651 passed; new increment CI follows push.
+
+## October 28 brow expression increment
+
+254 backend tests pass, two Windows symlink privilege skips. Production build, 15 client checks and four focused character-lab browser scenarios pass. New checks measure actual five-target deltas, source upper-face localization, skin/groom coverage, unchanged jaw/blink deformations and neutral/rest preservation. Browser exercises all five actual influences at their caps and resets. Reviewed the actual brow-lift render; appearance remains a development blockout. Source target hashes recorded; no paid calls or live game presentation changes. Previous main CI 40817990427 passed. Full browser regression and new source CI are recorded after completion.
+
+Full regression completed: all fifteen browser scenarios pass, alongside backend254/client15/build. New increment CI follows push.

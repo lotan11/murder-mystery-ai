@@ -82,7 +82,7 @@ def test_bound_study_exports_real_normalized_skin_weights_and_joint_references()
                 assert all(0<=index<len(skin['joints']) for index,value in zip(indices,values) if value>0)
     assert vertices>100000
     report=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb',measure=True)
-    assert report['missing_bones']==[] and report['morph_target_count']==3
+    assert report['missing_bones']==[] and report['morph_target_count']==8
     assert report['external_resources']==[] and not report['talkinghead_inventory_complete']
     for target in report['morph_deformations'].values():assert target['affected_vertices']>100
     evidence=json.loads((ROOT/'assets/character-production/rig-study-validation.json').read_text())
@@ -91,3 +91,26 @@ def test_bound_study_exports_real_normalized_skin_weights_and_joint_references()
     for item in evidence['meshes'].values():
         if item['method']=='rigid torso':assert item['head_turn_max_delta_m']<0.00001
         if item['method']=='rigid head':assert item['head_turn_max_delta_m']>0.001
+
+
+def test_brow_controls_are_local_real_targets_and_preserve_existing_face_study():
+    import json
+    rig=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb',measure=True)
+    face=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-face-study.glb',measure=True)
+    for name,measured in face['morph_deformations'].items():
+        assert rig['morph_deformations'][name]==measured
+    expected={'browInnerUp','browOuterUpLeft','browOuterUpRight','browDownLeft','browDownRight'}
+    assert set(rig['morph_deformations'])-set(face['morph_deformations'])==expected
+    evidence=json.loads((ROOT/'assets/character-production/rig-study-validation.json').read_text())
+    assert set(evidence['expression_controls'])==expected
+    for name in expected:
+        measured=rig['morph_deformations'][name]
+        assert measured['affected_vertices']>100
+        assert 0.001<measured['max_displacement']<0.015
+        control=evidence['expression_controls'][name]
+        assert control['source_affected_height_m'][0]>1.5
+        assert all(len(digest)==64 for digest in control['source_targets_sha256'].values())
+        assert any('skin blockout' in mesh for mesh in control['meshes'])
+        assert any('Grey strand' in mesh for mesh in control['meshes'])
+    assert evidence['binding_neutral_max_error_m']<0.000001
+    assert evidence['restored_max_error_m']<0.000001
