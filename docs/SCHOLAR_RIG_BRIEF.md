@@ -113,3 +113,7 @@ A front/profile/three-quarter [construction reference sheet](assets/scholar-cons
 ## Authoring foundation update
 
 Portable Blender 4.5.15 and a pinned MPFB source checkout are now available locally under ignored data/character-tools. The earlier environment limitation above is historical. An actual anatomical development bust, editable Blender source, build settings and separate browser workbench now establish the modeling/export path. This is a blockout, not a completed likeness or facial rig. See CHARACTER_AUTHORING.md for reproduction and current gates; keep the approved portrait/live Lewis in the game.
+
+## Deadline-critical rig inspection — October 28, 2026
+
+Pinned MPFB source includes actual `rig.mixamo_unity.json` and corresponding `weights.mixamo_unity.json`; HumanService.add_builtin_rig can create/fit a real weighted rig to the full parametric base (this availability is not proof that the exported bust is rigged). Its bundled `data/expressions/README.md` explicitly says that expression directory is currently empty. Do not assume the installed addon supplies ARKit/viseme controls. Next rig work must preserve geometry correspondence when deriving the bust, fit/test real weights or an explicitly designed bust rig, and author/validate actual facial deformation. No labels-only rig or invented timing can meet the November 10 gate.

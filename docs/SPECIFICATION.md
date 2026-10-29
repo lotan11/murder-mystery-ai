@@ -2,6 +2,10 @@
 
 Status: authoritative working specification, updated October 27, 2026.
 
+## Integration deadline
+
+The user set **November 10, 2026 (America/Denver)** as the integration deadline. Prioritize stable end-to-end play and the approved Scholar/Lewis presentation; flag custom-rig readiness risk early. See INTEGRATION_PLAN.md for engineering checkpoints and fallback boundaries.
+
 ## Product
 
 Let an organizer run a dinner mystery from a host desk while guests participate on phones and a shared television presents Detective Reginald P. Wobblebottom, dialogue, and cinematic evidence. The user should test complete milestones rather than assemble work from separate conversations.

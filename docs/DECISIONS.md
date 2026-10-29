@@ -68,3 +68,7 @@ Before an external AI, transcription or voice service becomes a dependency, add 
 - **ADR-034: Reproducible local anatomical authoring.** Prepare a checksum-verified portable Blender and pinned MPFB anatomical base in ignored data, with no system-wide install/PATH edits or paid service. Retain an editable source, parametric settings and exported development GLB. Record distinct upstream software and asset licenses.
 - **ADR-035: Development workbench before activation.** Inspect real geometry beside the approved portrait at a separate route with camera presets, actual counts and failure recovery. No voice or production activation path. Missing skeleton/facial controls remain explicit; a valid mesh is not an approved speaking avatar. Existing Scholar portrait/Lewis game mode stays intact.
 - **ADR-036: Isolate project tests from authoring bundles.** Limit pytest discovery to backend/tests so optional bundled Blender/MPFB third-party test suites are not mistaken for application tests. Core game checks and offline-provider restrictions remain in force.
+
+## November 10 delivery control — October 28, 2026
+
+- **ADR-037: User-set integration deadline.** November 10, 2026 America/Denver is the integration deadline. Track internal art/rig/integration/freeze/rehearsal checkpoints in INTEGRATION_PLAN.md; flag the unfinished facial rig early and preserve the runnable approved portrait/Lewis baseline. Hourly automation now carries this date. The deadline does not authorize spending or deployment.

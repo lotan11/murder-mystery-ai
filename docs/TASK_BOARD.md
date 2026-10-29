@@ -1,5 +1,7 @@
 # Authoritative task backlog
 
+**Integration deadline: November 10, 2026 (America/Denver).** Track the avatar critical path and readiness gates in INTEGRATION_PLAN.md. The approved portrait + Lewis remains the runnable fallback.
+
 Updated October 27, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
 
 ## Accepted foundation: M1 — reliable Blackthorn rehearsal
@@ -101,3 +103,12 @@ Casting source commit `ec39e04` passed independent CI run 40769768890, including
 - Done: separate character workbench with actual geometry inventory and camera/failure controls; active TV remains approved portrait + Lewis.
 - Local checks: 251 backend / 15 client / thirteen browser scenarios and production build pass; source CI pending.
 - Next: improve likeness, eyelids, hair/scalp/beard and wardrobe materials, then create real facial topology/targets and compatible rig. This blockout is not awaiting another casting decision and is not production ready.
+
+## Deadline planning checkpoint — October 28, 2026
+
+- Recorded November 10 deadline and internal asset/rig/integration/freeze/rehearsal checkpoints; hourly automation now includes the deadline.
+- Confirmed authoring milestone CI run 40792819175 passed.
+- Active asset increment: reduce heavy eyelids and refine mature facial proportions/beard against approved reference; no TV activation.
+- Remote feature/listener discovered and documented as unmerged; saved-room/privacy/transcription review needed before reuse. No paid transcription or branch merge performed.
+
+- Completed this checkpoint: alert-eye/cheek refinement and denser beard guide; editable source/export/renders/inventory rebuilt together. Verified 251 backend tests, build and both focused browser scenarios. Live game health remains good. Facial rig still absent; next priority is actual weighted/deformable rig work under the deadline plan.

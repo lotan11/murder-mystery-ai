@@ -43,4 +43,8 @@ Inspect the result with `python scripts/inspect-character.py frontend/public/cha
 
 ## Remaining art/technical work
 
-The hair is a rough scalp/strand proxy with visible gaps, the beard is sparse, eyelids are too heavy relative to the reference, and wardrobe materials/proportions are only blocking. Head likeness, facial anatomy refinement, production hair cards, skin/PBR textures, retopology, UV review, real rigging/weights, expression shapes, visemes and deformation tests remain future gates. The source supports the next iteration; it does not claim those gates are complete.
+The hair is a rough scalp/strand proxy with visible gaps, the beard is sparse, eyelids have been opened in a first refinement but still need likeness review, and wardrobe materials/proportions are only blocking. Head likeness, facial anatomy refinement, production hair cards, skin/PBR textures, retopology, UV review, real rigging/weights, expression shapes, visemes and deformation tests remain future gates. The source supports the next iteration; it does not claim those gates are complete.
+
+## First facial refinement — October 28, 2026
+
+Opened the eyes with symmetric MPFB eye-height2 and eyefold-up targets, reduced additional eye-bag shaping, and added subtle cheekbone shaping. Beard candidates increased from 400 to 750. Real front/profile renders were compared with the previous version and approved portrait; the eyes appear more alert without moving the eye centers. This remains a sparse procedural beard and rough hair proxy, not finished character grooming. Source, config, GLB and renders were rebuilt together; original comparison artifacts stay in ignored work.

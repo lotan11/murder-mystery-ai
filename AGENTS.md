@@ -32,3 +32,7 @@ Ask the user only for a material product preference or unavailable credential/as
 ## Approved character direction
 
 The Scholar + Lewis +5% pace is selected and approved. Keep the approved portrait/live voice in the game while developing the actual likeness-matched rig. The separate character lab is for real development geometry, not activation or another casting decision. Do not fabricate bones/morphs to satisfy inventory checks or claim a static blockout is a finished speaking avatar. Keep canonical Blender source/settings/build script together and preserve model provenance.
+
+## Integration deadline
+
+November 10, 2026 (America/Denver) is the user-set integration deadline. Read docs/INTEGRATION_PLAN.md and protect the runnable Scholar/Lewis fallback while completing actual rig work. Flag schedule risks early; do not interpret the deadline as permission for spending or public deployment.

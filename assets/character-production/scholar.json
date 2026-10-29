@@ -35,12 +35,18 @@
     "nose/nose-curve-convex.target.gz": 0.1,
     "chin/chin-prominent-incr.target.gz": 0.05,
     "forehead/forehead-scale-vert-incr.target.gz": 0.1,
-    "eyes/l-eye-bag-incr.target.gz": 0.2,
-    "eyes/r-eye-bag-incr.target.gz": 0.2
+    "eyes/l-eye-bag-incr.target.gz": 0.1,
+    "eyes/r-eye-bag-incr.target.gz": 0.1,
+    "eyes/l-eye-height2-incr.target.gz": 0.65,
+    "eyes/l-eye-eyefold-up.target.gz": 0.4,
+    "cheek/l-cheek-bones-incr.target.gz": 0.08,
+    "eyes/r-eye-height2-incr.target.gz": 0.65,
+    "eyes/r-eye-eyefold-up.target.gz": 0.4,
+    "cheek/r-cheek-bones-incr.target.gz": 0.08
   },
   "procedural": {
     "hair_strands": 360,
-    "beard_strands": 400,
+    "beard_strands": 750,
     "seed": 67,
     "glasses_radius": 0.0225,
     "bust_skin_cutoff": 1.46
