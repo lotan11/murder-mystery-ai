@@ -41,3 +41,11 @@ Brow geometry comes from pinned raw targets/expression/units, not the empty pack
 Three manual mouth units now complement the brows, jaw and blinks: rounding 0.25, compression 0.25, slight smile 0.20. Renders in docs/assets/rig-study-mouthPucker.png, rig-study-lipPress.png and rig-study-mouthSmile.png show actual geometry at those limits. These are not a complete viseme set; mouth interior and speech synchronization remain unfinished.
 
 The static lab now draws on change and skips idle GPU work; orbit damping and manual shape/pose changes still update actual geometry. This optimization does not change time-driven TV animation. See the separate Lewis timing probe in assets/character-production/README.md; no speech connection has been activated.
+
+## Try the fixed timed speech study
+
+Open `?view=character-lab`, choose **Rig study**, and select **Play Lewis timing study**. The bundled clip plays at approved1.05 pace without any runtime/model installation, paid account or microphone. Stop cancels/reset; changing model, hiding the page or losing graphics also stops it. Localhost or HTTPS is required for the waveform integrity check.
+
+The preview uses model-predicted phoneme spans and a deliberately simplified small mouth mapping, not a finished full-viseme TalkingHead performance. Audio SHA256, PCM format and duration are checked before playback. Source-clock cues follow audio.currentTime and are not accelerated twice. The game remains approved portrait/live Lewis.
+
+To reproduce the sample, first run the same-inference timing probe with the optional runtime, then `.\.venv\Scripts\python.exe scripts/prepare-scholar-timing-study.py`. Packaging validates that the local WAV matches the recorded proof before copying it into the lab. No synthesis/download occurs during packaging or browser playback.

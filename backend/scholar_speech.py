@@ -16,6 +16,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from .local_speech import _authorize
+from .speech_timing import MAX_TIMING_BYTES, validate_phoneme_timing
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_TEXT_CHARS = 1500
@@ -48,9 +49,24 @@ def _read_render(directory, text):
         duration = audio.getnframes() * 1000 / 24000
     if not 100 <= duration <= 170000:
         raise ScholarSpeechError("invalid_output")
-    return {"provider": "kokoro-onnx", "voice": "bm_lewis", "text": text,
-            "duration_ms": round(duration, 2), "content_type": "audio/wav",
-            "audio_base64": base64.b64encode(data).decode("ascii"), "playback_rate": PLAYBACK_RATE}
+    result = {"provider": "kokoro-onnx", "voice": "bm_lewis", "text": text,
+              "duration_ms": round(duration, 2), "content_type": "audio/wav",
+              "audio_base64": base64.b64encode(data).decode("ascii"), "playback_rate": PLAYBACK_RATE}
+    timing_path = directory / "speech-timing.json"
+    if timing_path.is_symlink():
+        raise ScholarSpeechError("invalid_output")
+    if timing_path.exists():
+        try:
+            if not timing_path.is_file() or timing_path.stat().st_size > MAX_TIMING_BYTES:
+                raise ValueError("Invalid timing file")
+            with timing_path.open("rb") as stream:
+                timing_data = stream.read(MAX_TIMING_BYTES + 1)
+            if len(timing_data) > MAX_TIMING_BYTES:
+                raise ValueError("Timing file exceeds limit")
+            result["phoneme_timing"] = validate_phoneme_timing(json.loads(timing_data), duration / 1000)
+        except (OSError, ValueError, TypeError, UnicodeError, OverflowError):
+            raise ScholarSpeechError("invalid_output") from None
+    return result
 
 
 class ScholarSpeechRenderer:
@@ -176,6 +192,14 @@ def create_router(get_room):
         keys = ("provider", "voice", "text", "duration_ms", "content_type", "audio_base64", "playback_rate")
         if not isinstance(result, dict) or result.get("text") != text or result.get("voice") != "bm_lewis" or result.get("provider") != "kokoro-onnx" or result.get("playback_rate") != PLAYBACK_RATE or not all(key in result for key in keys):
             raise HTTPException(503, "The approved voice output could not be validated. Captions remain available.")
-        return JSONResponse({**{key: result[key] for key in keys}, "revision": revision}, headers={"Cache-Control": "no-store"})
+        response = {**{key: result[key] for key in keys}, "revision": revision}
+        if "phoneme_timing" in result:
+            try:
+                # duration_ms is rounded to0.01ms; recover the unique24000Hz frame clock.
+                duration = round(result["duration_ms"] * 24) / 24000
+                response["phoneme_timing"] = validate_phoneme_timing(result["phoneme_timing"], duration)
+            except (ValueError, TypeError, OverflowError):
+                raise HTTPException(503, "The approved voice output could not be validated. Captions remain available.") from None
+        return JSONResponse(response, headers={"Cache-Control": "no-store"})
 
     return router

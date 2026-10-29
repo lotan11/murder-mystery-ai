@@ -267,3 +267,57 @@ def test_generated_output_must_match_approved_voice_and_current_text(tmp_path, m
         with pytest.raises(ScholarSpeechError, match="invalid_output"):
             await fake_renderer(tmp_path).render("Public text.")
     asyncio.run(run())
+
+
+def timing_value(end=0.5):
+    return {'source':'kokoro-model-duration','clock':'audio-seconds','phonemes':[{'phoneme':'ə','start':0.1,'end':end}]}
+
+def test_worker_sidecar_is_optional_bounded_and_validated(tmp_path):
+    from backend.scholar_speech import _read_render
+    write_result(tmp_path,'Public text.')
+    assert 'phoneme_timing' not in _read_render(tmp_path,'Public text.')
+    path=tmp_path/'speech-timing.json';path.write_text(json.dumps(timing_value()),encoding='utf-8')
+    result=_read_render(tmp_path,'Public text.')
+    assert result['phoneme_timing']==timing_value() and result['playback_rate']==1.05
+    path.write_text(json.dumps(timing_value(1.01)),encoding='utf-8')
+    with pytest.raises(ScholarSpeechError,match='invalid_output'):_read_render(tmp_path,'Public text.')
+    path.write_bytes(b' '*(512*1024+1))
+    with pytest.raises(ScholarSpeechError,match='invalid_output'):_read_render(tmp_path,'Public text.')
+    path.write_text('{broken',encoding='utf-8')
+    with pytest.raises(ScholarSpeechError,match='invalid_output'):_read_render(tmp_path,'Public text.')
+
+
+def test_worker_sidecar_symlink_is_rejected(tmp_path):
+    from backend.scholar_speech import _read_render
+    write_result(tmp_path,'Public text.')
+    outside=tmp_path/'other.json';outside.write_text(json.dumps(timing_value()),encoding='utf-8')
+    try:(tmp_path/'speech-timing.json').symlink_to(outside)
+    except OSError:pytest.skip('Local Windows symlink permission unavailable')
+    with pytest.raises(ScholarSpeechError,match='invalid_output'):_read_render(tmp_path,'Public text.')
+
+
+def test_endpoint_exposes_only_validated_optional_timing_for_current_public_text(client,monkeypatch):
+    created=room(client)
+    fake=FakeScholar(extra={'phoneme_timing':timing_value(),'private_extra':'never exposed'})
+    monkeypatch.setattr(app.state,'scholar_speech',fake)
+    response=client.post(endpoint(created),headers=auth(created['organizer_token']),json={})
+    assert response.status_code==200
+    assert response.json()['phoneme_timing']==timing_value()
+    assert 'private_extra' not in response.json()
+    assert response.headers['cache-control']=='no-store'
+
+
+@pytest.mark.parametrize('value', [timing_value(1.01),{'source':'guessed','clock':'audio-seconds','phonemes':[]},None,{'source':'kokoro-model-duration','clock':'audio-seconds','phonemes':[{'phoneme':'\ud800','start':0,'end':.1}]}])
+def test_endpoint_revalidates_timing_from_injected_renderer(client,monkeypatch,value):
+    created=room(client)
+    monkeypatch.setattr(app.state,'scholar_speech',FakeScholar(extra={'phoneme_timing':value}))
+    response=client.post(endpoint(created),headers=auth(created['organizer_token']),json={})
+    assert response.status_code==503 and 'phoneme_timing' not in response.json()
+
+
+def test_endpoint_recovers_exact_source_sample_clock_from_rounded_milliseconds(client,monkeypatch):
+    created=room(client);duration=24001/24000
+    cue={'source':'kokoro-model-duration','clock':'audio-seconds','phonemes':[{'phoneme':'ə','start':0.1,'end':duration}]}
+    monkeypatch.setattr(app.state,'scholar_speech',FakeScholar(extra={'duration_ms':round(duration*1000,2),'phoneme_timing':cue}))
+    response=client.post(endpoint(created),headers=auth(created['organizer_token']),json={})
+    assert response.status_code==200 and response.json()['phoneme_timing']==cue

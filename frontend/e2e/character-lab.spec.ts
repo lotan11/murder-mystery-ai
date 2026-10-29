@@ -125,3 +125,101 @@ test('rig study turns the actual head bone, resets and retains facial controls',
  await expect(head).toHaveCount(0);
  expect(speech).toEqual([]);expect(errors).toEqual([]);
 });
+
+
+test('fixed Lewis study uses user-initiated source-clock speech and stops on model change',async({page})=>{
+ test.setTimeout(90000);const errors:string[]=[];const gameSpeech:string[]=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ page.on('request',r=>{if(r.url().includes('/scholar-speech'))gameSpeech.push(r.url());});
+ await page.goto('/?view=character-lab');
+ const viewer=page.getByLabel('Scholar 3D workbench',{exact:true});
+ await page.getByLabel('Development model',{exact:true}).selectOption('rig-study');
+ await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
+ await expect(viewer).toHaveAttribute('data-speech-state','idle');
+ await expect(page.locator('audio[data-lab-speech]')).toHaveCount(0);
+ const head=page.getByRole('slider',{name:/Head turn/});await head.focus();await head.press('End');
+ await page.getByRole('button',{name:'Play Lewis timing study',exact:true}).click();
+ await expect(viewer).toHaveAttribute('data-speech-state','playing');
+ const audio=page.locator('audio[data-lab-speech]');
+ expect(await audio.evaluate(element=>(element as HTMLAudioElement).playbackRate)).toBe(1.05);
+ expect(await audio.evaluate(element=>(element as HTMLAudioElement).preservesPitch)).toBe(true);
+ await expect.poll(async()=>Number(await viewer.getAttribute('data-speech-time'))).toBeGreaterThan(0);
+ await expect.poll(async()=>Number(await viewer.getAttribute('data-morph-max'))).toBeGreaterThan(0);
+ await expect(page.getByRole('slider',{name:/Jaw opening/})).toBeDisabled();
+ await page.getByRole('button',{name:'Stop timing study',exact:true}).click();
+ await expect(viewer).toHaveAttribute('data-speech-state','idle');
+ await expect(viewer).toHaveAttribute('data-morph-max','0.000');
+ await expect(viewer).toHaveAttribute('data-head-turn','10.000');
+ await expect(audio).toHaveCount(0);
+ await page.getByRole('button',{name:'Play Lewis timing study',exact:true}).click();
+ await expect(viewer).toHaveAttribute('data-speech-state','playing');
+ await page.getByLabel('Development model',{exact:true}).selectOption('blockout');
+ await expect(viewer).toHaveAttribute('data-model-state','ready');
+ await expect(viewer).toHaveAttribute('data-speech-state','idle');
+ await expect(audio).toHaveCount(0);
+ expect(errors).toEqual([]);expect(gameSpeech).toEqual([]);
+});
+
+test('missing fixed timing study leaves manual rig controls available',async({page})=>{
+ await page.route('**/character-lab/lewis-study.json',route=>route.fulfill({status:404,body:'Missing study'}));
+ await page.goto('/?view=character-lab');
+ await page.getByLabel('Development model',{exact:true}).selectOption('rig-study');
+ const viewer=page.getByLabel('Scholar 3D workbench',{exact:true});
+ await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
+ await page.getByRole('button',{name:'Play Lewis timing study',exact:true}).click();
+ await expect(viewer).toHaveAttribute('data-speech-state','error');
+ await expect(page.getByRole('slider',{name:/Jaw opening/})).toBeEnabled();
+ await expect(page.locator('audio[data-lab-speech]')).toHaveCount(0);
+ await expect(page.getByLabel('Fixed Lewis timing study')).toContainText('unavailable');
+});
+
+test('fixed Lewis study stops on graphics loss and rejects mismatched audio',async({page})=>{
+ await page.goto('/?view=character-lab');
+ await page.getByLabel('Development model',{exact:true}).selectOption('rig-study');
+ const viewer=page.getByLabel('Scholar 3D workbench',{exact:true});
+ await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
+ await page.getByRole('button',{name:'Play Lewis timing study',exact:true}).click();
+ await expect(viewer).toHaveAttribute('data-speech-state','playing');
+ await viewer.locator('canvas').evaluate(element=>element.dispatchEvent(new Event('webglcontextlost',{cancelable:true})));
+ await expect(viewer).toHaveAttribute('data-model-state','failed');
+ await expect(viewer).toHaveAttribute('data-speech-state','idle');
+ await expect(page.locator('audio[data-lab-speech]')).toHaveCount(0);
+ await page.route('**/character-lab/lewis-study.json',async route=>{
+   const response=await route.fetch();const data=await response.json();data.audio_sha256='0'.repeat(64);
+   await route.fulfill({response,json:data});
+ });
+ await page.reload();await page.getByLabel('Development model',{exact:true}).selectOption('rig-study');
+ await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
+ await page.getByRole('button',{name:'Play Lewis timing study',exact:true}).click();
+ await expect(viewer).toHaveAttribute('data-speech-state','error');
+ await expect(page.getByLabel('Fixed Lewis timing study')).toContainText('does not match');
+ await expect(page.locator('audio[data-lab-speech]')).toHaveCount(0);
+});
+
+
+test('pending fixed study can be cancelled and hidden page stops playback',async({page})=>{
+ let release=()=>{};const gate=new Promise<void>(resolve=>{release=resolve;});
+ let entered=false;let completed=()=>{};const finished=new Promise<void>(resolve=>{completed=resolve;});
+ await page.route('**/character-lab/lewis-study.json',async route=>{
+   const response=await route.fetch();entered=true;await gate;
+   try{await route.fulfill({response});}finally{completed();}
+ });
+ await page.goto('/?view=character-lab');
+ await page.getByLabel('Development model',{exact:true}).selectOption('rig-study');
+ const viewer=page.getByLabel('Scholar 3D workbench',{exact:true});
+ await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
+ await page.getByRole('button',{name:'Play Lewis timing study',exact:true}).click();
+ await expect.poll(()=>entered).toBe(true);
+ await expect(viewer).toHaveAttribute('data-speech-state','loading');
+ await page.getByRole('button',{name:'Stop timing study',exact:true}).click();
+ release();await finished;
+ await expect(viewer).toHaveAttribute('data-speech-state','idle');
+ await expect(page.locator('audio[data-lab-speech]')).toHaveCount(0);
+ await page.unroute('**/character-lab/lewis-study.json');
+ await page.getByRole('button',{name:'Play Lewis timing study',exact:true}).click();
+ await expect(viewer).toHaveAttribute('data-speech-state','playing');
+ await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});
+ await expect(viewer).toHaveAttribute('data-speech-state','idle');
+ await expect(viewer).toHaveAttribute('data-morph-max','0.000');
+ await expect(page.locator('audio[data-lab-speech]')).toHaveCount(0);
+});

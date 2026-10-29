@@ -31,3 +31,20 @@ def test_zero_duration_symbols_and_real_pause_gaps_are_preserved():
 ])
 def test_invalid_or_invented_metadata_is_rejected(cues):
     with pytest.raises(ValueError):probe.validate_timings(cues,1)
+
+
+def test_packaged_lab_clip_matches_its_own_model_cues_and_approved_voice():
+    import hashlib,io,wave
+    directory=ROOT/'frontend/public/character-lab'
+    manifest=json.loads((directory/'lewis-study.json').read_text(encoding='utf-8'))
+    audio=(directory/'lewis-study.wav').read_bytes()
+    assert hashlib.sha256(audio).hexdigest()==manifest['audio_sha256']
+    assert manifest['schema_version']==1 and manifest['voice']=='bm_lewis'
+    assert manifest['generation_speed']==.92 and manifest['playback_rate']==1.05
+    assert manifest['timing_source']=='kokoro-model-duration'
+    with wave.open(io.BytesIO(audio),'rb') as wav:
+        assert wav.getnchannels()==1 and wav.getframerate()==24000 and wav.getsampwidth()==2
+        assert abs(wav.getnframes()/24000-manifest['duration_seconds'])<0.000001
+    cues=probe.validate_timings(manifest['phonemes'],manifest['duration_seconds'])
+    proof=json.loads((ROOT/'assets/character-production/lewis-timing-proof.json').read_text(encoding='utf-8'))
+    assert cues==proof['phonemes'] and manifest['audio_sha256']==proof['timed_wav_sha256']

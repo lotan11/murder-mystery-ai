@@ -323,3 +323,7 @@
   outline: 2px solid var(--gold);
   outline-offset: 3px;
 }
+
+.character-lab-study-buttons {display:flex;gap:8px;flex-wrap:wrap;}
+.character-lab-study-line {color:#ddd2b2;font-style:italic;}
+.character-lab-face-slider input:disabled {opacity:.5;cursor:default;}

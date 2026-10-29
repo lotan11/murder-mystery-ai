@@ -141,3 +141,9 @@ Final mouth-increment regression: all fifteen browser scenarios pass, production
 Prior CI40829947023 failed only the90s rig browser budget (fourteen others passed). Root cause was unnecessary continuous drawing of the static dense model. New actual render-count tests prove idle settling and camera/pose redraw; no timeout relaxation.264 backend tests pass/two Windows skips, client15/build pass, all15 browser scenarios pass locally (rig5.7s). Optional real local timing probe:73 model spans/5.502s, same-inference audio object and PCM unchanged. Rejects empty, nonfinite, overlapping, out-of-range or extra-field timing data. Live voice worker untouched; no paid calls. New source CI follows push.
 
 Hosted CI confirmation: run40836345515 passes for code commit7385b78. All browser scenarios pass without timeout relaxation; prior40829947023 rig timeout resolved.
+
+## October29 first timed speech study
+
+291 backend tests pass/three Windows permission skips,21 client checks pass. Optional realworker smoke accepted5.502s/73cues from bm_lewis at unchangedpace. Client tests verify exact clip hash/duration, sourceclock, gaps, soft/capped poses and malformed data rejection. Backend tests verify strict sidecar limits, exact sample-clock reconstruction, Unicode/surrogate rejection, legacy compatibility, projection/auth/stale protections. Reviewed actual timed-model screenshot; blockout quality remains explicit. Build/eight focusedlab scenarios pass, including realusergestureaudio1.05, actualmorph motion, missingmetadata/hashmismatch, cancellation/latefetch/hidden/contextloss/modelchange. Full browser regression follows; no paid calls/downloads.
+
+Final local regression: all19 browser scenarios pass,291 backend tests pass/three Windows permission skips,21 client checks and production build pass. Actual fixed-study screenshot reviewed locally; routine CI retains failure screenshots. Hosted CI follows push.

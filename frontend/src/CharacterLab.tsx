@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import "./character-lab.css";
+import { validateStudy, validateStudyAudio, studyPoseAt } from "./scholar-timing.mjs";
 
 type Preset = "front" | "profile" | "three-quarter";
 type DevelopmentModel = "blockout" | "face-study" | "rig-study";
@@ -39,6 +40,8 @@ const modelFiles: Record<DevelopmentModel, string> = {
 const neutralFace = Object.fromEntries(
   facialControls.map((control) => [control.name, 0]),
 ) as Record<FacialControl, number>;
+const speechMouthControls: FacialControl[] = ["jawOpen", "mouthPucker", "lipPress", "mouthSmile"];
+type SpeechState = "idle" | "loading" | "playing" | "ended" | "error";
 type MorphBinding = { influences: number[]; index: number };
 type Inventory = {
   meshes: number;
@@ -79,6 +82,12 @@ export default function CharacterLab() {
     headVertex = useRef<{ mesh: THREE.SkinnedMesh; rest: THREE.Vector3 } | null>(null),
     cameraPreset = useRef<(preset: Preset) => void>(() => {}),
     requestRender = useRef<() => void>(() => {});
+  const speechAudio = useRef<HTMLAudioElement | null>(null),
+    speechAbort = useRef<AbortController | null>(null),
+    speechFrame = useRef(0), speechSession = useRef(0),
+    speechURL = useRef<string | null>(null);
+  const [speechState, setSpeechState] = useState<SpeechState>("idle"),
+    [speechMessage, setSpeechMessage] = useState("");
   const [model, setModel] = useState<DevelopmentModel>("blockout"),
     [discoveredControls, setDiscoveredControls] = useState<FacialControl[]>([]),
     [hasHead, setHasHead] = useState(false),
@@ -90,6 +99,98 @@ export default function CharacterLab() {
     [preset, setPreset] = useState<Preset>("front");
   const [inventory, setInventory] = useState<Inventory | null>(null),
     [error, setError] = useState("");
+  function setSpeechMouth(values: Partial<Record<FacialControl, number>>) {
+    let changed = false;
+    for (const name of speechMouthControls) {
+      const value = Math.max(0, Math.min(facialControls.find(c => c.name === name)?.max || 0, values[name] || 0));
+      for (const binding of morphBindings.current[name] || []) {
+        if (Math.abs(binding.influences[binding.index] - value) > .0001) changed = true;
+        binding.influences[binding.index] = value;
+      }
+    }
+    if (changed) requestRender.current();
+  }
+  function stopSpeech(next: SpeechState = "idle", message = "") {
+    speechSession.current += 1;
+    speechAbort.current?.abort(); speechAbort.current = null;
+    cancelAnimationFrame(speechFrame.current); speechFrame.current = 0;
+    const audio = speechAudio.current; speechAudio.current = null;
+    if (audio) { audio.onended = null; audio.onerror = null; audio.pause(); audio.removeAttribute("src"); audio.load(); audio.remove(); }
+    if (speechURL.current) URL.revokeObjectURL(speechURL.current);
+    speechURL.current = null;
+    setSpeechMouth({});
+    setFaceValues(current => ({...current, jawOpen:0, mouthPucker:0, lipPress:0, mouthSmile:0}));
+    if (viewer.current) {
+      viewer.current.dataset.speechTime = "0";
+      viewer.current.dataset.speechPhoneme = "";
+      viewer.current.dataset.speechState = next;
+    }
+    setSpeechState(next); setSpeechMessage(message);
+  }
+  async function playSpeech() {
+    if (model !== "rig-study" || state !== "ready" || document.hidden) return;
+    stopSpeech("loading");
+    const session = speechSession.current, abort = new AbortController();
+    speechAbort.current = abort;
+    async function boundedResponse(path: string, maximum: number) {
+      const response = await fetch(path, {signal: abort.signal, cache: "no-store"});
+      if (!response.ok || Number(response.headers.get("content-length") || 0) > maximum) throw Error("The fixed local study is unavailable.");
+      const reader = response.body?.getReader();
+      if (!reader) throw Error("The fixed local study could not be read.");
+      const chunks: Uint8Array[] = []; let size = 0;
+      while (true) {
+        const {value, done} = await reader.read(); if (done) break;
+        size += value.byteLength;
+        if (size > maximum) { await reader.cancel(); throw Error("The fixed local study exceeds its size limit."); }
+        chunks.push(value);
+      }
+      const bytes = new Uint8Array(size); let offset = 0;
+      for (const chunk of chunks) {bytes.set(chunk, offset); offset += chunk.byteLength;}
+      return bytes;
+    }
+    try {
+      const metadata = await boundedResponse("/character-lab/lewis-study.json", 512*1024);
+      const study = validateStudy(JSON.parse(new TextDecoder().decode(metadata)));
+      const bytes = await boundedResponse("/character-lab/lewis-study.wav", 8*1024*1024);
+      validateStudyAudio(bytes, study.duration_seconds);
+      if (!globalThis.crypto?.subtle) throw Error("This browser cannot verify the fixed recording. Open the lab on localhost or a secure connection.");
+      const digest = await crypto.subtle.digest("SHA-256", bytes);
+      const hash = [...new Uint8Array(digest)].map(v => v.toString(16).padStart(2,"0")).join("");
+      if (hash !== study.audio_sha256) throw Error("The fixed audio does not match its phoneme timing.");
+      if (session !== speechSession.current || abort.signal.aborted || document.hidden) return;
+      const url = URL.createObjectURL(new Blob([bytes], {type:"audio/wav"}));
+      speechURL.current = url;
+      const audio = new Audio(url); speechAudio.current = audio;
+      audio.hidden = true; audio.dataset.labSpeech = "true";
+      audio.playbackRate = 1.05; audio.preservesPitch = true;
+      viewer.current?.appendChild(audio);
+      audio.onended = () => {if (session === speechSession.current) stopSpeech("ended", "The fixed Lewis study finished.");};
+      audio.onerror = () => {if (session === speechSession.current) stopSpeech("error", "The fixed local study audio could not be played. Manual controls remain available.");};
+      await audio.play();
+      if (session !== speechSession.current || abort.signal.aborted) return;
+      setSpeechState("playing");
+      if (viewer.current) viewer.current.dataset.speechState = "playing";
+      const animate = () => {
+        if (session !== speechSession.current || speechAudio.current !== audio || audio.paused || audio.ended) return;
+        const pose = studyPoseAt(study.phonemes, audio.currentTime);
+        setSpeechMouth(pose);
+        if (viewer.current) {
+          viewer.current.dataset.speechTime = audio.currentTime.toFixed(3);
+          viewer.current.dataset.speechPhoneme = pose.phoneme;
+        }
+        speechFrame.current = requestAnimationFrame(animate);
+      };
+      speechFrame.current = requestAnimationFrame(animate);
+    } catch (error) {
+      if (session !== speechSession.current || abort.signal.aborted) return;
+      stopSpeech("error", error instanceof Error ? error.message : "The fixed local study is unavailable.");
+    }
+  }
+  useEffect(() => {
+    const hidden = () => {if (document.hidden && (speechAudio.current || speechAbort.current)) stopSpeech();};
+    document.addEventListener("visibilitychange", hidden);
+    return () => {document.removeEventListener("visibilitychange", hidden); stopSpeech();};
+  }, []);
   useEffect(() => {
     setState("loading");
     setInventory(null);
@@ -118,6 +219,7 @@ export default function CharacterLab() {
     function cleanup() {
       if (cleaned) return;
       cleaned = true;
+      stopSpeech();
       cancelAnimationFrame(frame);
       observer?.disconnect();
       controls?.dispose();
@@ -197,7 +299,7 @@ export default function CharacterLab() {
           if (now - previous < 1000 / 30) return;
           previous = now;
           controls?.update();
-          // This workbench has no time-driven animation. Keep damping responsive,
+          // Speech study invalidates changed poses; idle models skip GPU work. Keep damping responsive,
           // but avoid reskinning and redrawing unchanged geometry while idle.
           if (!dirty) return;
           dirty = false;
@@ -431,6 +533,7 @@ export default function CharacterLab() {
   }
   function changeModel(next: DevelopmentModel) {
     if (next === model) return;
+    stopSpeech();
     resetFace();
     applyHead(0);
     setHasHead(false);
@@ -489,7 +592,7 @@ export default function CharacterLab() {
           </select>
           <p>
             {model === "rig-study"
-              ? "An experimental weighted bust with manual head and face controls. Likeness, materials and full visemes remain unfinished; no speech is connected."
+              ? "An experimental weighted bust with manual head and face controls. Likeness, materials and full visemes remain unfinished. A fixed local Lewis timing study is available below; live game speech is not connected."
               : model === "face-study"
               ? "A static face experiment with three manually controlled morphs. No skeleton or speech-driven lip sync is connected."
               : "The original unapproved blockout remains available for comparison."}
@@ -522,6 +625,9 @@ export default function CharacterLab() {
               aria-label="Scholar 3D workbench"
               data-model-state={state}
               data-development-model={model}
+              data-speech-state={speechState}
+              data-speech-time="0"
+              data-speech-phoneme=""
               data-render-count="0"
               data-head-turn="0"
               data-head-displacement="0"
@@ -623,6 +729,7 @@ export default function CharacterLab() {
                           <input
                             id={`face-${control.name}`}
                             type="range"
+                            disabled={(speechState === "playing" || speechState === "loading") && speechMouthControls.includes(control.name)}
                             min="0"
                             max={control.max}
                             step="0.01"
@@ -636,7 +743,7 @@ export default function CharacterLab() {
                           />
                         </div>
                       ))}
-                    <button onClick={resetFace}>Reset facial controls</button>
+                    <button disabled={speechState === "playing" || speechState === "loading"} onClick={resetFace}>Reset facial controls</button>
                     {discoveredControls.length < (model === "rig-study" ? 11 : 3) && (
                       <p>
                         Only the controls actually present in this file are
@@ -651,6 +758,18 @@ export default function CharacterLab() {
                       : "No supported facial controls are available in the loaded model."}
                   </p>
                 )}
+              </section>
+            )}
+            {model === "rig-study" && (
+              <section className="character-lab-face-controls character-lab-speech" aria-label="Fixed Lewis timing study">
+                <h3>Fixed Lewis timing study</h3>
+                <p>A short local Lewis recording at the approved +5% pace drives a simplified mouth-shape approximation from model-predicted phoneme timings. This is not finished natural lip-sync or a full viseme set. Mouth interior and final likeness remain unfinished.</p>
+                <p className="character-lab-study-line">“Good evening. I am Detective Wobblebottom. Let us examine the evidence.”</p>
+                <div className="character-lab-study-buttons">
+                  <button disabled={state !== "ready" || speechState === "loading" || speechState === "playing" || !speechMouthControls.every(name => discoveredControls.includes(name))} onClick={() => void playSpeech()}>Play Lewis timing study</button>
+                  <button disabled={speechState !== "loading" && speechState !== "playing"} onClick={() => stopSpeech()}>Stop timing study</button>
+                </div>
+                <p role="status">{speechMessage || (speechState === "playing" ? "Playing the fixed local study. Stop returns the mouth to neutral." : speechState === "loading" ? "Checking the fixed recording and its timing…" : "Silent until you choose Play. This study does not use room dialogue or a microphone.")}</p>
               </section>
             )}
             {model === "rig-study" && state === "ready" && hasHead && (
@@ -742,8 +861,8 @@ export default function CharacterLab() {
             </details>
           )}
           <p className="character-lab-note">
-            No speech-driven mouth animation is connected in this workbench.
-            Manual face-study sliders do not connect to a voice. The approved
+            Only the weighted rig offers a fixed local speech-timing experiment.
+            Manual face-study sliders remain separate from voice. The approved
             portrait + Lewis presentation and the existing animated sample
             remain available in the working game.
           </p>

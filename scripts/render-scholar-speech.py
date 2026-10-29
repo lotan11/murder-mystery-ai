@@ -34,7 +34,8 @@ def render(input_file, output_directory, model_directory):
     import soundfile as sf
     from kokoro_onnx import Kokoro
     engine = Kokoro(str(model_directory / "kokoro-v1.0.onnx"), str(model_directory / "voices-v1.0.bin"))
-    audio, rate = engine.create(text, voice="bm_lewis", speed=0.92, lang="en-gb")
+    # create() already delegates to this same path; preserve audio and retain its own cues.
+    audio, rate, timings = engine.create_timed(text, voice="bm_lewis", speed=0.92, lang="en-gb")
     audio = np.asarray(audio, dtype=np.float32).reshape(-1)
     if rate != 24000 or not np.isfinite(audio).all() or not 0.1 <= len(audio) / rate <= 170 or float(np.sqrt(np.mean(audio * audio))) < 0.00001:
         raise RuntimeError("The neural worker returned an invalid waveform.")
@@ -44,6 +45,18 @@ def render(input_file, output_directory, model_directory):
     manifest = {"text": text, "provider": "kokoro-onnx", "voice": "bm_lewis", "generation_speed": 0.92,
                 "duration_ms": round(len(audio) * 1000 / rate, 2)}
     (output_directory / "speech.json").write_text(json.dumps(manifest, ensure_ascii=False), encoding="utf-8")
+    if timings:
+        timing_spec = importlib.util.spec_from_file_location("speech_timing_validation", ROOT / "backend" / "speech_timing.py")
+        timing_module = importlib.util.module_from_spec(timing_spec)
+        timing_spec.loader.exec_module(timing_module)
+        timing = timing_module.validate_phoneme_timing({
+            "source": "kokoro-model-duration", "clock": "audio-seconds",
+            "phonemes": [{"phoneme": cue.phoneme, "start": float(cue.start), "end": float(cue.end)} for cue in timings],
+        }, len(audio) / rate)
+        encoded = json.dumps(timing, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        if len(encoded) > timing_module.MAX_TIMING_BYTES:
+            raise RuntimeError("Phoneme metadata exceeds the bounded sidecar limit.")
+        (output_directory / "speech-timing.json").write_bytes(encoded)
 
 
 if __name__ == "__main__":
