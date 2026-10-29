@@ -7,3 +7,5 @@ The separate scholar-face-study.glb derives from the same CC0 anatomical base an
 The separate scholar-rig-study.glb retains the same CC0-derived anatomy and project-authored accessories/morph studies, adding actual imported MPFB mixamo_unity skin weights. Software remains subject to its existing GPL notices; the CC0 anatomical/weight data provenance is unchanged. This is a manual binding study, not a finished speech avatar.
 
 Five brow morphs in the rig study derive from the same pinned MPFB CC0 asset collection, under data/targets/expression/units/caucasian. Exact raw-file hashes are recorded in rig-study-validation.json. These are partial legacy expression units, not a licensed external avatar or complete facial-control package.
+
+Three mouth units derive from the same pinned CC0 raw targets: mouth-pursing, mouth-compression and mouth-corner-puller. Exact hashes are in rig-study-validation.json. They are manual expression studies, not a complete external facial rig or speech-alignment service.

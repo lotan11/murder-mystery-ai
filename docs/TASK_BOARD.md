@@ -2,7 +2,7 @@
 
 **Integration deadline: November 10, 2026 (America/Denver).** Track the avatar critical path and readiness gates in INTEGRATION_PLAN.md. The approved portrait + Lewis remains the runnable fallback.
 
-Updated October 28, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
+Updated October 29, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
 
 ## Accepted foundation: M1 — reliable Blackthorn rehearsal
 
@@ -132,3 +132,13 @@ Added five actual brow morphs to the existing weighted rig study: inner lift, in
 Rig study now has 64 weighted joints and eight real facial controls. Manual lifts cap at 0.35 and lowering at 0.25. Reviewed an actual close-up brow-lift render. Binary checks measure nonzero displacement and confirm the three original jaw/blink deformations are unchanged; source checks locate brow motion above 1.5m and neutral/rest errors remain below one micrometre. The original static and three-control face-only studies remain intact. Game portrait/Lewis at 1.05x, interfaces and saved rooms are unchanged. No paid provider or speech connection was added.
 
 Next: mouth interior/lip shaping and complete speech deformation, followed by actual Lewis alignment. Likeness/groom/materials still need substantial polish. The animated Scholar remains the main November 10 risk; portrait/live Lewis stays the stable playable baseline. No user decision is required for this increment.
+
+## Restrained mouth-shape study — October 29, 2026
+
+Added three real anatomical mouth units to the existing weighted Scholar study: lip rounding (0.25 cap), compression (0.25 cap) and slight bilateral smile (0.20 cap). Source target hashes are recorded; skin and nearby beard guides receive actual geometry deltas. The rig now has 64 joints and eleven facial controls. All eight earlier morph displacement inventories match the preceding commit exactly. Neutral/rest geometry is preserved.
+
+Reviewed actual renders for each mouth control. At the manual caps, maximum displacement is about 4.1mm rounding, 2.2mm compression and 2.6mm smile; this is deliberately restrained. Binary tests verify actual motion, source localization, distinct targets, normalized skin weights and missing viseme inventory. These are manual expression units, not complete phoneme shapes or voice alignment. Mouth interior/teeth/tongue, final likeness/groom/materials and actual Lewis synchronization remain unfinished.
+
+Approved portrait/live Lewis at +5%, original animation modes, playable mystery, interfaces and saved-room schema remain unchanged. No paid provider calls or purchases. Next: mouth-interior/deformation quality and real speech alignment; do not activate the unfinished study in the game. Final animated-character quality remains the main November 10 risk; the approved playable fallback is retained. No new user decision is needed.
+
+Follow-up: obtain and validate real audio-derived phoneme/viseme timing for the approved local Lewis WAVs; the current worker manifest contains audio duration, not phoneme timestamps. Preserve approved synthesis/playback speeds. Do not substitute invented text-proportional timing for an alignment claim.

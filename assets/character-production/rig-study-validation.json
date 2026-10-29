@@ -95,6 +95,63 @@
         "Scholar Grey strand 4",
         "Scholar Neutral aged skin blockout"
       ]
+    },
+    "mouthPucker": {
+      "source_affected_height_m": [
+        1.5168033838272095,
+        1.5759469270706177
+      ],
+      "source_targets_sha256": {
+        "data/character-tools/mpfb/src/mpfb/data/targets/expression/units/caucasian/mouth-pursing.target.gz": "9a5968be7a322d01db28490667746e711ca05d679aeaf7273b25f71c89d1bd49"
+      },
+      "changed_vertices": 15428,
+      "max_delta_m": 0.01634166816440944,
+      "meshes": [
+        "Scholar Grey strand 0",
+        "Scholar Grey strand 1",
+        "Scholar Grey strand 2",
+        "Scholar Grey strand 3",
+        "Scholar Grey strand 4",
+        "Scholar Neutral aged skin blockout"
+      ]
+    },
+    "lipPress": {
+      "source_affected_height_m": [
+        1.520377516746521,
+        1.5825647115707397
+      ],
+      "source_targets_sha256": {
+        "data/character-tools/mpfb/src/mpfb/data/targets/expression/units/caucasian/mouth-compression.target.gz": "c1dad4335810949a4591794023de4cf502a677c0aa59d40f7e70b99d4aac20c1"
+      },
+      "changed_vertices": 15155,
+      "max_delta_m": 0.008728716391052351,
+      "meshes": [
+        "Scholar Grey strand 0",
+        "Scholar Grey strand 1",
+        "Scholar Grey strand 2",
+        "Scholar Grey strand 3",
+        "Scholar Grey strand 4",
+        "Scholar Neutral aged skin blockout"
+      ]
+    },
+    "mouthSmile": {
+      "source_affected_height_m": [
+        1.524104356765747,
+        1.594687819480896
+      ],
+      "source_targets_sha256": {
+        "data/character-tools/mpfb/src/mpfb/data/targets/expression/units/caucasian/mouth-corner-puller.target.gz": "d881bb8feda2637bdaef2c7d7c6bed12f0be5914949e5a2cb9b06a583af412c0"
+      },
+      "changed_vertices": 14726,
+      "max_delta_m": 0.012816805379496837,
+      "meshes": [
+        "Scholar Grey strand 0",
+        "Scholar Grey strand 1",
+        "Scholar Grey strand 2",
+        "Scholar Grey strand 3",
+        "Scholar Grey strand 4",
+        "Scholar Neutral aged skin blockout"
+      ]
     }
   },
   "source_face_study_sha256": "9824ffa51275815d3d7fe252e76dbd31d0fd992e40e02ecb2ec21f9110ee5153",
@@ -242,11 +299,16 @@
   "binding_neutral_max_error_m": 1.2737006692050962e-07,
   "negative_head_turn_max_delta_m": 0.023602554179462085,
   "combined_pose_max_delta_m": 0.023602554179462085,
+  "mouth_preview_limits": {
+    "mouthPucker": 0.25,
+    "lipPress": 0.25,
+    "mouthSmile": 0.2
+  },
   "restored_max_error_m": 1.2737006692050962e-07,
   "head_turn_degrees": 10,
   "limitations": [
     "Head/neck binding proof only; eye gaze, jaw bone, shoulders and combined extreme poses are not approved.",
-    "Eight facial morphs only; full expressive/viseme set, speech alignment, mouth interior, groom and materials remain unfinished.",
+    "Eleven facial morphs only; full expressive/viseme set, speech alignment, mouth interior, groom and materials remain unfinished.",
     "Wardrobe intentionally rigid to Spine2; no cloth simulation or shoulder deformation claim."
   ]
 }

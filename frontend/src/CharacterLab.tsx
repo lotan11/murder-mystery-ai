@@ -14,7 +14,10 @@ type FacialControl =
   | "browOuterUpLeft"
   | "browOuterUpRight"
   | "browDownLeft"
-  | "browDownRight";
+  | "browDownRight"
+  | "mouthPucker"
+  | "lipPress"
+  | "mouthSmile";
 const facialControls: { name: FacialControl; label: string; max: number }[] = [
   { name: "jawOpen", label: "Jaw opening", max: 0.38 },
   { name: "eyeBlinkLeft", label: "Left blink", max: 1 },
@@ -24,6 +27,9 @@ const facialControls: { name: FacialControl; label: string; max: number }[] = [
   { name: "browOuterUpRight", label: "Right brow lift", max: 0.35 },
   { name: "browDownLeft", label: "Left brow lower", max: 0.25 },
   { name: "browDownRight", label: "Right brow lower", max: 0.25 },
+  { name: "mouthPucker", label: "Lip rounding", max: 0.25 },
+  { name: "lipPress", label: "Lip compression", max: 0.25 },
+  { name: "mouthSmile", label: "Subtle smile", max: 0.2 },
 ];
 const modelFiles: Record<DevelopmentModel, string> = {
   blockout: "scholar-blockout.glb",
@@ -572,7 +578,7 @@ export default function CharacterLab() {
                   These controls drive real morph targets found in the selected
                   file. Jaw opening is capped at 0.38; blinks can close fully.
                   {model === "rig-study" &&
-                    " Brow lifts are limited to 0.35 and lowering to 0.25."}
+                    " Brow lifts are limited to 0.35 and lowering to 0.25. Manual lip rounding and compression are limited to 0.25; smile to 0.20. Full visemes and mouth interior remain unfinished."}
                   {" "}This does not establish a usable speech rig.
                 </p>
                 {state === "ready" && discoveredControls.length > 0 ? (
@@ -609,7 +615,7 @@ export default function CharacterLab() {
                         </div>
                       ))}
                     <button onClick={resetFace}>Reset facial controls</button>
-                    {discoveredControls.length < (model === "rig-study" ? 8 : 3) && (
+                    {discoveredControls.length < (model === "rig-study" ? 11 : 3) && (
                       <p>
                         Only the controls actually present in this file are
                         shown.

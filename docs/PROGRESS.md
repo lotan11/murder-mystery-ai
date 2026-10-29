@@ -1,3 +1,13 @@
+## Restrained mouth-shape study — October 29, 2026
+
+Added three real anatomical mouth units to the existing weighted Scholar study: lip rounding (0.25 cap), compression (0.25 cap) and slight bilateral smile (0.20 cap). Source target hashes are recorded; skin and nearby beard guides receive actual geometry deltas. The rig now has 64 joints and eleven facial controls. All eight earlier morph displacement inventories match the preceding commit exactly. Neutral/rest geometry is preserved.
+
+Reviewed actual renders for each mouth control. At the manual caps, maximum displacement is about 4.1mm rounding, 2.2mm compression and 2.6mm smile; this is deliberately restrained. Binary tests verify actual motion, source localization, distinct targets, normalized skin weights and missing viseme inventory. These are manual expression units, not complete phoneme shapes or voice alignment. Mouth interior/teeth/tongue, final likeness/groom/materials and actual Lewis synchronization remain unfinished.
+
+Approved portrait/live Lewis at +5%, original animation modes, playable mystery, interfaces and saved-room schema remain unchanged. No paid provider calls or purchases. Next: mouth-interior/deformation quality and real speech alignment; do not activate the unfinished study in the game. Final animated-character quality remains the main November 10 risk; the approved playable fallback is retained. No new user decision is needed.
+
+Verification: 255 backend tests pass (two Windows permission skips), 15 client checks, production build and all fifteen browser scenarios pass. Local app health good, paid AI disabled. Previous main CI40823323676 passed; new increment CI follows push.
+
 ## Restrained Scholar brow expressions — October 28, 2026
 
 Added five actual brow morphs to the existing weighted rig study: inner lift, independent outer lifts and independent lowering. These derive from pinned MPFB legacy expression-unit target geometry, with source hashes recorded and deltas transferred to skin and nearby brow/hair guides. This corrects an earlier incomplete tool inventory: data/expressions is empty, but raw targets/expression/units contains usable units. It is not a supplied complete ARKit/viseme package.

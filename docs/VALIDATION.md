@@ -127,3 +127,11 @@ Final local verification for the bound study: 253 backend tests pass (two Window
 254 backend tests pass, two Windows symlink privilege skips. Production build, 15 client checks and four focused character-lab browser scenarios pass. New checks measure actual five-target deltas, source upper-face localization, skin/groom coverage, unchanged jaw/blink deformations and neutral/rest preservation. Browser exercises all five actual influences at their caps and resets. Reviewed the actual brow-lift render; appearance remains a development blockout. Source target hashes recorded; no paid calls or live game presentation changes. Previous main CI 40817990427 passed. Full browser regression and new source CI are recorded after completion.
 
 Full regression completed: all fifteen browser scenarios pass, alongside backend254/client15/build. New increment CI follows push.
+
+## October 29 mouth units
+
+255 backend tests pass, two Windows symlink privilege skips. New binary checks measure nonzero mouth displacements, restrained preview limits, localized source motion and distinct target hashes. All eight prior displacement inventories compared equal against HEAD before this increment. Reviewed actual rounding/compression/slight-smile renders; no finished speech or interior claim. Previous main CI40823323676 passed. Frontend/browser results follow after completion.
+
+During the full Windows browser run, the test server logged Proactor connection-reset callbacks as clients disconnected; affected guest/full-case scenarios still passed. This is a teardown-log observation, not a new application exception-handler suppression or an assertion of failure-free logs.
+
+Final mouth-increment regression: all fifteen browser scenarios pass, production build and client15 pass; backend255 pass/two skips. New push CI follows.

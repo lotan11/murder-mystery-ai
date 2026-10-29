@@ -39,7 +39,7 @@ test('face study moves actual morphs within restrained limits and resets',async(
  await page.getByLabel('Development model',{exact:true}).selectOption('face-study');
  await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
  await expect(viewer).toHaveAttribute('data-morph-count','3');
- await expect(page.getByRole('slider',{name:/brow/})).toHaveCount(0);
+ await expect(page.getByRole('slider',{name:/brow|Lip rounding|Lip compression|Subtle smile/})).toHaveCount(0);
  const jaw=page.getByRole('slider',{name:/Jaw opening/});
  await jaw.focus();await jaw.press('End');
  await expect(jaw).toHaveValue('0.38');
@@ -66,7 +66,7 @@ test('rig study turns the actual head bone, resets and retains facial controls',
  await page.getByLabel('Development model',{exact:true}).selectOption('rig-study');
  await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
  expect(Number(await viewer.getAttribute('data-joint-count'))).toBeGreaterThan(0);
- await expect(viewer).toHaveAttribute('data-morph-count','8');
+ await expect(viewer).toHaveAttribute('data-morph-count','11');
  const head=page.getByRole('slider',{name:/Head turn/});
  await head.focus();await head.press('End');
  await expect(head).toHaveValue('10');
@@ -85,6 +85,7 @@ test('rig study turns the actual head bone, resets and retains facial controls',
  for(const [label,limit] of [
    ['Inner brow lift','0.35'],['Left brow lift','0.35'],['Right brow lift','0.35'],
    ['Left brow lower','0.25'],['Right brow lower','0.25'],
+   ['Lip rounding','0.25'],['Lip compression','0.25'],['Subtle smile','0.2'],
  ]){
    const brow=page.getByRole('slider',{name:new RegExp('^'+label)});
    await brow.focus();await brow.press('End');

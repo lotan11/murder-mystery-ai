@@ -34,6 +34,8 @@ The approved portrait + live Lewis presentation remains the playable TV default 
 
 ## Separate weighted rig study
 
-The lab now also offers Weighted rig study. This separate GLB has 64 joints, real skin weights and eight morphs; manual head turn is limited to ten degrees each way. The original static blockout and face-only experiment remain separate. No speech, production activation or full facial compatibility is implied. Build after the face study with portable Blender --background --factory-startup --python-exit-code 1 --python scripts/build-scholar-bound-study.py. See rig-study-validation.json for measured deformation and rig-study-glb-validation.json for actual export inventory.
+The lab now also offers Weighted rig study. This separate GLB has 64 joints, real skin weights and eleven morphs; manual head turn is limited to ten degrees each way. The original static blockout and face-only experiment remain separate. No speech, production activation or full facial compatibility is implied. Build after the face study with portable Blender --background --factory-startup --python-exit-code 1 --python scripts/build-scholar-bound-study.py. See rig-study-validation.json for measured deformation and rig-study-glb-validation.json for actual export inventory.
 
 Brow geometry comes from pinned raw targets/expression/units, not the empty packaged data/expressions directory. Five new controls use actual sparse anatomical deltas and affect the skin plus nearby brow guides. Lifts cap at0.35, lowering at0.25; no speech mapping or final expression-quality approval is implied.
+
+Three manual mouth units now complement the brows, jaw and blinks: rounding 0.25, compression 0.25, slight smile 0.20. Renders in docs/assets/rig-study-mouthPucker.png, rig-study-lipPress.png and rig-study-mouthSmile.png show actual geometry at those limits. These are not a complete viseme set; mouth interior and speech synchronization remain unfinished.

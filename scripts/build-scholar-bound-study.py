@@ -52,7 +52,8 @@ expression_tree.balance()
 units=mpfb/'src/mpfb/data/targets/expression/units/caucasian'
 expressions={'browInnerUp':['eyebrows-left-inner-up','eyebrows-right-inner-up'],
  'browOuterUpLeft':['eyebrows-left-extern-up'],'browOuterUpRight':['eyebrows-right-extern-up'],
- 'browDownLeft':['eyebrows-left-down'],'browDownRight':['eyebrows-right-down']}
+ 'browDownLeft':['eyebrows-left-down'],'browDownRight':['eyebrows-right-down'],
+ 'mouthPucker':['mouth-pursing'],'lipPress':['mouth-compression'],'mouthSmile':['mouth-corner-puller']}
 expression_report={}
 for name,files in expressions.items():
     keys=[];hashes={}
@@ -159,6 +160,15 @@ for obj in objects:
     if obj.data.shape_keys:
         for key in obj.data.shape_keys.key_blocks:
             if key.name!='Basis':key.value=0
+# Preview each mouth unit at the restrained lab limit, then restore neutral.
+report['mouth_preview_limits']={'mouthPucker':.25,'lipPress':.25,'mouthSmile':.20}
+for name,limit in report['mouth_preview_limits'].items():
+    for obj in objects:
+        if obj.data.shape_keys and name in obj.data.shape_keys.key_blocks:obj.data.shape_keys.key_blocks[name].value=limit
+    scene.render.filepath=str(ROOT/f'docs/assets/rig-study-{name}.png');bpy.ops.render.render(write_still=True)
+    for obj in objects:
+        if obj.data.shape_keys and name in obj.data.shape_keys.key_blocks:obj.data.shape_keys.key_blocks[name].value=0
+
 restored={obj.name:positions(obj) for obj in objects}
 report['restored_max_error_m']=max((a-b).length for name in rest for a,b in zip(rest[name],restored[name]))
 if report['restored_max_error_m']>0.00001:raise RuntimeError('Rig failed to restore rest pose')
@@ -172,7 +182,7 @@ bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'assets/character-production/rig-study.blend'),compress=True)
 report['head_turn_degrees']=10
 report['limitations']=['Head/neck binding proof only; eye gaze, jaw bone, shoulders and combined extreme poses are not approved.',
- 'Eight facial morphs only; full expressive/viseme set, speech alignment, mouth interior, groom and materials remain unfinished.',
+ 'Eleven facial morphs only; full expressive/viseme set, speech alignment, mouth interior, groom and materials remain unfinished.',
  'Wardrobe intentionally rigid to Spine2; no cloth simulation or shoulder deformation claim.']
 (ROOT/'assets/character-production/rig-study-validation.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
 print('RIG STUDY COMPLETE '+json.dumps(report))
