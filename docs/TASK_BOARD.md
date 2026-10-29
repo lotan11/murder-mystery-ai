@@ -112,3 +112,9 @@ Casting source commit `ec39e04` passed independent CI run 40769768890, including
 - Remote feature/listener discovered and documented as unmerged; saved-room/privacy/transcription review needed before reuse. No paid transcription or branch merge performed.
 
 - Completed this checkpoint: alert-eye/cheek refinement and denser beard guide; editable source/export/renders/inventory rebuilt together. Verified 251 backend tests, build and both focused browser scenarios. Live game health remains good. Facial rig still absent; next priority is actual weighted/deformable rig work under the deadline plan.
+
+## Weighted skeleton proof and facial study — October 28, 2026
+
+Completed a real MPFB weighted-source experiment: 64 bones, all 19,158 source vertices weighted, measured head motion and exact rest restoration. This proof remains separate from the public bust. Created an editable face study with three actual pose-derived morphs (jawOpen, eyeBlinkLeft, eyeBlinkRight), transferred to the existing head and beard without changing neutral geometry. Export contains 15 meshes, three morph names and zero skeleton joints. Binary inspection measures nonzero displacement; these are not inventory placeholders.
+
+The separate character lab now selects the face study and exposes real sliders: jaw capped at 0.38, full blinks and reset. Reviewed close-up neutral/jaw/blink renders; eyelids close, but groom, materials, mouth interior and production deformation still need refinement. This is an early study, not the finished Scholar or a speech-connected rig. Default game portrait, Lewis at 1.05x, existing animation modes and saved-room format are untouched. Next: refine deformation quality, complete expressive/viseme controls and bind the finished bust before voice alignment. November 10 risk remains custom avatar quality; the playable portrait/Lewis fallback is preserved.

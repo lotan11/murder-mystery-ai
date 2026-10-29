@@ -1,3 +1,9 @@
+## Weighted skeleton proof and facial study — October 28, 2026
+
+Completed a real MPFB weighted-source experiment: 64 bones, all 19,158 source vertices weighted, measured head motion and exact rest restoration. This proof remains separate from the public bust. Created an editable face study with three actual pose-derived morphs (jawOpen, eyeBlinkLeft, eyeBlinkRight), transferred to the existing head and beard without changing neutral geometry. Export contains 15 meshes, three morph names and zero skeleton joints. Binary inspection measures nonzero displacement; these are not inventory placeholders.
+
+The separate character lab now selects the face study and exposes real sliders: jaw capped at 0.38, full blinks and reset. Reviewed close-up neutral/jaw/blink renders; eyelids close, but groom, materials, mouth interior and production deformation still need refinement. This is an early study, not the finished Scholar or a speech-connected rig. Default game portrait, Lewis at 1.05x, existing animation modes and saved-room format are untouched. Next: refine deformation quality, complete expressive/viseme controls and bind the finished bust before voice alignment. November 10 risk remains custom avatar quality; the playable portrait/Lewis fallback is preserved.
+
 # Hourly development checkpoint — October 28, 2026
 
 Recorded the user's November 10, 2026 integration deadline in specification/backlog/INTEGRATION_PLAN.md and the existing hourly automation. Set internal likeness/rig/integration/freeze/rehearsal gates while preserving the runnable portrait + Lewis fallback. Confirmed authoring foundation CI 40792819175 passed. Initial read-only review found a separate unmerged feature/listener branch; its transcription/privacy/schema changes require code and migration review before reuse, with no paid calls enabled.
@@ -126,3 +132,5 @@ No blocker prevents the scripted game. Live AI use requires explicit local confi
 M1 source e27ab9a established durable Blackthorn rehearsal. M2 source 091aa6b added private characters and four-guest participation; CI run 40604506205 passed, and documentation head 5cc18a2 also passed. M3 extends that single application and preserves case version 1 because the murder facts/solution are unchanged.
 
 Inspect Git status, branches/PRs and CI before continuing. Keep one file owner per parallel stream, integrate tests, update these documents and commit accepted increments. No scheduled background work is configured.
+
+Final local verification: all three character-lab browser scenarios pass after the assertion correction; thirteen existing browser scenarios passed in the full run. Backend 252 pass/2 Windows skips, client 15 pass, build pass. New push CI pending; preceding main run 40800185053 passed.

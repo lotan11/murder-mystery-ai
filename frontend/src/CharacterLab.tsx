@@ -5,6 +5,19 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import "./character-lab.css";
 
 type Preset = "front" | "profile" | "three-quarter";
+type DevelopmentModel = "blockout" | "face-study";
+type FacialControl = "jawOpen" | "eyeBlinkLeft" | "eyeBlinkRight";
+const facialControls: { name: FacialControl; label: string; max: number }[] = [
+  { name: "jawOpen", label: "Jaw opening", max: 0.38 },
+  { name: "eyeBlinkLeft", label: "Left blink", max: 1 },
+  { name: "eyeBlinkRight", label: "Right blink", max: 1 },
+];
+const modelFiles: Record<DevelopmentModel, string> = {
+  blockout: "scholar-blockout.glb",
+  "face-study": "scholar-face-study.glb",
+};
+const neutralFace = { jawOpen: 0, eyeBlinkLeft: 0, eyeBlinkRight: 0 };
+type MorphBinding = { influences: number[]; index: number };
 type Inventory = {
   meshes: number;
   joints: number;
@@ -35,12 +48,26 @@ function releaseModel(root: THREE.Object3D) {
 
 export default function CharacterLab() {
   const mount = useRef<HTMLDivElement>(null),
+    viewer = useRef<HTMLDivElement>(null),
+    morphBindings = useRef<Partial<Record<FacialControl, MorphBinding[]>>>({}),
     cameraPreset = useRef<(preset: Preset) => void>(() => {});
+  const [model, setModel] = useState<DevelopmentModel>("blockout"),
+    [discoveredControls, setDiscoveredControls] = useState<FacialControl[]>([]),
+    [faceValues, setFaceValues] = useState<Record<FacialControl, number>>({
+      ...neutralFace,
+    });
   const [state, setState] = useState<"loading" | "ready" | "failed">("loading"),
     [preset, setPreset] = useState<Preset>("front");
   const [inventory, setInventory] = useState<Inventory | null>(null),
     [error, setError] = useState("");
   useEffect(() => {
+    setState("loading");
+    setInventory(null);
+    setError("");
+    setPreset("front");
+    setDiscoveredControls([]);
+    setFaceValues({ ...neutralFace });
+    morphBindings.current = {};
     let disposed = false,
       frame = 0,
       previous = 0,
@@ -68,6 +95,11 @@ export default function CharacterLab() {
         renderer.domElement.remove();
       }
       cameraPreset.current = () => {};
+      morphBindings.current = {};
+      if (viewer.current) {
+        viewer.current.dataset.morphActive = "0";
+        viewer.current.dataset.morphMax = "0";
+      }
     }
     function contextLost(event: Event) {
       event.preventDefault();
@@ -120,10 +152,28 @@ export default function CharacterLab() {
           if (now - previous < 1000 / 30) return;
           previous = now;
           controls?.update();
+          const influenceGroups = Object.values(morphBindings.current).map(
+            (bindings) =>
+              Math.max(
+                0,
+                ...bindings.map((binding) =>
+                  Math.abs(binding.influences[binding.index] || 0),
+                ),
+              ),
+          );
+          if (viewer.current) {
+            viewer.current.dataset.morphActive = String(
+              influenceGroups.filter((value) => value > 0.001).length,
+            );
+            viewer.current.dataset.morphMax = Math.max(
+              0,
+              ...influenceGroups,
+            ).toFixed(3);
+          }
           renderer?.render(scene, camera);
         };
         frame = requestAnimationFrame(draw);
-        const response = await fetch("/character-lab/scholar-blockout.glb", {
+        const response = await fetch(`/character-lab/${modelFiles[model]}`, {
           signal: abort.signal,
         });
         if (!response.ok) throw Error("missing");
@@ -153,6 +203,23 @@ export default function CharacterLab() {
             Object.keys(object.morphTargetDictionary || {}).forEach((name) =>
               morphs.add(name),
             );
+            if (object.morphTargetDictionary && object.morphTargetInfluences) {
+              for (const control of facialControls) {
+                const index = object.morphTargetDictionary[control.name];
+                if (
+                  Number.isInteger(index) &&
+                  index >= 0 &&
+                  index < object.morphTargetInfluences.length
+                ) {
+                  const binding = {
+                    influences: object.morphTargetInfluences,
+                    index,
+                  };
+                  (morphBindings.current[control.name] ||= []).push(binding);
+                  binding.influences[index] = 0;
+                }
+              }
+            }
           }
           if (object instanceof THREE.SkinnedMesh) skinnedMeshes += 1;
           if (object instanceof THREE.Bone) joints += 1;
@@ -176,7 +243,13 @@ export default function CharacterLab() {
         // Bust exports need the whole head and shoulder silhouette, not full-body head framing.
         const distance = fullBody
           ? height * 1.17
-          : Math.max(height / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))), size.x / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect)) * 1.12;
+          : Math.max(
+              height / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))),
+              size.x /
+                (2 *
+                  Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) *
+                  camera.aspect),
+            ) * 1.12;
         camera.near = Math.max(height / 1000, 0.001);
         camera.far = height * 100;
         camera.updateProjectionMatrix();
@@ -203,13 +276,18 @@ export default function CharacterLab() {
           meshNames,
           bytes: bytes.byteLength,
         });
+        setDiscoveredControls(
+          facialControls
+            .filter((control) => !!morphBindings.current[control.name]?.length)
+            .map((control) => control.name),
+        );
         setState("ready");
       } catch {
         if (disposed || cleaned) return;
         cleanup();
         setState("failed");
         setError(
-          "The local Scholar blockout could not be opened. It may still be preparing, or this browser may not support the 3D view. No other avatar has been substituted.",
+          "The selected local Scholar model could not be opened. It may still be preparing, or this browser may not support the 3D view. No other avatar has been substituted.",
         );
       }
     });
@@ -218,7 +296,40 @@ export default function CharacterLab() {
       abort.abort();
       cleanup();
     };
-  }, []);
+  }, [model]);
+  function applyFace(name: FacialControl, value: number) {
+    const safe = Math.max(
+      0,
+      Math.min(
+        facialControls.find((control) => control.name === name)?.max || 0,
+        Number.isFinite(value) ? value : 0,
+      ),
+    );
+    const bindings = morphBindings.current[name];
+    if (!bindings?.length) return;
+    bindings.forEach((binding) => {
+      binding.influences[binding.index] = safe;
+    });
+    setFaceValues((current) => ({ ...current, [name]: safe }));
+  }
+  function resetFace() {
+    Object.values(morphBindings.current).forEach((bindings) =>
+      bindings.forEach((binding) => {
+        binding.influences[binding.index] = 0;
+      }),
+    );
+    setFaceValues({ ...neutralFace });
+  }
+  function changeModel(next: DevelopmentModel) {
+    if (next === model) return;
+    resetFace();
+    setState("loading");
+    setInventory(null);
+    setDiscoveredControls([]);
+    setError("");
+    setPreset("front");
+    setModel(next);
+  }
   function view(next: Preset) {
     setPreset(next);
     cameraPreset.current(next);
@@ -244,6 +355,28 @@ export default function CharacterLab() {
           blockout beside it is a work in progress, with likeness, clothing, and
           animation rig still in development.
         </p>
+        <div className="character-lab-model-choice">
+          <label htmlFor="development-model">Development model</label>
+          <select
+            id="development-model"
+            value={model}
+            onChange={(event) =>
+              changeModel(
+                event.target.value === "face-study" ? "face-study" : "blockout",
+              )
+            }
+          >
+            <option value="blockout">Original Scholar blockout</option>
+            <option value="face-study">
+              Face study · three-control experiment
+            </option>
+          </select>
+          <p>
+            {model === "face-study"
+              ? "A static face experiment with three manually controlled morphs. No skeleton or speech-driven lip sync is connected."
+              : "The original unapproved blockout remains available for comparison."}
+          </p>
+        </div>
         <div className="character-lab-comparison">
           <section className="character-lab-reference">
             <div className="character-lab-panel-title">
@@ -266,9 +399,13 @@ export default function CharacterLab() {
             </div>
             <div
               className="character-lab-viewer"
+              ref={viewer}
               role="img"
               aria-label="Scholar 3D workbench"
               data-model-state={state}
+              data-development-model={model}
+              data-morph-active="0"
+              data-morph-max="0"
               data-mesh-count={inventory?.meshes || 0}
               data-joint-count={inventory?.joints || 0}
               data-morph-count={inventory?.morphs.length || 0}
@@ -276,16 +413,22 @@ export default function CharacterLab() {
               <div ref={mount} className="character-lab-canvas" />
               {state === "loading" && (
                 <div className="character-lab-overlay" role="status">
-                  Opening the local Scholar blockout…
+                  {model === "blockout"
+                    ? "Opening the local Scholar blockout…"
+                    : "Opening the local Scholar face study…"}
                 </div>
               )}
               {state === "failed" && (
                 <div className="character-lab-overlay">
-                  3D blockout unavailable
+                  {model === "blockout"
+                    ? "3D blockout unavailable"
+                    : "3D face study unavailable"}
                 </div>
               )}
               <span className="character-lab-watermark">
-                BLOCKOUT · NOT ACTIVE IN THE GAME
+                {model === "face-study"
+                  ? "FACE STUDY · THREE-CONTROL EXPERIMENT"
+                  : "BLOCKOUT · NOT ACTIVE IN THE GAME"}
               </span>
             </div>
             <div
@@ -320,6 +463,67 @@ export default function CharacterLab() {
                 Reset camera
               </button>
             </div>
+            {model === "face-study" && (
+              <section
+                className="character-lab-face-controls"
+                aria-label="Face study controls"
+              >
+                <h3>Manual facial experiment</h3>
+                <p>
+                  These controls drive real morph targets found in the selected
+                  file. Influence is capped at 0.38. This does not establish a
+                  usable speech rig.
+                </p>
+                {state === "ready" && discoveredControls.length > 0 ? (
+                  <>
+                    {facialControls
+                      .filter((control) =>
+                        discoveredControls.includes(control.name),
+                      )
+                      .map((control) => (
+                        <div
+                          className="character-lab-face-slider"
+                          key={control.name}
+                        >
+                          <label htmlFor={`face-${control.name}`}>
+                            {control.label}
+                            <output htmlFor={`face-${control.name}`}>
+                              {faceValues[control.name].toFixed(2)}
+                            </output>
+                          </label>
+                          <input
+                            id={`face-${control.name}`}
+                            type="range"
+                            min="0"
+                            max={control.max}
+                            step="0.01"
+                            value={faceValues[control.name]}
+                            onChange={(event) =>
+                              applyFace(
+                                control.name,
+                                Number(event.target.value),
+                              )
+                            }
+                          />
+                        </div>
+                      ))}
+                    <button onClick={resetFace}>Reset facial controls</button>
+                    {discoveredControls.length < 3 && (
+                      <p>
+                        Only the controls actually present in this file are
+                        shown.
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p>
+                    {state === "loading"
+                      ? "Discovering the model’s actual morph targets…"
+                      : "No supported facial controls are available in the loaded model."}
+                  </p>
+                )}
+              </section>
+            )}
             <p className="character-lab-note">
               Drag to orbit. Scroll to zoom. Neutral studio lighting; the head
               and upper body are framed for inspection.
@@ -380,9 +584,10 @@ export default function CharacterLab() {
             </details>
           )}
           <p className="character-lab-note">
-            No speech or mouth animation is connected in this workbench. The
-            approved portrait + Lewis presentation and the existing animated
-            sample remain available in the working game.
+            No speech-driven mouth animation is connected in this workbench.
+            Manual face-study sliders do not connect to a voice. The approved
+            portrait + Lewis presentation and the existing animated sample
+            remain available in the working game.
           </p>
         </section>
       </main>

@@ -72,3 +72,5 @@ Before an external AI, transcription or voice service becomes a dependency, add 
 ## November 10 delivery control — October 28, 2026
 
 - **ADR-037: User-set integration deadline.** November 10, 2026 America/Denver is the integration deadline. Track internal art/rig/integration/freeze/rehearsal checkpoints in INTEGRATION_PLAN.md; flag the unfinished facial rig early and preserve the runnable approved portrait/Lewis baseline. Hourly automation now carries this date. The deadline does not authorize spending or deployment.
+
+- **ADR-038: Separate measured rig proofs from production activation.** Keep the canonical static bust unchanged. A private weighted source proves actual skeletal deformation; a separate editable face-study export proves three nonzero pose-derived facial morphs with manual lab controls. Neither is a finished TalkingHead avatar. Require complete deformation, likeness and actual speech-alignment review before switching the game.

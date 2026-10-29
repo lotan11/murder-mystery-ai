@@ -109,3 +109,9 @@ Full integrated regression: all seven browser scenarios pass, including complete
 ## October 28 hourly refinement checkpoint
 
 Reviewed rebuilt front/profile render after symmetric eye-height/fold and eye-bag changes; eyes are more open while age, placement and approved reference remain stable. Denser beard remains a development proxy. GLB inspection: 15 meshes, 101835 exported vertices,165239 triangles, 4263452 bytes, zero joints/morphs and no external resources. This increment passes 251 backend tests (two Windows privilege skips), four asset checks, production build and both workbench browser scenarios including failure recovery. The live game health endpoint remains good. Previous full CI run 40792819175 passed; the new source run is checked after push. No rig/deformation gate is marked complete.
+
+## October 28 weighted source and face study
+
+252 backend tests pass, two Windows symlink privilege skips; 15 client checks and production build pass. All thirteen existing browser scenarios pass. The new face-control scenario initially failed solely on expected numeric attribute formatting (0.38 versus 0.380); corrected assertion and focused rerun recorded below after completion. Binary GLB inspection confirms actual nonzero jaw and eyelid deltas, 15 meshes/3 morph names/0 exported joints/no external resources. Source proof measures real head movement, full source weights and exact rest restoration. Visual review confirms closed eyelids in the blink render; hair, materials, mouth interior and complete deformation remain unfinished. No paid providers invoked.
+
+Final local verification: all three character-lab browser scenarios pass after the assertion correction; thirteen existing browser scenarios passed in the full run. Backend 252 pass/2 Windows skips, client 15 pass, build pass. New push CI pending; preceding main run 40800185053 passed.

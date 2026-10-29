@@ -31,3 +31,7 @@ These are engineering planning targets, not promises that unavailable art work i
 ## Reporting and controls
 
 Hourly progress updates are configured in this chat. Report actual completed work, current test/CI state, the next milestone and risks to November 10. Do not imply unattended work between scheduled runs. Preserve the approved look/voice/pace; new casting approval is not a blocker. Material spending, public deployment or a scope tradeoff affecting the agreed deadline must be surfaced before execution.
+
+## October 28 rig checkpoint
+
+Weighted source proof now passes (64 bones); separate face study has actual jaw and two blink morphs with exact neutral preservation. Canonical bust remains static; the face-study export has no skeleton and no speech connection. Full expressions/visemes, production materials/groom, bust/accessory binding and real Lewis alignment remain on the critical path. This proof does not satisfy the November 4 animated-character readiness gate.

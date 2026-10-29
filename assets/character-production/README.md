@@ -48,3 +48,9 @@ The hair is a rough scalp/strand proxy with visible gaps, the beard is sparse, e
 ## First facial refinement — October 28, 2026
 
 Opened the eyes with symmetric MPFB eye-height2 and eyefold-up targets, reduced additional eye-bag shaping, and added subtle cheekbone shaping. Beard candidates increased from 400 to 750. Real front/profile renders were compared with the previous version and approved portrait; the eyes appear more alert without moving the eye centers. This remains a sparse procedural beard and rough hair proxy, not finished character grooming. Source, config, GLB and renders were rebuilt together; original comparison artifacts stay in ignored work.
+
+## Separate deformation experiments
+
+The zero-rig description above applies to scholar-blockout.glb. skeleton-proof.json/.md record the actual 64-bone weighted full-source experiment (diagnostic scene in ignored data/). face-study.blend is editable source for scholar-face-study.glb, a separate 15-mesh export with jawOpen and two blink morphs, zero exported joints and no speech connection. face-study-validation.json records mapping/neutral error; face-study-glb-validation.json measures binary target displacement. Close-up rest/jaw/blink renders are in docs/assets/. These are development proofs, not final likeness or lip-sync approval.
+
+After preparing pinned Blender/MPFB as documented, run portable Blender in background with --factory-startup --python-exit-code 1 --python scripts/probe-scholar-skeleton.py, then with --python scripts/build-scholar-face-controls.py. The latter checks the canonical source hash against the skeleton report. Inspect the export with .venv/Scripts/python.exe scripts/inspect-character.py frontend/public/character-lab/scholar-face-study.glb --measure-morphs. Open ?view=character-lab and select Face study to try restrained manual controls.

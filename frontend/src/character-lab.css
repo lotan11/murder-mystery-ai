@@ -251,3 +251,75 @@
     padding: 10px 12px;
   }
 }
+
+.character-lab-model-choice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 28px;
+}
+.character-lab-model-choice label {
+  margin: 0;
+  font-size: 11px;
+  color: #ccb88c;
+}
+.character-lab-model-choice select {
+  padding: 11px 13px;
+  background: #10231b;
+  color: #e0e6d3;
+  border: 1px solid #596c4d;
+  font: inherit;
+  font-size: 12px;
+  max-width: 100%;
+}
+.character-lab-model-choice > p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #a5b99f;
+  flex-basis: 100%;
+  margin: 0;
+}
+.character-lab-face-controls {
+  background: #182c20;
+  border: 1px solid #64704d;
+  padding: 18px;
+  margin-top: 16px;
+}
+.character-lab-face-controls h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+.character-lab-face-controls p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #b2c2a8;
+}
+.character-lab-face-slider {
+  margin: 16px 0;
+}
+.character-lab-face-slider label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #ddd2b2;
+  margin: 0 0 7px;
+}
+.character-lab-face-slider output {
+  font-variant-numeric: tabular-nums;
+  color: #b4c3aa;
+}
+.character-lab-face-slider input[type="range"] {
+  width: 100%;
+  padding: 0;
+  accent-color: #c8a56b;
+  background: transparent;
+  cursor: pointer;
+}
+.character-lab-face-controls button {
+  font-size: 11px;
+}
+.character-lab-model-choice select:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
