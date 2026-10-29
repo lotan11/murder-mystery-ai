@@ -175,3 +175,5 @@ Hosted CI40867962436 passes for source commit5659c0e, including actual texture-b
 ## October29 fitted facial groom
 
 313 backend tests pass/three Windows permission skips,21 client checks/build/all19 browser scenarios pass. Newexportcomponent checks preserve originalhead pointcloud/triangles/rest mouth-blink delta counts/magnitudes acrossmaterial splits while validating intentionalgroomaddition(18kverts/12ktris/4nonzero mouthtargets). Allverticesnormalized/validboneindices; zerooutwardfaceinversions, fiveindividualposeattachmentchecks0inwardpoints, weight/morphcorrespondenceerrorsunder1e-6, restlipproxygap2mm. Actualbrowser8018 confirms19primitives/64joints/11controls/3maps,1.05pitch-preservedLewis, visiblemouthmotion andStopneutral/noaudio. No pageerrors orroomAPIcalls. Screenshotreviewnotescoarse/unevendensity; no finalhair orphoneme-accuracy certification. Crownexperimentrejectedandnotexported. New source CI follows push.
+
+Hosted CI40916235913 passes for source commita4888d6, including genuine fitted-groom/component checks and all19 browser scenarios.

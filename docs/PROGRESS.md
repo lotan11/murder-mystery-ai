@@ -10,6 +10,8 @@ Inspector now exposes component-level geometry/morph inventory so deliberate gro
 
 Verification:313 backend tests pass (three Windows permission skips),21 client checks, production build and all19 browser scenarios pass. Actual8018 playback/Stop and matched renders reviewed. Prior code CI40867962436 passed; new source CI follows push.
 
+Hosted CI confirmation: source commita4888d6 passes run40916235913, including component head preservation and all19 browser scenarios. This follow-up updates documentation only.
+
 ## Browser-delivered baked skin materials — October 29, 2026
 
 Closed the missing-runtime-detail gap on the weighted Scholar study. A reproducible Blender helper now bakes existing skin base color (COLOR-only, no lighting), roughness and tangent normal maps at1024px, binds supported image nodes and packs them into editable source/GLB. The normal bake is compared with a real bump-disabled baseline over an emission coverage mask: measuredRMSXY0.009305, proving the source's shallow procedural grain is captured. This is not authored wrinkles, a skin scan, final skin artistry or subsurface reconstruction.
