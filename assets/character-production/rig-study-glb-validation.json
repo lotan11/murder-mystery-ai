@@ -1,6 +1,6 @@
 {
   "file": "scholar-rig-study.glb",
-  "bytes": 10663228,
+  "bytes": 11160124,
   "mesh_count": 15,
   "vertices": 101835,
   "triangles": 165239,
@@ -73,6 +73,189 @@
   "external_resources": [],
   "talkinghead_inventory_complete": false,
   "approval": "Structural inventory only; likeness, deformations and runtime performance require separate review.",
+  "material_inventory": {
+    "materials": [
+      {
+        "index": 0,
+        "name": "Brown tweed blocking",
+        "base_color_texture": {
+          "texture_index": 0,
+          "image_index": 0,
+          "tex_coord": 0
+        },
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 1,
+        "name": "Forest wool waistcoat",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 2,
+        "name": "Grey hair underlayer",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 3,
+        "name": "Grey strand 0",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 4,
+        "name": "Grey strand 1",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 5,
+        "name": "Grey strand 2",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 6,
+        "name": "Grey strand 3",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 7,
+        "name": "Grey strand 4",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 8,
+        "name": "Ivory shirt",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 9,
+        "name": "Muted patterned tie blocking",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 10,
+        "name": "Natural eye whites",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 11,
+        "name": "Neutral aged skin blockout",
+        "base_color_texture": {
+          "texture_index": 2,
+          "image_index": 2,
+          "tex_coord": 0
+        },
+        "normal_texture": {
+          "texture_index": 1,
+          "image_index": 1,
+          "tex_coord": 0
+        },
+        "metallic_roughness_texture": {
+          "texture_index": 3,
+          "image_index": 3,
+          "tex_coord": 0
+        }
+      },
+      {
+        "index": 12,
+        "name": "Scholar anatomical oral lining study",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 13,
+        "name": "Pupils",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 14,
+        "name": "Slate blue grey iris",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 15,
+        "name": "Thin dark bronze spectacle rims",
+        "base_color_texture": null,
+        "normal_texture": null,
+        "metallic_roughness_texture": null
+      }
+    ],
+    "images": [
+      {
+        "index": 0,
+        "name": "Project authored tweed weave",
+        "mime_type": "image/png",
+        "embedded": true,
+        "bytes": 69478,
+        "sha256": "96fbd222675640372ce6f736bc6d3be3cc6403c2eb8964d4403c3eb9367c50e7",
+        "width": 256,
+        "height": 256,
+        "bit_depth": 8,
+        "color_type": 2
+      },
+      {
+        "index": 1,
+        "name": "skin-normal",
+        "mime_type": "image/png",
+        "embedded": true,
+        "bytes": 425370,
+        "sha256": "37bc1a9166e9c89444d0df198d4ea599d0374f52bcf9709bfd546f99e1b494c2",
+        "width": 1024,
+        "height": 1024,
+        "bit_depth": 8,
+        "color_type": 6
+      },
+      {
+        "index": 2,
+        "name": "skin-base-color",
+        "mime_type": "image/png",
+        "embedded": true,
+        "bytes": 40676,
+        "sha256": "a35c286218bbf8a6eed2296833e511371b49c76055f0c9697f56662a3b724ff4",
+        "width": 1024,
+        "height": 1024,
+        "bit_depth": 8,
+        "color_type": 6
+      },
+      {
+        "index": 3,
+        "name": "skin-roughness",
+        "mime_type": "image/png",
+        "embedded": true,
+        "bytes": 30432,
+        "sha256": "cd418a180e28877743ebdb6b005b766d49d24d0bff8181accc953f4d9cdaea37",
+        "width": 1024,
+        "height": 1024,
+        "bit_depth": 8,
+        "color_type": 2
+      }
+    ],
+    "texture_count": 4
+  },
   "morph_deformations": {
     "jawOpen": {
       "affected_vertices": 25081,

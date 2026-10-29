@@ -1,3 +1,13 @@
+## Browser-delivered baked skin materials — October 29, 2026
+
+Closed the missing-runtime-detail gap on the weighted Scholar study. A reproducible Blender helper now bakes existing skin base color (COLOR-only, no lighting), roughness and tangent normal maps at1024px, binds supported image nodes and packs them into editable source/GLB. The normal bake is compared with a real bump-disabled baseline over an emission coverage mask: measuredRMSXY0.009305, proving the source's shallow procedural grain is captured. This is not authored wrinkles, a skin scan, final skin artistry or subsurface reconstruction.
+
+Actual GLB inventory has four embedded images (coat plus three skin maps); skin has baseColorTexture, normalTexture and metallicRoughnessTexture. Normal and base-color embedded image hashes exactly match source PNGs; roughness is packed into the glTF channel layout. Inspector now records actual material references/image dimensions/hashes. The browser confirms three decoded1K textures on the actual loaded skin material, not a model-mode label. Reviewed actual browser close-up and Blender open-jaw render: subtle grain survives export; the model is still visibly a blockout.
+
+Original101,835 exported vertices/165,239 triangles,64 joints/11 morph names, normalized weights, oral lining, neutral/rest deformation and restrained Lewis timing study remain. Canonical static/face-only studies, game portrait/liveLewis(+5%), interfaces and saved rooms are unchanged. No paid calls/downloads/new casting decisions. Next P0: coherent silver hair/beard groom and matched-view likeness; more art and perceptual speech work remains before November4 readiness gate/November10 integration. First-generation speech latency also remains; replay cache is preserved.
+
+Verification:311 backend tests pass (three Windows permission skips),21 client checks, production build and all19 browser scenarios pass. Browser confirms three actual decoded1K skin maps; source normal/base-color hashes match embedded images. No final art/perceptual approval implied. Prior code CI40859619619 passed; new source CI follows push.
+
 ## Bounded public speech replay cache and art quality review — October 29, 2026
 
 Added a process-local memory cache for successful validated Lewis clips and their matching model timing. Default bounds: four entries,32MiB of immutable serialized payloads,15-minute non-sliding reuse lifetime. Expired entries are pruned on cache activity, not a background deletion timer. Hits decode a fresh result copy; oversized results, failures, timeouts and cancellations are not retained. Cache faults fall back to normal valid rendering. No extra audio files persist after the existing temporary-worker cleanup.

@@ -9,7 +9,7 @@ Updated October 29, 2026. Lead/integrator owns this board. Status reflects commi
 | Priority | Work | Current state / next gate |
 | --- | --- | --- |
 | P0 | Premium Scholar likeness and groom | Development model only; refine matched-view face/hair/beard against approved portrait |
-| P0 | Browser-delivered materials | Blender procedural skin detail is absent from GLB; bake supported maps and verify actual runtime output |
+| P0 | Browser-delivered materials | Three1K baked maps now embedded/decoded; grain delivery fixed, final color/skin/eye artistry still unfinished |
 | P0 | Speech deformation and oral detail | Fixed real Lewis lab study works; full natural visemes, teeth/tongue and perceptual review unfinished |
 | P1 | First-generation speech latency | Warm replay cache implemented; new/expired/evicted text still needs generation; no prefetch yet |
 | Done this increment | Bounded public replay cache | Four entries/32MiB/15-minute reuse lifetime; actual local cold12.107s/warm0.005724s, one worker |
@@ -193,3 +193,11 @@ Real isolated59-word renderer probe: one25.06s/391-cue clip took12.107s on the f
 A separate actual-asset review confirms the model is not yet premium-ready: hair/beard silhouette, matched-camera likeness, materials and tailoring remain substantial gaps. Procedural Blender skin detail is absent from the actual GLB; supported baked PBR maps need explicit export/browser verification. See SCHOLAR_QUALITY_REVIEW.md. No new model, voice, casting request, purchase or game presentation change was made. Next visual priority: groom/likeness and browser-delivered skin detail, while preserving the playable portrait/Lewis fallback. November10 risk remains final art/perceived speech quality and first-generation latency; no input is required now.
 
 Next P0visual task: use matched camera/lighting, refine silver hair/beard silhouette and deliver baked supported skin maps in the actual GLB/browser. Require visual comparison, deformation regressions and measured runtime texture inventory; source-only procedural detail is not completion. Cache miss/first-generation latency remains a separate performance task.
+
+## Browser-delivered baked skin materials — October 29, 2026
+
+Closed the missing-runtime-detail gap on the weighted Scholar study. A reproducible Blender helper now bakes existing skin base color (COLOR-only, no lighting), roughness and tangent normal maps at1024px, binds supported image nodes and packs them into editable source/GLB. The normal bake is compared with a real bump-disabled baseline over an emission coverage mask: measuredRMSXY0.009305, proving the source's shallow procedural grain is captured. This is not authored wrinkles, a skin scan, final skin artistry or subsurface reconstruction.
+
+Actual GLB inventory has four embedded images (coat plus three skin maps); skin has baseColorTexture, normalTexture and metallicRoughnessTexture. Normal and base-color embedded image hashes exactly match source PNGs; roughness is packed into the glTF channel layout. Inspector now records actual material references/image dimensions/hashes. The browser confirms three decoded1K textures on the actual loaded skin material, not a model-mode label. Reviewed actual browser close-up and Blender open-jaw render: subtle grain survives export; the model is still visibly a blockout.
+
+Original101,835 exported vertices/165,239 triangles,64 joints/11 morph names, normalized weights, oral lining, neutral/rest deformation and restrained Lewis timing study remain. Canonical static/face-only studies, game portrait/liveLewis(+5%), interfaces and saved rooms are unchanged. No paid calls/downloads/new casting decisions. Next P0: coherent silver hair/beard groom and matched-view likeness; more art and perceptual speech work remains before November4 readiness gate/November10 integration. First-generation speech latency also remains; replay cache is preserved.

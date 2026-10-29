@@ -165,3 +165,34 @@ def test_oral_lining_uses_existing_anatomical_cavity_without_new_geometry():
     original=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-face-study.glb')
     assert rig['vertices']==original['vertices'] and rig['triangles']==original['triangles']
     assert evidence['binding_neutral_max_error_m']<.000001 and evidence['restored_max_error_m']<.000001
+
+
+def test_baked_skin_maps_are_really_embedded_and_bound_to_the_runtime_material():
+    import hashlib,json
+    report=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')
+    inventory=report['material_inventory']
+    skin=next(material for material in inventory['materials'] if material['name']=='Neutral aged skin blockout')
+    assert inventory['texture_count']==4 and len(inventory['images'])==4
+    for slot in ['base_color_texture','normal_texture','metallic_roughness_texture']:
+        reference=skin[slot]
+        assert reference is not None and reference['tex_coord']==0
+        image=inventory['images'][reference['image_index']]
+        assert image['embedded'] and image['mime_type']=='image/png'
+        assert image['width']==image['height']==1024 and image['bytes']>1000
+    evidence=json.loads((ROOT/'assets/character-production/skin-material-validation.json').read_text())
+    assert evidence['geometry_modified'] is False and evidence['light_baked_into_color'] is False
+    assert evidence['normal_vs_bump_disabled_rms_xy']>.0005
+    assert evidence['baked_surface_pixels_including_margin']>10000
+    for channel in ['0','1']:
+        low,high=evidence['normal_channel_ranges'][channel]
+        assert .3<low<high<.7 and high-low>.01
+    for name,source in evidence['maps'].items():
+        data=(ROOT/source['path']).read_bytes()
+        assert hashlib.sha256(data).hexdigest()==source['sha256'] and len(data)==source['bytes']
+        assert data[:8]==b'\x89PNG\r\n\x1a\n'
+        assert struct.unpack_from('>II',data,16)==(1024,1024)
+    normal=inventory['images'][skin['normal_texture']['image_index']]
+    assert normal['sha256']==evidence['maps']['normal']['sha256']
+    base=inventory['images'][skin['base_color_texture']['image_index']]
+    assert base['sha256']==evidence['maps']['base_color']['sha256']
+    assert report['external_resources']==[] and report['joint_count']==64 and report['morph_target_count']==11

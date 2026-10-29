@@ -152,6 +152,12 @@ for obj in objects:
 neutral={obj.name:positions(obj) for obj in objects}
 report['binding_neutral_max_error_m']=max((a-b).length for name in rest for a,b in zip(rest[name],neutral[name]))
 if report['binding_neutral_max_error_m']>0.00001:raise RuntimeError('Binding changed neutral geometry')
+# Bake source skin detail into explicit maps supported by the browser's glTF material.
+import importlib.util
+skin_spec=importlib.util.spec_from_file_location('scholar_skin_bake',ROOT/'scripts/bake-scholar-skin.py')
+skin_module=importlib.util.module_from_spec(skin_spec);skin_spec.loader.exec_module(skin_module)
+report['skin_materials']=skin_module.bake_skin_materials(head_mesh,ROOT)
+
 head=rig.pose.bones['mixamorig:Head'];head.rotation_mode='XYZ';head.rotation_euler=(0,math.radians(10),0)
 posed={obj.name:positions(obj) for obj in objects}
 for obj in objects:

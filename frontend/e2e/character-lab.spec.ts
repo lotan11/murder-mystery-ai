@@ -7,6 +7,7 @@ test('Scholar workbench loads real development geometry without activating the g
  const viewer=page.getByLabel('Scholar 3D workbench',{exact:true});
  await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
  await expect(viewer.locator('canvas')).toBeVisible();
+ await expect(viewer).toHaveAttribute('data-skin-map-count','0');
  expect(Number(await viewer.getAttribute('data-mesh-count'))).toBeGreaterThan(0);
  await page.getByRole('button',{name:'Profile',exact:true}).click();
  await expect(page.getByRole('button',{name:'Profile',exact:true})).toHaveAttribute('aria-pressed','true');
@@ -51,6 +52,7 @@ test('face study moves actual morphs within restrained limits and resets',async(
  await page.getByLabel('Development model',{exact:true}).selectOption('face-study');
  await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
  await expect(viewer).toHaveAttribute('data-morph-count','3');
+ await expect(viewer).toHaveAttribute('data-skin-map-count','0');
  await expect(page.getByRole('slider',{name:/brow|Lip rounding|Lip compression|Subtle smile/})).toHaveCount(0);
  const jaw=page.getByRole('slider',{name:/Jaw opening/});
  await jaw.focus();await jaw.press('End');
@@ -79,6 +81,7 @@ test('rig study turns the actual head bone, resets and retains facial controls',
  await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
  expect(Number(await viewer.getAttribute('data-joint-count'))).toBeGreaterThan(0);
  await expect(viewer).toHaveAttribute('data-morph-count','11');
+ await expect(viewer).toHaveAttribute('data-skin-map-count','3');
  // The manual lab should draw its loaded pose, then leave the GPU idle.
  await expect.poll(async()=>{
    const before=await viewer.getAttribute('data-render-count');

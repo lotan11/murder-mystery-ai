@@ -47,6 +47,7 @@ type Inventory = {
   meshes: number;
   joints: number;
   skinnedMeshes: number;
+  skinMaps: number;
   morphs: string[];
   meshNames: string[];
   bytes: number;
@@ -365,12 +366,22 @@ export default function CharacterLab() {
         }
         let meshes = 0,
           joints = 0,
-          skinnedMeshes = 0;
+          skinnedMeshes = 0,
+          skinMaps = 0;
         const morphs = new Set<string>(),
           meshNames: string[] = [];
         gltf.scene.traverse((object) => {
           if (object instanceof THREE.Mesh) {
             meshes += 1;
+            for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
+              if (material instanceof THREE.MeshStandardMaterial && material.name === "Neutral aged skin blockout") {
+                const decodedMaps = [material.map, material.normalMap, material.roughnessMap].filter(texture => {
+                  const image = texture?.image as {width?: number; height?: number} | undefined;
+                  return texture instanceof THREE.Texture && image?.width === 1024 && image?.height === 1024;
+                }).length;
+                skinMaps = Math.max(skinMaps, decodedMaps);
+              }
+            }
             meshNames.push(object.name || `Mesh ${meshes}`);
             Object.keys(object.morphTargetDictionary || {}).forEach((name) =>
               morphs.add(name),
@@ -465,6 +476,7 @@ export default function CharacterLab() {
           meshes,
           joints,
           skinnedMeshes,
+          skinMaps,
           morphs: [...morphs].sort(),
           meshNames,
           bytes: bytes.byteLength,
@@ -633,6 +645,7 @@ export default function CharacterLab() {
               data-head-displacement="0"
               data-morph-active="0"
               data-morph-max="0"
+              data-skin-map-count={inventory?.skinMaps || 0}
               data-mesh-count={inventory?.meshes || 0}
               data-joint-count={inventory?.joints || 0}
               data-morph-count={inventory?.morphs.length || 0}
@@ -825,6 +838,10 @@ export default function CharacterLab() {
             <div>
               <strong>{inventory?.skinnedMeshes ?? "—"}</strong>
               <span>Skinned meshes</span>
+            </div>
+            <div>
+              <strong>{inventory?.skinMaps ?? "—"}</strong>
+              <span>Skin detail maps</span>
             </div>
             <div>
               <strong>{inventory?.morphs.length ?? "—"}</strong>

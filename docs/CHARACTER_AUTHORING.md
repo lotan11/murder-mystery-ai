@@ -51,3 +51,9 @@ The preview uses model-predicted phoneme spans and a deliberately simplified sma
 To reproduce the sample, first run the same-inference timing probe with the optional runtime, then `.\.venv\Scripts\python.exe scripts/prepare-scholar-timing-study.py`. Packaging validates that the local WAV matches the recorded proof before copying it into the lab. No synthesis/download occurs during packaging or browser playback.
 
 October29 oral refinement: the weighted study uses the existing anatomical UV mouth mask to assign lining to398 cavity faces. Vertex/triangle counts and neutral shape are unchanged; skin now has a second material primitive. See docs/assets/rig-study-mouth-lining.png for the actual restrained open-jaw render. No teeth/tongue or new cavity geometry was created. Full interior and face quality remain under development.
+
+## Baked skin maps
+
+The bound-study builder calls scripts/bake-scholar-skin.py as a Blender helper. It bakes1K color-only albedo, roughness and tangent normals from the existing skin nodes, verifies normal detail against a bump-disabled baseline using a UV coverage bake, saves PNGs under assets/character-production/skin-materials and packs them into the editable scene/GLB. Run the normal bound-study Blender command; the helper is not a standalone model-generation command.
+
+skin-material-validation.json records samples, margin, color spaces, hashes and measured detail. The inspector's material_inventory records actual runtime references, embedded image hashes and dimensions. Character lab displays the actual loaded1K map count; static/face-only studies remain at zero, weighted rig at three. Subsurface response and final artistic skin/groom/likeness are unfinished.

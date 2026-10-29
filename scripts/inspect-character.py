@@ -4,6 +4,7 @@ import argparse
 import json
 import struct
 import math
+import hashlib
 
 CORE=['Hips','Spine','Spine1','Spine2','Neck','Head']
 SIDE=['Shoulder','Arm','ForeArm','Hand','UpLeg','Leg','Foot','ToeBase']
@@ -64,6 +65,40 @@ def measure_morphs(document, binary):
     return report
 
 
+def material_inventory(document, binary):
+    """Inspect actual glTF texture bindings and embedded image bytes, not source nodes."""
+    images=[];views=document.get('bufferViews',[])
+    for index,item in enumerate(document.get('images',[])):
+        entry={'index':index,'name':item.get('name',''),'mime_type':item.get('mimeType'), 'embedded':False}
+        view_index=item.get('bufferView')
+        if type(view_index) is int and 0<=view_index<len(views) and binary is not None:
+            view=views[view_index];begin=view.get('byteOffset',0);size=view.get('byteLength',0)
+            if view.get('buffer',0)!=0 or begin<0 or size<0 or begin+size>len(binary):raise ValueError('Invalid embedded image buffer')
+            data=binary[begin:begin+size]
+            entry.update({'embedded':True,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()})
+            if data.startswith(b'\x89PNG\r\n\x1a\n') and len(data)>=33 and data[12:16]==b'IHDR':
+                width,height=struct.unpack_from('>II',data,16)
+                if not 0<width<=16384 or not 0<height<=16384:raise ValueError('Invalid PNG dimensions')
+                entry.update({'width':width,'height':height,'bit_depth':data[24],'color_type':data[25]})
+        images.append(entry)
+    textures=document.get('textures',[])
+    def binding(value):
+        if value is None:return None
+        index=value.get('index') if isinstance(value,dict) else None
+        if type(index) is not int or not 0<=index<len(textures):raise ValueError('Invalid material texture reference')
+        source=textures[index].get('source')
+        if type(source) is not int or not 0<=source<len(images):raise ValueError('Invalid texture image reference')
+        return {'texture_index':index,'image_index':source,'tex_coord':value.get('texCoord',0)}
+    materials=[]
+    for index,item in enumerate(document.get('materials',[])):
+        pbr=item.get('pbrMetallicRoughness',{})
+        materials.append({'index':index,'name':item.get('name',''),
+          'base_color_texture':binding(pbr.get('baseColorTexture')),
+          'normal_texture':binding(item.get('normalTexture')),
+          'metallic_roughness_texture':binding(pbr.get('metallicRoughnessTexture'))})
+    return {'materials':materials,'images':images,'texture_count':len(textures)}
+
+
 def inspect(path, measure=False):
     path=Path(path)
     if not 20<=path.stat().st_size<=128*1024*1024:raise ValueError('GLB size outside inspection limit')
@@ -104,6 +139,7 @@ def inspect(path, measure=False):
             'morph_target_count':len(targets),'missing_bones':missing_bones,'missing_expressions':missing_expressions,'missing_visemes':missing_visemes,
             'external_resources':external,'talkinghead_inventory_complete':not(missing_bones or missing_expressions or missing_visemes),
             'approval':'Structural inventory only; likeness, deformations and runtime performance require separate review.'}
+    report['material_inventory']=material_inventory(document,binary)
     if measure:report['morph_deformations']=measure_morphs(document,binary)
     return report
 
