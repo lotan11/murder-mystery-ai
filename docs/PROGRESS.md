@@ -8,6 +8,8 @@ Next: detailed mouth/face quality and perceived speech review, plus measured lat
 
 Verification:294 backend tests pass (three Windows permission skips),21 client checks, production build and all19 browser scenarios pass. Reviewed actual open-jaw lining render; no production appearance approval implied. Prior code CI40843961780 passed; new source CI follows push.
 
+Hosted CI confirmation: corrected source commitaf0d1a8 passes run40851331046, including all19 browser scenarios. The raw-line-ending evidence failure is resolved; this follow-up changes documentation only.
+
 ## First opt-in timed Scholar speech study — October 29, 2026
 
 The weighted rig can now perform a fixed real Lewis line in the separate character lab. Choose Rig study and Play Lewis timing study. No autoplay. The clip is the verified5.502-second same-inference proof, at approved1.05 playback; its73 model-predicted cues follow audio.currentTime. A restrained, explicitly approximate phoneme-to-existing-mouth mapping drives real morph influences. Unknown symbols/gaps stay neutral. This is a speaking deformation study, not a complete viseme rig or finished natural lip-sync/likeness.

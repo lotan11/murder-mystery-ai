@@ -157,3 +157,5 @@ Hosted CI40843961780 passes for code commit5a7ccca, including all19 browser scen
 CI portability correction: run40850873555 found a raw source-hash mismatch between Windows CRLF and Linux LF. Evidence now retains the raw observed hash and adds canonical JSON content SHA256 for cross-platform fact validation; an LF/CRLF and changed-content regression check protects the distinction. No game/voice/geometry change.
 
 After portability correction:294 backend tests pass/three Windows permission skips. The application/asset code is unchanged from the passing21client/build/19browser local run. New CI follows the evidence-hash fix.
+
+Hosted CI40851331046 passes for corrected code commitaf0d1a8, including backend/client/build/all19 browser scenarios. Prior40850873555 evidence-hash failure resolved without changing game/voice behavior.
