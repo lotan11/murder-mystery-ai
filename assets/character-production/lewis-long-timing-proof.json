@@ -45,5 +45,7 @@
     "No claim about internal synthesis batch count; worker timing output is checked as delivered.",
     "Observed generation time is local evidence, not a performance guarantee on other machines.",
     "Waveform and timing sidecar belong to this same inference; repeated neural syntheses may differ."
-  ]
+  ],
+  "source_content_sha256": "446cacb6fa44cc365196797cb0bf98de5bdf7161d9535deec041bea05d812f79",
+  "source_content_hash_encoding": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=False; raw source hash retained separately"
 }

@@ -153,3 +153,7 @@ Hosted CI40843961780 passes for code commit5a7ccca, including all19 browser scen
 ## October29 oral lining and longer narration
 
 293 backend tests pass/three Windows permission skips,21 client checks, production build and all19 browser scenarios pass. Material test verifies the existing weighted cavity primitive, anatomical mask bounds and unchanged vertices/triangles plus jaw/blink displacement magnitude/count. Extra primitive reflects material separation only. Actual mouth-lining open-jaw render reviewed. Realworker59-word public narration:25.0606s/391cues, zerooverlap/outofbounds,21.096s observedgeneration under40s budget; source/hash/public-fields recorded. One sample is not maximum-length or perceptual/performance certification. Windows testserver still emits known Proactor socket-close logs during disconnection scenarios; scenarios pass. New source CI follows push.
+
+CI portability correction: run40850873555 found a raw source-hash mismatch between Windows CRLF and Linux LF. Evidence now retains the raw observed hash and adds canonical JSON content SHA256 for cross-platform fact validation; an LF/CRLF and changed-content regression check protects the distinction. No game/voice/geometry change.
+
+After portability correction:294 backend tests pass/three Windows permission skips. The application/asset code is unchanged from the passing21client/build/19browser local run. New CI follows the evidence-hash fix.

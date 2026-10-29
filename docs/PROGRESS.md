@@ -6,7 +6,7 @@ Ran the actual local worker on59 words/378 characters concatenated from canonica
 
 Next: detailed mouth/face quality and perceived speech review, plus measured latency improvement before live3D integration. November10 risk remains final character quality and long-dialogue responsiveness. No new casting/voice decision is needed; preserve the working fallback.
 
-Verification:293 backend tests pass (three Windows permission skips),21 client checks, production build and all19 browser scenarios pass. Reviewed actual open-jaw lining render; no production appearance approval implied. Prior code CI40843961780 passed; new source CI follows push.
+Verification:294 backend tests pass (three Windows permission skips),21 client checks, production build and all19 browser scenarios pass. Reviewed actual open-jaw lining render; no production appearance approval implied. Prior code CI40843961780 passed; new source CI follows push.
 
 ## First opt-in timed Scholar speech study — October 29, 2026
 
@@ -194,3 +194,5 @@ Inspect Git status, branches/PRs and CI before continuing. Keep one file owner p
 Final local verification: all three character-lab browser scenarios pass after the assertion correction; thirteen existing browser scenarios passed in the full run. Backend 252 pass/2 Windows skips, client 15 pass, build pass. New push CI pending; preceding main run 40800185053 passed.
 
 Final local verification for the bound study: 253 backend tests pass (two Windows permission skips), 15 client checks pass, production build and all fifteen browser scenarios pass. Live local app health is good with scripted dialogue and paid AI disabled. Previous main CI 40812785651 passed; new increment CI follows push.
+
+CI portability correction: run40850873555 found a raw source-hash mismatch between Windows CRLF and Linux LF. Evidence now retains the raw observed hash and adds canonical JSON content SHA256 for cross-platform fact validation; an LF/CRLF and changed-content regression check protects the distinction. No game/voice/geometry change.

@@ -20,6 +20,12 @@ PUBLIC_FIELDS = ('welcome', 'start', 'advance')
 TIMEOUT_SECONDS = 40
 
 
+def case_content_hash(case_bytes):
+    """Hash JSON content consistently across LF/CRLF and formatting differences."""
+    canonical=json.dumps(json.loads(case_bytes),ensure_ascii=False,sort_keys=True,separators=(',',':')).encode('utf-8')
+    return hashlib.sha256(canonical).hexdigest()
+
+
 def main():
     # Use only established public event narration, not evidence/solution/private cards.
     case_path = ROOT / 'backend/cases/blackthorn.json'
@@ -82,6 +88,8 @@ def main():
         'probe': 'longer public narration, real local worker',
         'case_id': case['id'], 'case_version': case['version'],
         'source': 'backend/cases/blackthorn.json', 'source_sha256': hashlib.sha256(case_bytes).hexdigest(),
+        'source_content_sha256': case_content_hash(case_bytes),
+        'source_content_hash_encoding': 'UTF-8 JSON, sorted keys, compact separators, ensure_ascii=False; raw source hash retained separately',
         'public_source_fields': ['narration.' + name for name in PUBLIC_FIELDS],
         'concatenated_for_validation_only': True,
         'text': text, 'word_count': words, 'character_count': len(text),

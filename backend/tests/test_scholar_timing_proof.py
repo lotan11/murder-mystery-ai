@@ -55,7 +55,8 @@ def test_longer_proof_is_tied_to_only_canonical_public_narration():
     case_bytes=(ROOT/'backend/cases/blackthorn.json').read_bytes()
     case=json.loads(case_bytes)
     report=json.loads((ROOT/'assets/character-production/lewis-long-timing-proof.json').read_text(encoding='utf-8'))
-    assert report['source_sha256']==hashlib.sha256(case_bytes).hexdigest()
+    canonical=json.dumps(case,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode('utf-8')
+    assert report['source_content_sha256']==hashlib.sha256(canonical).hexdigest()
     assert report['public_source_fields']==['narration.welcome','narration.start','narration.advance']
     assert report['text']==' '.join(case['narration'][name] for name in ['welcome','start','advance'])
     assert 40<=report['word_count']==len(report['text'].split())<=80
@@ -64,3 +65,12 @@ def test_longer_proof_is_tied_to_only_canonical_public_narration():
     assert report['phoneme_count']>73 and report['out_of_bounds_cues']==report['overlapping_cues']==0
     assert report['sidecar_bytes']<512*1024 and report['worker_elapsed_seconds_observed']<report['worker_timeout_seconds']==40
     assert report['downloads'] is False and report['paid_calls'] is False and report['live_game_modified'] is False
+
+
+def test_case_content_evidence_hash_is_portable_but_detects_changed_facts():
+    spec=importlib.util.spec_from_file_location('long_timing_probe',ROOT/'scripts/probe-scholar-long-timing.py')
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    lf=b'{\n  "narration": {"welcome": "Public line."}, "version": 1\n}\n'
+    assert module.case_content_hash(lf)==module.case_content_hash(lf.replace(b'\n',b'\r\n'))
+    changed=lf.replace(b'Public line.',b'Changed line.')
+    assert module.case_content_hash(lf)!=module.case_content_hash(changed)
