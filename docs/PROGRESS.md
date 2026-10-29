@@ -1,3 +1,9 @@
+## Bound Scholar development study — October 28, 2026
+
+Bound a separate copy of the Scholar face study to the actual imported MPFB skeleton. Public GLB now contains 15 skinned meshes, one skin, 64 joints and the same three real facial morphs. Every exported vertex has normalized positive weights and valid joint references. Skin uses anatomical source weights; groom uses four-neighbour weight transfer; glasses/eyes/scalp attach rigidly to Head and wardrobe to Spine2. This intentionally avoids claiming cloth or shoulder deformation.
+
+Measured positive/negative ten-degree head turns, combined head/jaw/blink evaluation, neutral preservation and rest restoration. A real close-up render verifies head accessories following the head. Character lab adds a separate weighted-rig choice and manual restrained head-turn control, while static and face-only studies remain available. Browser validation measures both the actual bone quaternion and a skinned spectacle vertex. No live game activation, paid provider, speech connection or saved-room change. Likeness, groom/materials, mouth interior, complete facial controls and Lewis alignment remain unfinished and the main November 10 risk. Approved portrait/Lewis +5% remains the playable baseline.
+
 ## Weighted skeleton proof and facial study — October 28, 2026
 
 Completed a real MPFB weighted-source experiment: 64 bones, all 19,158 source vertices weighted, measured head motion and exact rest restoration. This proof remains separate from the public bust. Created an editable face study with three actual pose-derived morphs (jawOpen, eyeBlinkLeft, eyeBlinkRight), transferred to the existing head and beard without changing neutral geometry. Export contains 15 meshes, three morph names and zero skeleton joints. Binary inspection measures nonzero displacement; these are not inventory placeholders.
@@ -134,3 +140,5 @@ M1 source e27ab9a established durable Blackthorn rehearsal. M2 source 091aa6b ad
 Inspect Git status, branches/PRs and CI before continuing. Keep one file owner per parallel stream, integrate tests, update these documents and commit accepted increments. No scheduled background work is configured.
 
 Final local verification: all three character-lab browser scenarios pass after the assertion correction; thirteen existing browser scenarios passed in the full run. Backend 252 pass/2 Windows skips, client 15 pass, build pass. New push CI pending; preceding main run 40800185053 passed.
+
+Final local verification for the bound study: 253 backend tests pass (two Windows permission skips), 15 client checks pass, production build and all fifteen browser scenarios pass. Live local app health is good with scripted dialogue and paid AI disabled. Previous main CI 40812785651 passed; new increment CI follows push.

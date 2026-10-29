@@ -1,0 +1,154 @@
+{
+  "source_face_study_sha256": "9824ffa51275815d3d7fe252e76dbd31d0fd992e40e02ecb2ec21f9110ee5153",
+  "bone_count": 64,
+  "meshes": {
+    "Scholar Brown tweed blocking": {
+      "vertices": 1594,
+      "weighted_vertices": 1594,
+      "method": "rigid torso",
+      "max_nearest_source_distance_m": 0,
+      "min_weight_sum": 1,
+      "max_weight_sum": 1,
+      "head_turn_max_delta_m": 0.0
+    },
+    "Scholar Forest wool waistcoat": {
+      "vertices": 7,
+      "weighted_vertices": 7,
+      "method": "rigid torso",
+      "max_nearest_source_distance_m": 0,
+      "min_weight_sum": 1,
+      "max_weight_sum": 1,
+      "head_turn_max_delta_m": 0.0
+    },
+    "Scholar Grey hair underlayer": {
+      "vertices": 12843,
+      "weighted_vertices": 12843,
+      "method": "rigid head",
+      "max_nearest_source_distance_m": 0,
+      "min_weight_sum": 1,
+      "max_weight_sum": 1,
+      "head_turn_max_delta_m": 0.023408445995382002
+    },
+    "Scholar Grey strand 0": {
+      "vertices": 11886,
+      "weighted_vertices": 11886,
+      "method": "source-weight transfer",
+      "max_nearest_source_distance_m": 0.07319991290569305,
+      "min_weight_sum": 0.9999999999999998,
+      "max_weight_sum": 1.0000000000000002,
+      "head_turn_max_delta_m": 0.022816227532155363
+    },
+    "Scholar Grey strand 1": {
+      "vertices": 16878,
+      "weighted_vertices": 16878,
+      "method": "source-weight transfer",
+      "max_nearest_source_distance_m": 0.07283063977956772,
+      "min_weight_sum": 0.9999999999999998,
+      "max_weight_sum": 1.0000000000000002,
+      "head_turn_max_delta_m": 0.023372474692982537
+    },
+    "Scholar Grey strand 2": {
+      "vertices": 13932,
+      "weighted_vertices": 13932,
+      "method": "source-weight transfer",
+      "max_nearest_source_distance_m": 0.07343469560146332,
+      "min_weight_sum": 0.9999999999999998,
+      "max_weight_sum": 1.0000000000000002,
+      "head_turn_max_delta_m": 0.02360255613986606
+    },
+    "Scholar Grey strand 3": {
+      "vertices": 14076,
+      "weighted_vertices": 14076,
+      "method": "source-weight transfer",
+      "max_nearest_source_distance_m": 0.07208970189094543,
+      "min_weight_sum": 0.9999999999999998,
+      "max_weight_sum": 1.0000000000000002,
+      "head_turn_max_delta_m": 0.02344580783245075
+    },
+    "Scholar Grey strand 4": {
+      "vertices": 12114,
+      "weighted_vertices": 12114,
+      "method": "source-weight transfer",
+      "max_nearest_source_distance_m": 0.07517003268003464,
+      "min_weight_sum": 0.9999999999999998,
+      "max_weight_sum": 1.0000000000000002,
+      "head_turn_max_delta_m": 0.02013518554696583
+    },
+    "Scholar Ivory shirt": {
+      "vertices": 13,
+      "weighted_vertices": 13,
+      "method": "rigid torso",
+      "max_nearest_source_distance_m": 0,
+      "min_weight_sum": 1,
+      "max_weight_sum": 1,
+      "head_turn_max_delta_m": 0.0
+    },
+    "Scholar Muted patterned tie blocking": {
+      "vertices": 9,
+      "weighted_vertices": 9,
+      "method": "rigid torso",
+      "max_nearest_source_distance_m": 0,
+      "min_weight_sum": 1,
+      "max_weight_sum": 1,
+      "head_turn_max_delta_m": 0.0
+    },
+    "Scholar Natural eye whites": {
+      "vertices": 1220,
+      "weighted_vertices": 1220,
+      "method": "rigid head",
+      "max_nearest_source_distance_m": 0,
+      "min_weight_sum": 1,
+      "max_weight_sum": 1,
+      "head_turn_max_delta_m": 0.01747983857151268
+    },
+    "Scholar Neutral aged skin blockout": {
+      "vertices": 4353,
+      "weighted_vertices": 4353,
+      "method": "source-weight transfer",
+      "max_nearest_source_distance_m": 0.06751283258199692,
+      "min_weight_sum": 0.9999999999999998,
+      "max_weight_sum": 1.0000000000000002,
+      "head_turn_max_delta_m": 0.023097721167616454
+    },
+    "Scholar Pupils": {
+      "vertices": 532,
+      "weighted_vertices": 532,
+      "method": "rigid head",
+      "max_nearest_source_distance_m": 0,
+      "min_weight_sum": 1,
+      "max_weight_sum": 1,
+      "head_turn_max_delta_m": 0.017542785349730902
+    },
+    "Scholar Slate blue grey iris": {
+      "vertices": 1220,
+      "weighted_vertices": 1220,
+      "method": "rigid head",
+      "max_nearest_source_distance_m": 0,
+      "min_weight_sum": 1,
+      "max_weight_sum": 1,
+      "head_turn_max_delta_m": 0.017596865131063753
+    },
+    "Scholar Thin dark bronze spectacle rims": {
+      "vertices": 2340,
+      "weighted_vertices": 2340,
+      "method": "rigid head",
+      "max_nearest_source_distance_m": 0,
+      "min_weight_sum": 1,
+      "max_weight_sum": 1,
+      "head_turn_max_delta_m": 0.021516687016581437
+    }
+  },
+  "speech_connected": false,
+  "status": "Experimental weighted bust; not finished likeness, full facial rig or production speech avatar",
+  "method": "Exact-nearest source weights for skin; inverse-distance four-neighbour transfer for groom; rigid Head accessories and Spine2 wardrobe. Normalized strongest four influences.",
+  "binding_neutral_max_error_m": 1.2737006692050962e-07,
+  "negative_head_turn_max_delta_m": 0.023602554179462085,
+  "combined_pose_max_delta_m": 0.023602554179462085,
+  "restored_max_error_m": 1.2737006692050962e-07,
+  "head_turn_degrees": 10,
+  "limitations": [
+    "Head/neck binding proof only; eye gaze, jaw bone, shoulders and combined extreme poses are not approved.",
+    "Three facial morphs only; full expressive/viseme set, speech alignment, mouth interior, groom and materials remain unfinished.",
+    "Wardrobe intentionally rigid to Spine2; no cloth simulation or shoulder deformation claim."
+  ]
+}

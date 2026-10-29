@@ -5,7 +5,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import "./character-lab.css";
 
 type Preset = "front" | "profile" | "three-quarter";
-type DevelopmentModel = "blockout" | "face-study";
+type DevelopmentModel = "blockout" | "face-study" | "rig-study";
 type FacialControl = "jawOpen" | "eyeBlinkLeft" | "eyeBlinkRight";
 const facialControls: { name: FacialControl; label: string; max: number }[] = [
   { name: "jawOpen", label: "Jaw opening", max: 0.38 },
@@ -15,6 +15,7 @@ const facialControls: { name: FacialControl; label: string; max: number }[] = [
 const modelFiles: Record<DevelopmentModel, string> = {
   blockout: "scholar-blockout.glb",
   "face-study": "scholar-face-study.glb",
+  "rig-study": "scholar-rig-study.glb",
 };
 const neutralFace = { jawOpen: 0, eyeBlinkLeft: 0, eyeBlinkRight: 0 };
 type MorphBinding = { influences: number[]; index: number };
@@ -29,10 +30,12 @@ type Inventory = {
 function releaseModel(root: THREE.Object3D) {
   const geometries = new Set<THREE.BufferGeometry>(),
     materials = new Set<THREE.Material>(),
-    textures = new Set<THREE.Texture>();
+    textures = new Set<THREE.Texture>(),
+    skeletons = new Set<THREE.Skeleton>();
   root.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
     geometries.add(object.geometry);
+    if (object instanceof THREE.SkinnedMesh) skeletons.add(object.skeleton);
     for (const material of Array.isArray(object.material)
       ? object.material
       : [object.material]) {
@@ -44,15 +47,20 @@ function releaseModel(root: THREE.Object3D) {
   geometries.forEach((geometry) => geometry.dispose());
   materials.forEach((material) => material.dispose());
   textures.forEach((texture) => texture.dispose());
+  skeletons.forEach((skeleton) => skeleton.dispose());
 }
 
 export default function CharacterLab() {
   const mount = useRef<HTMLDivElement>(null),
     viewer = useRef<HTMLDivElement>(null),
     morphBindings = useRef<Partial<Record<FacialControl, MorphBinding[]>>>({}),
+    headBinding = useRef<{ bone: THREE.Bone; rest: THREE.Quaternion } | null>(null),
+    headVertex = useRef<{ mesh: THREE.SkinnedMesh; rest: THREE.Vector3 } | null>(null),
     cameraPreset = useRef<(preset: Preset) => void>(() => {});
   const [model, setModel] = useState<DevelopmentModel>("blockout"),
     [discoveredControls, setDiscoveredControls] = useState<FacialControl[]>([]),
+    [hasHead, setHasHead] = useState(false),
+    [headTurn, setHeadTurn] = useState(0),
     [faceValues, setFaceValues] = useState<Record<FacialControl, number>>({
       ...neutralFace,
     });
@@ -68,6 +76,10 @@ export default function CharacterLab() {
     setDiscoveredControls([]);
     setFaceValues({ ...neutralFace });
     morphBindings.current = {};
+    headBinding.current = null;
+    headVertex.current = null;
+    setHasHead(false);
+    setHeadTurn(0);
     let disposed = false,
       frame = 0,
       previous = 0,
@@ -96,9 +108,13 @@ export default function CharacterLab() {
       }
       cameraPreset.current = () => {};
       morphBindings.current = {};
+      headBinding.current = null;
+      headVertex.current = null;
       if (viewer.current) {
         viewer.current.dataset.morphActive = "0";
         viewer.current.dataset.morphMax = "0";
+        viewer.current.dataset.headTurn = "0";
+        viewer.current.dataset.headDisplacement = "0";
       }
     }
     function contextLost(event: Event) {
@@ -162,6 +178,23 @@ export default function CharacterLab() {
               ),
           );
           if (viewer.current) {
+            scene.updateMatrixWorld(true);
+            const sample = headVertex.current;
+            let displacement = 0;
+            if (sample) {
+              sample.mesh.skeleton.update();
+              const posed = sample.mesh.getVertexPosition(0, new THREE.Vector3());
+              posed.applyMatrix4(sample.mesh.matrixWorld);
+              displacement = posed.distanceTo(sample.rest);
+            }
+            viewer.current.dataset.headDisplacement = displacement.toFixed(6);
+            const head = headBinding.current;
+            const rotation = head
+              ? head.rest.clone().invert().multiply(head.bone.quaternion)
+              : new THREE.Quaternion();
+            viewer.current.dataset.headTurn = THREE.MathUtils.radToDeg(
+              2 * Math.atan2(rotation.y, rotation.w),
+            ).toFixed(3);
             viewer.current.dataset.morphActive = String(
               influenceGroups.filter((value) => value > 0.001).length,
             );
@@ -221,8 +254,22 @@ export default function CharacterLab() {
               }
             }
           }
-          if (object instanceof THREE.SkinnedMesh) skinnedMeshes += 1;
-          if (object instanceof THREE.Bone) joints += 1;
+          if (object instanceof THREE.SkinnedMesh) {
+            skinnedMeshes += 1;
+            if (object.name.toLowerCase().includes("spectacle") &&
+                object.geometry.getAttribute("position")?.count) {
+              headVertex.current = { mesh: object, rest: new THREE.Vector3() };
+            }
+          }
+          if (object instanceof THREE.Bone) {
+            joints += 1;
+            if (object.name.replace(/^mixamorig:?/, "") === "Head") {
+              headBinding.current = {
+                bone: object,
+                rest: object.quaternion.clone(),
+              };
+            }
+          }
         });
         if (!meshes) {
           releaseModel(gltf.scene);
@@ -230,6 +277,12 @@ export default function CharacterLab() {
         }
         scene.add(gltf.scene);
         gltf.scene.updateMatrixWorld(true);
+        if (headVertex.current) {
+          const sample = headVertex.current;
+          sample.mesh.skeleton.update();
+          sample.mesh.getVertexPosition(0, sample.rest);
+          sample.rest.applyMatrix4(sample.mesh.matrixWorld);
+        }
         const bounds = new THREE.Box3().setFromObject(gltf.scene),
           size = bounds.getSize(new THREE.Vector3()),
           center = bounds.getCenter(new THREE.Vector3());
@@ -281,6 +334,7 @@ export default function CharacterLab() {
             .filter((control) => !!morphBindings.current[control.name]?.length)
             .map((control) => control.name),
         );
+        setHasHead(headBinding.current !== null);
         setState("ready");
       } catch {
         if (disposed || cleaned) return;
@@ -312,6 +366,19 @@ export default function CharacterLab() {
     });
     setFaceValues((current) => ({ ...current, [name]: safe }));
   }
+  function applyHead(value: number) {
+    const binding = headBinding.current;
+    if (!binding) return;
+    const safe = Math.max(-10, Math.min(10, Number.isFinite(value) ? value : 0));
+    binding.bone.quaternion.copy(binding.rest).multiply(
+      new THREE.Quaternion().setFromAxisAngle(
+        new THREE.Vector3(0, 1, 0),
+        THREE.MathUtils.degToRad(safe),
+      ),
+    );
+    binding.bone.updateMatrixWorld(true);
+    setHeadTurn(safe);
+  }
   function resetFace() {
     Object.values(morphBindings.current).forEach((bindings) =>
       bindings.forEach((binding) => {
@@ -323,6 +390,8 @@ export default function CharacterLab() {
   function changeModel(next: DevelopmentModel) {
     if (next === model) return;
     resetFace();
+    applyHead(0);
+    setHasHead(false);
     setState("loading");
     setInventory(null);
     setDiscoveredControls([]);
@@ -362,7 +431,11 @@ export default function CharacterLab() {
             value={model}
             onChange={(event) =>
               changeModel(
-                event.target.value === "face-study" ? "face-study" : "blockout",
+                event.target.value === "rig-study"
+                  ? "rig-study"
+                  : event.target.value === "face-study"
+                    ? "face-study"
+                    : "blockout",
               )
             }
           >
@@ -370,9 +443,12 @@ export default function CharacterLab() {
             <option value="face-study">
               Face study · three-control experiment
             </option>
+            <option value="rig-study">Rig study · experimental binding</option>
           </select>
           <p>
-            {model === "face-study"
+            {model === "rig-study"
+              ? "An experimental weighted bust with manual head and face controls. Likeness, materials and full visemes remain unfinished; no speech is connected."
+              : model === "face-study"
               ? "A static face experiment with three manually controlled morphs. No skeleton or speech-driven lip sync is connected."
               : "The original unapproved blockout remains available for comparison."}
           </p>
@@ -404,6 +480,8 @@ export default function CharacterLab() {
               aria-label="Scholar 3D workbench"
               data-model-state={state}
               data-development-model={model}
+              data-head-turn="0"
+              data-head-displacement="0"
               data-morph-active="0"
               data-morph-max="0"
               data-mesh-count={inventory?.meshes || 0}
@@ -415,18 +493,24 @@ export default function CharacterLab() {
                 <div className="character-lab-overlay" role="status">
                   {model === "blockout"
                     ? "Opening the local Scholar blockout…"
-                    : "Opening the local Scholar face study…"}
+                    : model === "rig-study"
+                      ? "Opening the local Scholar rig study…"
+                      : "Opening the local Scholar face study…"}
                 </div>
               )}
               {state === "failed" && (
                 <div className="character-lab-overlay">
                   {model === "blockout"
                     ? "3D blockout unavailable"
-                    : "3D face study unavailable"}
+                    : model === "rig-study"
+                      ? "3D rig study unavailable"
+                      : "3D face study unavailable"}
                 </div>
               )}
               <span className="character-lab-watermark">
-                {model === "face-study"
+                {model === "rig-study"
+                  ? "RIG STUDY · EXPERIMENTAL BINDING"
+                  : model === "face-study"
                   ? "FACE STUDY · THREE-CONTROL EXPERIMENT"
                   : "BLOCKOUT · NOT ACTIVE IN THE GAME"}
               </span>
@@ -463,7 +547,7 @@ export default function CharacterLab() {
                 Reset camera
               </button>
             </div>
-            {model === "face-study" && (
+            {model !== "blockout" && (
               <section
                 className="character-lab-face-controls"
                 aria-label="Face study controls"
@@ -471,8 +555,8 @@ export default function CharacterLab() {
                 <h3>Manual facial experiment</h3>
                 <p>
                   These controls drive real morph targets found in the selected
-                  file. Influence is capped at 0.38. This does not establish a
-                  usable speech rig.
+                  file. Jaw opening is capped at 0.38; blinks can close fully.
+                  This does not establish a usable speech rig.
                 </p>
                 {state === "ready" && discoveredControls.length > 0 ? (
                   <>
@@ -522,6 +606,35 @@ export default function CharacterLab() {
                       : "No supported facial controls are available in the loaded model."}
                   </p>
                 )}
+              </section>
+            )}
+            {model === "rig-study" && state === "ready" && hasHead && (
+              <section
+                className="character-lab-face-controls"
+                aria-label="Rig study controls"
+              >
+                <h3>Manual head experiment</h3>
+                <p>
+                  Turns the actual head bone up to ten degrees from its loaded
+                  rest pose. This is a binding study, with unfinished likeness,
+                  materials and speech controls.
+                </p>
+                <div className="character-lab-face-slider">
+                  <label htmlFor="rig-head-turn">
+                    Head turn
+                    <output htmlFor="rig-head-turn">{headTurn.toFixed(1)}°</output>
+                  </label>
+                  <input
+                    id="rig-head-turn"
+                    type="range"
+                    min="-10"
+                    max="10"
+                    step="0.5"
+                    value={headTurn}
+                    onChange={(event) => applyHead(Number(event.target.value))}
+                  />
+                </div>
+                <button onClick={() => applyHead(0)}>Reset head pose</button>
               </section>
             )}
             <p className="character-lab-note">

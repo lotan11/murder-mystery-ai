@@ -31,3 +31,7 @@ The workbench displays actual mesh, joint, skin and named-morph counts measured 
 ## Milestone boundary
 
 The approved portrait + live Lewis presentation remains the playable TV default at the approved pace. The authoring model is a work in progress and has not replaced it. This milestone establishes editable anatomical geometry, reproducible export and inspection; likeness refinement, production hair/cloth materials, facial topology/shape targets, a compatible skeleton and actual speech deformation testing remain real follow-up work. See SCHOLAR_RIG_BRIEF.md for the acceptance gates.
+
+## Separate weighted rig study
+
+The lab now also offers Weighted rig study. This separate GLB has 64 joints, real skin weights and three morphs; manual head turn is limited to ten degrees each way. The original static blockout and face-only experiment remain separate. No speech, production activation or full facial compatibility is implied. Build after the face study with portable Blender --background --factory-startup --python-exit-code 1 --python scripts/build-scholar-bound-study.py. See rig-study-validation.json for measured deformation and rig-study-glb-validation.json for actual export inventory.

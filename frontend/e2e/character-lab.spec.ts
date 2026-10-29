@@ -54,3 +54,35 @@ test('face study moves actual morphs within restrained limits and resets',async(
  await expect(viewer).toHaveAttribute('data-model-state','ready');
  await expect(viewer).toHaveAttribute('data-morph-count','0');
 });
+
+
+test('rig study turns the actual head bone, resets and retains facial controls',async({page})=>{
+ test.setTimeout(90000);const errors:string[]=[];const speech:string[]=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ page.on('request',r=>{if(r.url().includes('scholar-speech'))speech.push(r.url());});
+ await page.goto('/?view=character-lab');
+ const viewer=page.getByLabel('Scholar 3D workbench',{exact:true});
+ await page.getByLabel('Development model',{exact:true}).selectOption('rig-study');
+ await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
+ expect(Number(await viewer.getAttribute('data-joint-count'))).toBeGreaterThan(0);
+ await expect(viewer).toHaveAttribute('data-morph-count','3');
+ const head=page.getByRole('slider',{name:/Head turn/});
+ await head.focus();await head.press('End');
+ await expect(head).toHaveValue('10');
+ await expect(viewer).toHaveAttribute('data-head-turn','10.000');
+ await expect.poll(async()=>Number(await viewer.getAttribute('data-head-displacement'))).toBeGreaterThan(0.001);
+ await head.press('Home');
+ await expect(viewer).toHaveAttribute('data-head-turn','-10.000');
+ await page.getByRole('button',{name:'Reset head pose'}).click();
+ await expect(head).toHaveValue('0');
+ await expect(viewer).toHaveAttribute('data-head-turn','0.000');
+ await expect(viewer).toHaveAttribute('data-head-displacement','0.000000');
+ const jaw=page.getByRole('slider',{name:/Jaw opening/});
+ await jaw.focus();await jaw.press('End');
+ await expect(viewer).toHaveAttribute('data-morph-max','0.380');
+ await page.getByLabel('Development model',{exact:true}).selectOption('blockout');
+ await expect(viewer).toHaveAttribute('data-model-state','ready');
+ await expect(viewer).toHaveAttribute('data-joint-count','0');
+ await expect(head).toHaveCount(0);
+ expect(speech).toEqual([]);expect(errors).toEqual([]);
+});

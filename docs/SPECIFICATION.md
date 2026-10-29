@@ -72,3 +72,7 @@ The selected default TV presentation is The Scholar concept portrait with option
 ## Character asset development
 
 A separate `?view=character-lab` loads the actual anatomical development GLB beside the approved portrait with camera presets, measured geometry/rig inventory and failure recovery. It has no speech or activation path. The editable source/configuration/build script are versioned; portable authoring tools stay optional and ignored. Likeness, production materials and facial rig quality gates remain mandatory before replacing the approved portrait presentation.
+
+## Character authoring checkpoint — October 28, 2026
+
+The separate lab supports the original static bust, a three-morph face study and an actual 64-joint weighted bust study with restrained manual head turn. These are development inspection modes, not final character approval or speech integration. The approved portrait/live Lewis remains the TV presentation. Full visemes, expressive face quality, production likeness/groom and actual voice alignment remain required for the animated Scholar.
