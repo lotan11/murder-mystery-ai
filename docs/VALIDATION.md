@@ -135,3 +135,7 @@ Full regression completed: all fifteen browser scenarios pass, alongside backend
 During the full Windows browser run, the test server logged Proactor connection-reset callbacks as clients disconnected; affected guest/full-case scenarios still passed. This is a teardown-log observation, not a new application exception-handler suppression or an assertion of failure-free logs.
 
 Final mouth-increment regression: all fifteen browser scenarios pass, production build and client15 pass; backend255 pass/two skips. New push CI follows.
+
+## October29 CI performance correction and timing probe
+
+Prior CI40829947023 failed only the90s rig browser budget (fourteen others passed). Root cause was unnecessary continuous drawing of the static dense model. New actual render-count tests prove idle settling and camera/pose redraw; no timeout relaxation.264 backend tests pass/two Windows skips, client15/build pass, all15 browser scenarios pass locally (rig5.7s). Optional real local timing probe:73 model spans/5.502s, same-inference audio object and PCM unchanged. Rejects empty, nonfinite, overlapping, out-of-range or extra-field timing data. Live voice worker untouched; no paid calls. New source CI follows push.

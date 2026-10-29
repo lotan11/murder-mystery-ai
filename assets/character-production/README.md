@@ -62,3 +62,9 @@ rig-study.blend and scholar-rig-study.glb bind the separate face study to the re
 The weighted rig now has eight actual morphs: the original three plus five brows from pinned targets/expression/units/caucasian. Build source records target hashes, upper-face affected height and actual transferred deltas. The face-only GLB remains three controls. See docs/assets/rig-study-brow-lift.png for the real restrained preview; production expressions/visemes and speech alignment remain unfinished.
 
 October 29: weighted study now has eleven controls, adding three real mouth units (pursing, compression and corner-puller) from the same pinned raw expression assets. Rounding/compression caps0.25, slight-smile cap0.20. Source hashes and limits are recorded; original eight displacement inventories are unchanged. No full phoneme/viseme mapping or speech connection is claimed.
+
+## Same-inference Lewis timing proof
+
+Run `.\data\casting-runtime\Scripts\python.exe scripts/probe-scholar-timing.py` with the already prepared optional runtime/models. It verifies pinned assets without downloads, captures the existing create() call's internal create_timed() output, validates model-derived phoneme spans and writes WAVs only under ignored data/scholar-timing-proof. lewis-timing-proof.json is the small checked-in evidence record. Current fixed line:73 spans/5.502s, same waveform object/PCM, Lewis0.92 synthesis and approved1.05 playback. This is a diagnostic, not a worker/API change.
+
+The existing model reports duration output; another paid alignment service is not needed to investigate these cues. Keep metadata and audio from the same inference because repeated neural renders vary. Cue time is original WAV seconds; audio.currentTime follows the source clock at approved playback rate. Model-predicted spans are not hand-verified alignment and still require long-line, bounds and actual facial-playback testing.

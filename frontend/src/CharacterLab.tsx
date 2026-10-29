@@ -77,7 +77,8 @@ export default function CharacterLab() {
     morphBindings = useRef<Partial<Record<FacialControl, MorphBinding[]>>>({}),
     headBinding = useRef<{ bone: THREE.Bone; rest: THREE.Quaternion } | null>(null),
     headVertex = useRef<{ mesh: THREE.SkinnedMesh; rest: THREE.Vector3 } | null>(null),
-    cameraPreset = useRef<(preset: Preset) => void>(() => {});
+    cameraPreset = useRef<(preset: Preset) => void>(() => {}),
+    requestRender = useRef<() => void>(() => {});
   const [model, setModel] = useState<DevelopmentModel>("blockout"),
     [discoveredControls, setDiscoveredControls] = useState<FacialControl[]>([]),
     [hasHead, setHasHead] = useState(false),
@@ -104,7 +105,10 @@ export default function CharacterLab() {
     let disposed = false,
       frame = 0,
       previous = 0,
-      cleaned = false;
+      cleaned = false,
+      dirty = true,
+      renderCount = 0;
+    requestRender.current = () => { dirty = true; };
     const abort = new AbortController();
     let renderer: THREE.WebGLRenderer | null = null,
       controls: OrbitControls | null = null,
@@ -128,6 +132,7 @@ export default function CharacterLab() {
         renderer.domElement.remove();
       }
       cameraPreset.current = () => {};
+      requestRender.current = () => {};
       morphBindings.current = {};
       headBinding.current = null;
       headVertex.current = null;
@@ -136,6 +141,7 @@ export default function CharacterLab() {
         viewer.current.dataset.morphMax = "0";
         viewer.current.dataset.headTurn = "0";
         viewer.current.dataset.headDisplacement = "0";
+        viewer.current.dataset.renderCount = "0";
       }
     }
     function contextLost(event: Event) {
@@ -164,6 +170,7 @@ export default function CharacterLab() {
         controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.12;
+        controls.addEventListener("change", () => { dirty = true; });
         controls.target.set(0, 1.3, 0);
         scene.add(new THREE.HemisphereLight(0xffffff, 0x969d98, 2.2));
         const key = new THREE.DirectionalLight(0xffffff, 3);
@@ -179,6 +186,7 @@ export default function CharacterLab() {
           renderer.setSize(width, height);
           camera.aspect = width / height;
           camera.updateProjectionMatrix();
+          dirty = true;
         };
         observer = new ResizeObserver(resize);
         observer.observe(host);
@@ -189,6 +197,10 @@ export default function CharacterLab() {
           if (now - previous < 1000 / 30) return;
           previous = now;
           controls?.update();
+          // This workbench has no time-driven animation. Keep damping responsive,
+          // but avoid reskinning and redrawing unchanged geometry while idle.
+          if (!dirty) return;
+          dirty = false;
           const influenceGroups = Object.values(morphBindings.current).map(
             (bindings) =>
               Math.max(
@@ -224,7 +236,11 @@ export default function CharacterLab() {
               ...influenceGroups,
             ).toFixed(3);
           }
-          renderer?.render(scene, camera);
+          if (renderer) {
+            renderer.render(scene, camera);
+            renderCount += 1;
+            if (viewer.current) viewer.current.dataset.renderCount = String(renderCount);
+          }
         };
         frame = requestAnimationFrame(draw);
         const response = await fetch(`/character-lab/${modelFiles[model]}`, {
@@ -340,6 +356,7 @@ export default function CharacterLab() {
           camera.position.copy(target).addScaledVector(direction, distance);
           controls.target.copy(target);
           controls.update();
+          dirty = true;
         };
         cameraPreset.current("front");
         setInventory({
@@ -356,6 +373,7 @@ export default function CharacterLab() {
             .map((control) => control.name),
         );
         setHasHead(headBinding.current !== null);
+        requestRender.current();
         setState("ready");
       } catch {
         if (disposed || cleaned) return;
@@ -385,6 +403,7 @@ export default function CharacterLab() {
     bindings.forEach((binding) => {
       binding.influences[binding.index] = safe;
     });
+    requestRender.current();
     setFaceValues((current) => ({ ...current, [name]: safe }));
   }
   function applyHead(value: number) {
@@ -398,6 +417,7 @@ export default function CharacterLab() {
       ),
     );
     binding.bone.updateMatrixWorld(true);
+    requestRender.current();
     setHeadTurn(safe);
   }
   function resetFace() {
@@ -406,6 +426,7 @@ export default function CharacterLab() {
         binding.influences[binding.index] = 0;
       }),
     );
+    requestRender.current();
     setFaceValues({ ...neutralFace });
   }
   function changeModel(next: DevelopmentModel) {
@@ -501,6 +522,7 @@ export default function CharacterLab() {
               aria-label="Scholar 3D workbench"
               data-model-state={state}
               data-development-model={model}
+              data-render-count="0"
               data-head-turn="0"
               data-head-displacement="0"
               data-morph-active="0"

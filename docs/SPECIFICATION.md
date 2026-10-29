@@ -76,3 +76,5 @@ A separate `?view=character-lab` loads the actual anatomical development GLB bes
 ## Character authoring checkpoint — October 28, 2026
 
 The separate lab supports the original static bust, a three-morph face study and an actual 64-joint weighted bust study with eleven facial controls and restrained manual head turn. These are development inspection modes, not final character approval or speech integration. The approved portrait/live Lewis remains the TV presentation. Full visemes, expressive face quality, production likeness/groom and actual voice alignment remain required for the animated Scholar.
+
+The static character lab renders on model/camera/manual-control changes and settles idle. A separate local probe demonstrates model-supplied Lewis phoneme timings from the same synthesis waveform; live game speech and avatar activation are unchanged. Predicted timing is not manual alignment certification.

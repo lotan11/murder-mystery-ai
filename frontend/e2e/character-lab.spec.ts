@@ -14,6 +14,18 @@ test('Scholar workbench loads real development geometry without activating the g
  await expect(page.getByRole('button',{name:'Three-quarter',exact:true})).toHaveAttribute('aria-pressed','true');
  await page.getByRole('button',{name:'Reset camera',exact:true}).click();
  await expect(page.getByRole('button',{name:'Front',exact:true})).toHaveAttribute('aria-pressed','true');
+ const canvasBounds=await viewer.locator('canvas').boundingBox();
+ if(!canvasBounds)throw new Error('The model canvas has no drag surface');
+ const beforeOrbit=Number(await viewer.getAttribute('data-render-count'));
+ await page.mouse.move(canvasBounds.x+canvasBounds.width/2,canvasBounds.y+canvasBounds.height/2);
+ await page.mouse.down();await page.mouse.move(canvasBounds.x+canvasBounds.width/2+70,canvasBounds.y+canvasBounds.height/2,{steps:4});await page.mouse.up();
+ await expect.poll(async()=>Number(await viewer.getAttribute('data-render-count'))).toBeGreaterThan(beforeOrbit);
+ // Orbit damping must finish naturally, then leave the GPU idle again.
+ await expect.poll(async()=>{
+   const before=await viewer.getAttribute('data-render-count');
+   await page.waitForTimeout(300);
+   return await viewer.getAttribute('data-render-count')===before;
+ }).toBe(true);
  await expect(page.getByLabel('Loaded model inventory')).toContainText('not an approved likeness');
  await page.setViewportSize({width:390,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
@@ -67,10 +79,20 @@ test('rig study turns the actual head bone, resets and retains facial controls',
  await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
  expect(Number(await viewer.getAttribute('data-joint-count'))).toBeGreaterThan(0);
  await expect(viewer).toHaveAttribute('data-morph-count','11');
+ // The manual lab should draw its loaded pose, then leave the GPU idle.
+ await expect.poll(async()=>{
+   const before=await viewer.getAttribute('data-render-count');
+   await page.waitForTimeout(300);
+   return Number(before)>0 && await viewer.getAttribute('data-render-count')===before;
+ }).toBe(true);
+ const idleRenders=Number(await viewer.getAttribute('data-render-count'));
+ await page.waitForTimeout(300);
+ await expect(viewer).toHaveAttribute('data-render-count',String(idleRenders));
  const head=page.getByRole('slider',{name:/Head turn/});
  await head.focus();await head.press('End');
  await expect(head).toHaveValue('10');
  await expect(viewer).toHaveAttribute('data-head-turn','10.000');
+ await expect.poll(async()=>Number(await viewer.getAttribute('data-render-count'))).toBeGreaterThan(idleRenders);
  await expect.poll(async()=>Number(await viewer.getAttribute('data-head-displacement'))).toBeGreaterThan(0.001);
  await head.press('Home');
  await expect(viewer).toHaveAttribute('data-head-turn','-10.000');

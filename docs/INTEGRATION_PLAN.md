@@ -41,3 +41,5 @@ October 28 binding checkpoint: separate bust now exports actual skin weights and
 October 28 expression checkpoint: five real brow controls added to the weighted bust (eight total); upper-face localization, unchanged jaw/blinks and restrained lab controls verified. Mouth/lip shaping, full expression/viseme quality and real voice alignment remain incomplete.
 
 October 29 mouth checkpoint: real rounding/compression/slight-smile units bring the weighted study to eleven controls. Existing eight deformations unchanged. This does not establish phoneme mapping, a finished mouth interior or actual voice synchronization; these remain on the critical path.
+
+October29 reliability/timing checkpoint: fixed continuous static-lab drawing after CI rig test timed out; all15 local browser scenarios now pass with original90s budget. Approved model exposes phoneme durations; same-inference fixed-line proof captures73 spans with unchanged audio. Runtime cue integration, perceived alignment and finished face quality remain pending. No outside paid alignment dependency is currently necessary for the next experiment.

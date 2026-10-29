@@ -39,3 +39,5 @@ The lab now also offers Weighted rig study. This separate GLB has 64 joints, rea
 Brow geometry comes from pinned raw targets/expression/units, not the empty packaged data/expressions directory. Five new controls use actual sparse anatomical deltas and affect the skin plus nearby brow guides. Lifts cap at0.35, lowering at0.25; no speech mapping or final expression-quality approval is implied.
 
 Three manual mouth units now complement the brows, jaw and blinks: rounding 0.25, compression 0.25, slight smile 0.20. Renders in docs/assets/rig-study-mouthPucker.png, rig-study-lipPress.png and rig-study-mouthSmile.png show actual geometry at those limits. These are not a complete viseme set; mouth interior and speech synchronization remain unfinished.
+
+The static lab now draws on change and skips idle GPU work; orbit damping and manual shape/pose changes still update actual geometry. This optimization does not change time-driven TV animation. See the separate Lewis timing probe in assets/character-production/README.md; no speech connection has been activated.
