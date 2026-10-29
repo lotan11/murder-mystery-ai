@@ -10,6 +10,8 @@ A separate actual-asset review confirms the model is not yet premium-ready: hair
 
 Verification:310 backend tests pass (three Windows permission skips),21 client checks, production build and all19 browser scenarios pass. Actual cache probe confirms one worker, identical audio/cues and bounded retained payload. Prior code CI40851331046 passed; new source CI follows push.
 
+Hosted CI confirmation: source commitb17ee59 passes run40859619619, including backend/client/build/all19 browser scenarios. This follow-up changes documentation only.
+
 ## Anatomical oral lining and longer narration evidence — October 29, 2026
 
 Refined the weighted Scholar study's existing mouth cavity using the pinned anatomical inside-mouth UV mask. Assigned a dark rough oral-lining material to398 existing faces/418 vertices, with source hash and bounds recorded. No new geometry, fake black plane, teeth or tongue were added. Actual vertex/triangle counts, neutral shape and original jaw/blink displacement counts/magnitudes remain unchanged; only the head's material primitives split. Reviewed the actual open-jaw render. Detailed teeth/tongue, groom, wardrobe, likeness and natural speech shapes remain unfinished; the approved game portrait/live Lewis remains the default.

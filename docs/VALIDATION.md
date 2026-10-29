@@ -163,3 +163,5 @@ Hosted CI40851331046 passes for corrected code commitaf0d1a8, including backend/
 ## October29 bounded speech cache
 
 310 backend tests pass/three Windows permission skips,21 client checks/build/all19 browser scenarios pass. Tests cover successful repeatedworker avoidance, pairedtiming/audio identity, freshcopies, exact UTF8payload budget, count/LRU/TTL, unavailable/textchecks beforelookup, warmhits duringothercoldgeneration, oversized/error/timeout/cancellation nonretention, cachefaultfallback and unchanged auth/pause/currentrevision/staleprojection. Realprobe:59publicwords,391cues/25.06s,12.107123s initialcachemiss/0.005724s immediatehit,oneworker,1,630,999retainedbytes and no generationfiles left. Local observation only; misses stillcold. Artreview documentsactualmissing skinmaps and remaininglikeness/groom/wardrobe/oral quality. New source CI follows push.
+
+Hosted CI40859619619 passes for source commitb17ee59, including new cache boundaries and all19 browser regressions.
