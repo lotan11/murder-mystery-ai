@@ -32,3 +32,7 @@ The selected identity is recognizable through glasses, age, hair color and dress
 ## Follow-up: portable skin grain delivered
 
 The subsequent skin-bake increment now embeds three1K supported maps and browser verification confirms decoded color/normal/roughness on the loaded material. Genuine normal variation is measured against a bump-disabled bake; source normal/base-color hashes match GLB images. This resolves delivery of the existing subtle grain. It does not add authored wrinkles, scan detail, subsurface response or close the groom/face/wardrobe likeness gaps above. Keep those P0 visual gates; the character is still a development rig.
+
+## Follow-up: facial groom density
+
+A subsequent facial-only pass adds denser fitted beard/moustache ribbons, with actual head correspondence and real mouth morphs. Actual front/profile and browser speech frames were reviewed: coverage improves, but still reads coarse/uneven and does not meet premium likeness. Angular crown ribbons were rejected; existing cap/hairline gaps remain. Continue crown silhouette and matched-view facial proportions before claiming finished grooming or activating the custom rig in the game.

@@ -158,13 +158,24 @@ skin_spec=importlib.util.spec_from_file_location('scholar_skin_bake',ROOT/'scrip
 skin_module=importlib.util.module_from_spec(skin_spec);skin_spec.loader.exec_module(skin_module)
 report['skin_materials']=skin_module.bake_skin_materials(head_mesh,ROOT)
 
+# Development facial groom only; the rejected crown-card experiment is not integrated.
+groom_spec=importlib.util.spec_from_file_location('scholar_groom_refinement',ROOT/'scripts/refine-scholar-groom.py')
+groom_module=importlib.util.module_from_spec(groom_spec);groom_spec.loader.exec_module(groom_module)
+groom,report['groom']=groom_module.refine_groom(head_mesh,objects,ROOT,rig)
+objects.append(groom);rest[groom.name]=positions(groom)
+weight_sums=[sum(entry.weight for entry in vertex.groups) for vertex in groom.data.vertices]
+report['meshes'][groom.name]={'vertices':len(groom.data.vertices),'weighted_vertices':len(groom.data.vertices),
+ 'method':'head-triangle correspondence facial groom','min_weight_sum':min(weight_sums),'max_weight_sum':max(weight_sums),
+ 'max_nearest_source_distance_m':report['groom']['measured_neutral_fit_range_m'][1]}
+
+
 head=rig.pose.bones['mixamorig:Head'];head.rotation_mode='XYZ';head.rotation_euler=(0,math.radians(10),0)
 posed={obj.name:positions(obj) for obj in objects}
 for obj in objects:
     deltas=[(a-b).length for a,b in zip(rest[obj.name],posed[obj.name])]
     item=report['meshes'][obj.name];item['head_turn_max_delta_m']=max(deltas)
     if item['method']=='rigid torso' and max(deltas)>0.00001:raise RuntimeError('Head turn moved torso wardrobe')
-    if item['method']=='rigid head' and max(deltas)<0.001:raise RuntimeError('Head accessory did not follow actual skeleton')
+    if item['method'] in ['rigid head','head-triangle correspondence facial groom'] and max(deltas)<0.001:raise RuntimeError('Head accessory did not follow actual skeleton')
 scene=bpy.context.scene
 scene.render.filepath=str(ROOT/'docs/assets/rig-study-head-turn.png');bpy.ops.render.render(write_still=True)
 head.rotation_euler=(0,math.radians(-10),0)

@@ -123,6 +123,8 @@ def inspect(path, measure=False):
     for mesh in meshes:
         targets.update(mesh.get('extras',{}).get('targetNames',[]))
         for primitive in mesh.get('primitives',[]):
+            material_index=primitive.get('material')
+            if 'material' in primitive and (type(material_index) is not int or not 0<=material_index<len(document.get('materials',[]))):raise ValueError('Invalid primitive material reference')
             index=primitive.get('attributes',{}).get('POSITION')
             if type(index) is not int or not 0<=index<len(accessors):raise ValueError('Invalid position accessor')
             count=accessors[index].get('count',0)
@@ -140,7 +142,28 @@ def inspect(path, measure=False):
             'external_resources':external,'talkinghead_inventory_complete':not(missing_bones or missing_expressions or missing_visemes),
             'approval':'Structural inventory only; likeness, deformations and runtime performance require separate review.'}
     report['material_inventory']=material_inventory(document,binary)
-    if measure:report['morph_deformations']=measure_morphs(document,binary)
+    if measure:
+        # Component checks distinguish intentional groom additions from head deformation changes.
+        inventory=[]
+        for mesh_index,mesh in enumerate(meshes):
+            item={'index':mesh_index,'node_names':[node.get('name','') for node in document.get('nodes',[]) if type(node.get('mesh')) is int and node.get('mesh')==mesh_index],
+                  'materials':sorted({document['materials'][primitive['material']].get('name','') for primitive in mesh.get('primitives',[]) if 'material' in primitive}),
+                  'name':mesh.get('name',''),'primitive_count':len(mesh.get('primitives',[])),
+                  'vertices':0,'triangles':0,'morph_deformations':measure_morphs({**document,'meshes':[mesh]},binary)}
+            for primitive in mesh.get('primitives',[]):
+                count=accessors[primitive['attributes']['POSITION']]['count'];item['vertices']+=count
+                index=primitive.get('indices')
+                if primitive.get('mode',4)==4:item['triangles']+=(accessors[index]['count'] if type(index) is int and 0<=index<len(accessors) else count)//3
+            inventory.append(item)
+        report['mesh_inventory']=inventory
+        combined={}
+        for item in inventory:
+            for name,measurement in item['morph_deformations'].items():
+                total=combined.setdefault(name,{'affected_vertices':0,'max_displacement':0.0,'primitive_count':0})
+                total['affected_vertices']+=measurement['affected_vertices']
+                total['primitive_count']+=measurement['primitive_count']
+                total['max_displacement']=max(total['max_displacement'],measurement['max_displacement'])
+        report['morph_deformations']=combined
     return report
 
 if __name__=='__main__':

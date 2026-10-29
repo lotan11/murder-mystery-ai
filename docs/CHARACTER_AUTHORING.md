@@ -57,3 +57,9 @@ October29 oral refinement: the weighted study uses the existing anatomical UV mo
 The bound-study builder calls scripts/bake-scholar-skin.py as a Blender helper. It bakes1K color-only albedo, roughness and tangent normals from the existing skin nodes, verifies normal detail against a bump-disabled baseline using a UV coverage bake, saves PNGs under assets/character-production/skin-materials and packs them into the editable scene/GLB. Run the normal bound-study Blender command; the helper is not a standalone model-generation command.
 
 skin-material-validation.json records samples, margin, color spaces, hashes and measured detail. The inspector's material_inventory records actual runtime references, embedded image hashes and dimensions. Character lab displays the actual loaded1K map count; static/face-only studies remain at zero, weighted rig at three. Subsurface response and final artistic skin/groom/likeness are unfinished.
+
+## Fitted facial groom
+
+The bound-study builder calls scripts/refine-scholar-groom.py after skin baking/binding. It adds deterministic beard/moustache ribbon clumps matched to actual head triangles, transferring real weights and nonzero jaw/rounding/compression/smile deltas. See groom-validation.json for counts, fit/orientation/lip-proxy guards and pose checks. docs/assets/groom-study-front.png and groom-study-profile.png are actual comparison renders. Original crown/scalp are deliberately unchanged. This is not production hair cards, anisotropic grooming or final likeness approval.
+
+The inspector now reports mesh_inventory with node/material labels, component geometry and actual nonzero deformation measurements. Original-head position/deformation tests remain separate from intentional added groom topology.

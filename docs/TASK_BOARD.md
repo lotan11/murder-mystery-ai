@@ -8,7 +8,7 @@ Updated October 29, 2026. Lead/integrator owns this board. Status reflects commi
 
 | Priority | Work | Current state / next gate |
 | --- | --- | --- |
-| P0 | Premium Scholar likeness and groom | Development model only; refine matched-view face/hair/beard against approved portrait |
+| P0 | Premium Scholar likeness and groom | Denser fitted facial groom tested; crown/hairline and matched-view facial likeness remain P0 |
 | P0 | Browser-delivered materials | Three1K baked maps now embedded/decoded; grain delivery fixed, final color/skin/eye artistry still unfinished |
 | P0 | Speech deformation and oral detail | Fixed real Lewis lab study works; full natural visemes, teeth/tongue and perceptual review unfinished |
 | P1 | First-generation speech latency | Warm replay cache implemented; new/expired/evicted text still needs generation; no prefetch yet |
@@ -201,3 +201,13 @@ Closed the missing-runtime-detail gap on the weighted Scholar study. A reproduci
 Actual GLB inventory has four embedded images (coat plus three skin maps); skin has baseColorTexture, normalTexture and metallicRoughnessTexture. Normal and base-color embedded image hashes exactly match source PNGs; roughness is packed into the glTF channel layout. Inspector now records actual material references/image dimensions/hashes. The browser confirms three decoded1K textures on the actual loaded skin material, not a model-mode label. Reviewed actual browser close-up and Blender open-jaw render: subtle grain survives export; the model is still visibly a blockout.
 
 Original101,835 exported vertices/165,239 triangles,64 joints/11 morph names, normalized weights, oral lining, neutral/rest deformation and restrained Lewis timing study remain. Canonical static/face-only studies, game portrait/liveLewis(+5%), interfaces and saved rooms are unchanged. No paid calls/downloads/new casting decisions. Next P0: coherent silver hair/beard groom and matched-view likeness; more art and perceptual speech work remains before November4 readiness gate/November10 integration. First-generation speech latency also remains; replay cache is preserved.
+
+## Fitted facial groom development refinement — October 29, 2026
+
+Added denser fitted silver beard/moustache clumps to the weighted Scholar study. The selected facial-only helper creates2200beard/800moustache clumps (18,000vertices/12,000triangles) with stored head-triangle barycentric correspondence for normalized bone weights and four genuinely nonzero mouth targets. No dummy brow/viseme keys were added. Original head rest positions, head geometry/deformation ranges, skin maps, oral lining,64-joint skeleton and11global control names are preserved. Canonical static/face-only studies and approved game portrait/liveLewis remain unchanged.
+
+Matched front/profile previews caught inverted-card shading and an overly angular crown experiment. Those were rejected before public export. The accepted development increment is facial hair only; original scalp/crown remain unchanged, including known cap/hairline gaps. Outward-face guard records zero inversions; normalized-weight and morph-correspondence errors are below one micrometre. Five restrained pose checks keep groom points outward from their source triangles; the rest lip-proxy gap is about2mm. These geometric checks do not certify every combined pose or natural-looking hair.
+
+Actual browser playback on8018 loaded19renderprimitives/64joints/11controls/three skin maps, used approved1.05Lewis pace with pitch preserved, showed real mouth motion, and Stop returned to neutral. Reviewed the live screenshot and actual front/profile renders: moustache/beard are denser but still coarse ribbons/stubble with uneven coverage. No obvious new floating/black-face/lip-bridge issue appeared in those frames; this is not perceptual phoneme-level lip-sync certification. GLB16meshes/119,835vertices/177,239triangles, about13.27MB, no external resources.
+
+Inspector now exposes component-level geometry/morph inventory so deliberate groom growth cannot hide changes to the original head. Tests check original head positions across material splits plus real new weighted geometry and fit guards. Next P0: crown/hairline shape and matched-view facial likeness, then finer groom/material/oral quality. November10 final-art and first-generation speech-latency risks remain; no new user decision or casting approval is needed. No paid calls/downloads or default-game activation.

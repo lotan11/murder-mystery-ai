@@ -97,11 +97,14 @@ def test_brow_controls_are_local_real_targets_and_preserve_existing_face_study()
     import json
     rig=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb',measure=True)
     face=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-face-study.glb',measure=True)
-    for name,measured in face['morph_deformations'].items():
-        assert rig['morph_deformations'][name]['affected_vertices']==measured['affected_vertices']
-        assert rig['morph_deformations'][name]['max_displacement']==measured['max_displacement']
-        # Oral lining splits the head into two material primitives, not new deformation geometry.
-        assert rig['morph_deformations'][name]['primitive_count']==measured['primitive_count']+1
+    original_head=next(item for item in face['mesh_inventory'] if 'Neutral aged skin blockout' in item['materials'])
+    rig_head=next(item for item in rig['mesh_inventory'] if 'Neutral aged skin blockout' in item['materials'])
+    assert rig_head['vertices']==original_head['vertices'] and rig_head['triangles']==original_head['triangles']
+    for name,measured in original_head['morph_deformations'].items():
+        assert rig_head['morph_deformations'][name]['affected_vertices']==measured['affected_vertices']
+        assert rig_head['morph_deformations'][name]['max_displacement']==measured['max_displacement']
+        # Oral lining splits the original head into two material primitives.
+        assert rig_head['morph_deformations'][name]['primitive_count']==measured['primitive_count']+1
     expected={'browInnerUp','browOuterUpLeft','browOuterUpRight','browDownLeft','browDownRight'}
     assert {name for name in rig['morph_deformations'] if name.startswith('brow')}==expected
     evidence=json.loads((ROOT/'assets/character-production/rig-study-validation.json').read_text())
@@ -161,9 +164,11 @@ def test_oral_lining_uses_existing_anatomical_cavity_without_new_geometry():
     assert mouth['new_geometry'] is False and mouth['teeth_or_tongue_added'] is False
     assert len(mouth['mask_sha256'])==64
     assert mouth['world_bounds_m']['min'][2]>1.5 and mouth['world_bounds_m']['max'][2]<1.6
-    rig=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')
-    original=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-face-study.glb')
-    assert rig['vertices']==original['vertices'] and rig['triangles']==original['triangles']
+    rig=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb',measure=True)
+    original=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-face-study.glb',measure=True)
+    rig_head=next(item for item in rig['mesh_inventory'] if 'Neutral aged skin blockout' in item['materials'])
+    original_head=next(item for item in original['mesh_inventory'] if 'Neutral aged skin blockout' in item['materials'])
+    assert rig_head['vertices']==original_head['vertices'] and rig_head['triangles']==original_head['triangles']
     assert evidence['binding_neutral_max_error_m']<.000001 and evidence['restored_max_error_m']<.000001
 
 
@@ -196,3 +201,48 @@ def test_baked_skin_maps_are_really_embedded_and_bound_to_the_runtime_material()
     base=inventory['images'][skin['base_color_texture']['image_index']]
     assert base['sha256']==evidence['maps']['base_color']['sha256']
     assert report['external_resources']==[] and report['joint_count']==64 and report['morph_target_count']==11
+
+
+def test_weighted_study_preserves_original_head_rest_positions_across_material_splits():
+    import json
+    def head_points(path):
+        data=path.read_bytes();offset=12;document=None;binary=None
+        while offset<len(data):
+            size,kind=struct.unpack_from('<II',data,offset);offset+=8
+            if kind==0x4e4f534a:document=json.loads(data[offset:offset+size])
+            elif kind==0x004e4942:binary=data[offset:offset+size]
+            offset+=size
+        material=next(i for i,item in enumerate(document['materials']) if item.get('name')=='Neutral aged skin blockout')
+        mesh=next(mesh for mesh in document['meshes'] if any(p.get('material')==material for p in mesh['primitives']))
+        points=[]
+        for primitive in mesh['primitives']:
+            accessor=document['accessors'][primitive['attributes']['POSITION']]
+            assert accessor['componentType']==5126 and accessor['type']=='VEC3'
+            view=document['bufferViews'][accessor['bufferView']]
+            start=view.get('byteOffset',0)+accessor.get('byteOffset',0);stride=view.get('byteStride',12)
+            points.extend(tuple(round(value,6) for value in struct.unpack_from('<3f',binary,start+i*stride)) for i in range(accessor['count']))
+        return sorted(points)
+    assert head_points(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')==head_points(ROOT/'frontend/public/character-lab/scholar-face-study.glb')
+
+
+def test_fitted_facial_groom_has_actual_weighted_geometry_and_nonzero_mouth_targets():
+    import json
+    report=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb',measure=True)
+    groom=next(item for item in report['mesh_inventory'] if 'Scholar Fitted silver facial groom' in item['node_names'])
+    evidence=json.loads((ROOT/'assets/character-production/groom-validation.json').read_text())
+    assert groom['vertices']==evidence['added_vertices']==18000
+    assert groom['triangles']==evidence['added_triangles']==12000
+    assert set(groom['morph_deformations'])=={'jawOpen','mouthPucker','lipPress','mouthSmile'}
+    for target in groom['morph_deformations'].values():
+        assert target['affected_vertices']>1000 and .001<target['max_displacement']<.03
+    assert evidence['clumps']=={'beard':2200,'moustache':800}
+    assert evidence['scalp_or_crown_modified'] is False and evidence['existing_head_unchanged'] is True
+    assert evidence['max_weight_sum_error']<.000001
+    assert evidence['maximum_morph_correspondence_error_m']<.000001
+    assert evidence['minimum_face_outward_dot']>0 and evidence['inverted_face_count']==0
+    assert evidence['minimum_rest_lip_proxy_clearance_m']>.001
+    assert len(evidence['pose_attachment'])==5
+    for pose in evidence['pose_attachment'].values():
+        assert pose['inward_vertices']==0 and pose['minimum_outward_offset_m']>0
+        assert pose['maximum_correspondence_distance_m']<.001
+    assert report['morph_target_count']==11 and report['joint_count']==64 and not report['external_resources']

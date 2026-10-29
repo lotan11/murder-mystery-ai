@@ -312,6 +312,15 @@
       "min_weight_sum": 1,
       "max_weight_sum": 1,
       "head_turn_max_delta_m": 0.021516687016581437
+    },
+    "Scholar Fitted silver facial groom": {
+      "vertices": 18000,
+      "weighted_vertices": 18000,
+      "method": "head-triangle correspondence facial groom",
+      "min_weight_sum": 0.9999999590218067,
+      "max_weight_sum": 1.0000000447034836,
+      "max_nearest_source_distance_m": 0.0005001776153221726,
+      "head_turn_max_delta_m": 0.023163077946682296
     }
   },
   "speech_connected": false,
@@ -382,6 +391,99 @@
       }
     },
     "restored_render_samples": 20
+  },
+  "groom": {
+    "status": "Fitted ribbon-clump groom development study; not final hair or likeness approval",
+    "seed": 271828,
+    "object": "Scholar Fitted silver facial groom",
+    "materials": [
+      "Scholar Silver facial hair 0.16",
+      "Scholar Silver facial hair 0.22",
+      "Scholar Silver facial hair 0.3"
+    ],
+    "added_vertices": 18000,
+    "added_triangles": 12000,
+    "clumps": {
+      "beard": 2200,
+      "moustache": 800
+    },
+    "morphs": {
+      "jawOpen": {
+        "affected_vertices": 13192,
+        "max_delta_m": 0.017956390070637047
+      },
+      "mouthPucker": {
+        "affected_vertices": 9476,
+        "max_delta_m": 0.010874626301914317
+      },
+      "lipPress": {
+        "affected_vertices": 8611,
+        "max_delta_m": 0.008085848235759089
+      },
+      "mouthSmile": {
+        "affected_vertices": 8554,
+        "max_delta_m": 0.009013969817098764
+      }
+    },
+    "weight_method": "Exact stored head-triangle barycentric interpolation, strongest four normalized bone influences",
+    "pose_attachment": {
+      "jaw_open": {
+        "minimum_outward_offset_m": 0.0003959435762226349,
+        "maximum_correspondence_distance_m": 0.000500285947191917,
+        "inward_vertices": 0
+      },
+      "rounding": {
+        "minimum_outward_offset_m": 0.00039401449701870206,
+        "maximum_correspondence_distance_m": 0.0005001742420489621,
+        "inward_vertices": 0
+      },
+      "compression": {
+        "minimum_outward_offset_m": 0.0003766805602936074,
+        "maximum_correspondence_distance_m": 0.0005001788038991397,
+        "inward_vertices": 0
+      },
+      "slight_smile": {
+        "minimum_outward_offset_m": 0.00039485618583512405,
+        "maximum_correspondence_distance_m": 0.0005001742420489621,
+        "inward_vertices": 0
+      },
+      "head_turn": {
+        "minimum_outward_offset_m": 0.0003997507755748586,
+        "maximum_correspondence_distance_m": 0.0005002532845572495,
+        "inward_vertices": 0
+      }
+    },
+    "maximum_morph_correspondence_error_m": 6.006850114687196e-08,
+    "vertex_correspondence_count": 18000,
+    "max_weight_sum_error": 4.470348358154297e-08,
+    "surface_offset_range_m": [
+      0.0004,
+      0.0005
+    ],
+    "measured_neutral_fit_range_m": [
+      0.00019657415396068245,
+      0.0005001776153221726
+    ],
+    "minimum_face_outward_dot": 0.12007328867912292,
+    "inverted_face_count": 0,
+    "protected_lip_proxy_xz_m": [
+      -0.029,
+      0.029,
+      1.5364784898757935,
+      1.5584784898757935
+    ],
+    "minimum_rest_lip_proxy_clearance_m": 0.002014740943908633,
+    "existing_head_unchanged": true,
+    "existing_head_position_sha256": "37267eb6ede4390571636ed4ef25f194cafee861883a1d207c72a8c7405962a1",
+    "scalp_or_crown_modified": false,
+    "limitations": [
+      "Development facial ribbon clumps and guide accents, not production hair cards/anisotropic shading; crown remains unchanged.",
+      "Lip region excluded at rest; combined speech/intersection quality still requires visual review."
+    ],
+    "comparison_renders": {
+      "front": "docs/assets/groom-study-front.png",
+      "profile": "docs/assets/groom-study-profile.png"
+    }
   },
   "negative_head_turn_max_delta_m": 0.023602554179462085,
   "combined_pose_max_delta_m": 0.023602554179462085,
