@@ -8,6 +8,8 @@ The existing local worker now retains model timing from the same synthesis call 
 
 Verification:291 backend tests pass (three Windows permission skips),21 client tests, production build and all19 browser scenarios pass. Actual model screenshot reviewed; speech remains a fixed experimental approximation. Previous code CI40836345515 passed; this increment CI follows push.
 
+Hosted CI confirmation: code commit5a7ccca passes run40843961780, including all19 browser scenarios. This follow-up updates documentation only.
+
 ## Lab performance correction and real Lewis timing proof — October 29, 2026
 
 Investigated failed CI40829947023: fourteen browser scenarios passed; the expanding rig-control scenario exhausted its 90-second budget on the slower software-GPU runner. Replaced continuous static-lab GPU rendering/geometry diagnostics with change-driven draws. Orbit damping, resize, model loading and manual controls still render correctly; no timeouts or assertions were relaxed. Added actual render-count checks for idle settling, mouse orbit and pose-triggered redraw. Rig scenario dropped from52s locally to5.7s. Existing animated TV modes are untouched.

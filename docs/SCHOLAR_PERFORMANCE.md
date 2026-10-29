@@ -31,3 +31,7 @@ The authenticated Scholar speech endpoint accepts an empty request only, using t
 ## Remaining character production
 
 The Scholar concept and Lewis pace are selected/approved. The portrait presentation and live voice are real; a likeness-matched rig, realistic materials and tested facial deformation are still production work. See SCHOLAR_RIG_BRIEF.md. Do not label the existing unrelated animated sample as the finished Scholar or animate the portrait with a fake mouth. Existing subtle expression and restrained viseme settings remain the reference for the future rig.
+
+## Optional model timing metadata
+
+The existing authenticated public-speech endpoint may now include phoneme_timing with source kokoro-model-duration, clock audio-seconds and bounded phoneme/start/end spans. These belong to the same inference waveform. Missing timing remains compatible with older outputs; malformed present sidecars fail safely. The portrait player continues approved audio playback and ignores these optional cues. No private input, room mutation, user text synthesis endpoint or automatic 3D activation is added. A separate fixed speaking study is available in the character lab; its simplified mouth mapping is not final viseme quality.

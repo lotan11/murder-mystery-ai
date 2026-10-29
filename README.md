@@ -98,7 +98,7 @@ Try the optional local voice and animated-face comparison at `/?view=audition`. 
 
 ## Optional animated TV performance
 
-The TV can opt into the approved TalkingHead sample and local Windows speech for public detective dialogue. No paid credentials or microphone are needed. See [TV setup, controls and limitations](docs/TV_PERFORMANCE.md). The ordinary evidence stage remains the default.
+The TV can opt into the approved TalkingHead sample and local Windows speech for public detective dialogue. No paid credentials or microphone are needed. See [TV setup, controls and limitations](docs/TV_PERFORMANCE.md). The approved Scholar portrait remains the TV default; the original evidence stage and animated sample stay selectable.
 
 ## Editing the story
 
@@ -115,3 +115,9 @@ The TV now opens on the approved Scholar portrait with live Lewis narration at t
 ## Scholar 3D development
 
 The separate `/?view=character-lab` workbench inspects the actual anatomical development model beside the approved portrait. It does not replace the live game character. See [authoring setup and model limits](docs/CHARACTER_AUTHORING.md); the final likeness and facial rig remain under development.
+
+## Try the timed Scholar study
+
+Start normally on Windows with `powershell -ExecutionPolicy Bypass -File .\start.ps1`. Open `http://localhost:8000/?view=character-lab` (use your selected port), choose **Rig study**, then scroll to **Play Lewis timing study**. The bundled real Lewis clip plays at the approved faster pace and drives restrained experimental mouth motion. No optional voice installation, API key, microphone or paid service is needed for this fixed preview. Use localhost or HTTPS for audio integrity checking.
+
+Stop cancels audio and resets the mouth; changing model, hiding the page or losing graphics also stops it. This is a development model with approximate speech shapes, unfinished mouth interior, groom and likeness. It does not replace the approved portrait/live Lewis in the game. See [character authoring and limitations](docs/CHARACTER_AUTHORING.md).
