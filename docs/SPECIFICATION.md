@@ -88,3 +88,7 @@ Approved local speech may reuse validated exact-public-text audio and its matchi
 Character material acceptance now checks actual exported image bindings and browser decoding, with independently measured baked normal detail rather than source-node presence. The weighted study has three supported1K skin maps; no final likeness/subsurface/skin-scan quality claim follows from this technical delivery.
 
 The weighted study now includes fitted facial hair with head-triangle weight/morph correspondence. Added hair geometry must not change the original head or invent empty controls; acceptance includes component-level export checks and actual playback review. This is a development groom, with no change to the approved portrait/live voice default.
+
+## October 29 crown fit and inspection increment
+
+The isolated weighted Scholar study now repairs visible scalp-cap gaps without changing the anatomical face, materials, topology or approved game presentation. Face close-up/Full bust framing supports consistent inspection using actual loaded eye, crown and facial-groom bounds; camera angle survives framing changes and Reset/model changes restore the full bust. This is development tooling, not final avatar activation.

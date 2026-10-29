@@ -30,7 +30,7 @@ These are engineering planning targets, not promises that unavailable art work i
 
 ## Reporting and controls
 
-Hourly progress updates are configured in this chat. Report actual completed work, current test/CI state, the next milestone and risks to November 10. Do not imply unattended work between scheduled runs. Preserve the approved look/voice/pace; new casting approval is not a blocker. Material spending, public deployment or a scope tradeoff affecting the agreed deadline must be surfaced before execution.
+Four-hour progress updates are configured in this chat. Report actual completed work, current test/CI state, the next milestone and risks to November 10. Do not imply unattended work between scheduled runs. Preserve the approved look/voice/pace; new casting approval is not a blocker. Material spending, public deployment or a scope tradeoff affecting the agreed deadline must be surfaced before execution.
 
 ## October 28 rig checkpoint
 
@@ -53,3 +53,5 @@ October29 replay/perceived-quality checkpoint: bounded public clip cache reduces
 October29 material delivery checkpoint: three1K skin maps now bake reproducibly and bind to actual exported/runtime material; genuine normal detail verified against bump-disabled baseline. Browser/GLB delivery gap is resolved for existing grain, not complete skin artistry. Groom, likeness, tailoring, detailed oral shapes and perceived speech quality remain critical before the November4 gate.
 
 October29 facial-groom checkpoint: denser beard/moustache now fitted to the actual head and tested in local Lewis playback; original head/skin/skeleton and live game preserved. Crown-card experiment rejected, scalp/crown unchanged. The groom still reads coarse and uneven; crown/hairline shape, face likeness and final hair/material/oral quality remain before the November4 readiness gate.
+
+October29 crown checkpoint: visible scalp holes repaired in the isolated rig; unchanged cap topology/material and original head, with anatomical cap weights. Raw triangle sign disagreements near ears remain explicitly reported despite positive smooth-normal clearance. Face close-up/full-bust controls improve consistent likeness review on desktop/phone. Final hairstyle, portrait-matched face/eyes/tailoring and perceived speech quality still threaten custom-avatar readiness; preserve November4 gate and portrait/Lewis demonstration baseline.

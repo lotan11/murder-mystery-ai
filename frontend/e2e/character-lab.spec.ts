@@ -226,3 +226,48 @@ test('pending fixed study can be cancelled and hidden page stops playback',async
  await expect(viewer).toHaveAttribute('data-morph-max','0.000');
  await expect(page.locator('audio[data-lab-speech]')).toHaveCount(0);
 });
+
+
+test('face framing fits decoded crown and chin on desktop and phone while preserving the view',async({page})=>{
+ test.setTimeout(90000);
+ await page.goto('/?view=character-lab');
+ const viewer=page.getByLabel('Scholar 3D workbench',{exact:true});
+ await page.getByLabel('Development model',{exact:true}).selectOption('rig-study');
+ await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
+ await expect(viewer).toHaveAttribute('data-frame-mode','bust');
+ await expect(viewer).toHaveAttribute('data-face-anchor','loaded-eye-geometry');
+ expect(Number(await viewer.getAttribute('data-face-world-bottom'))).toBeLessThan(Number(await viewer.getAttribute('data-groom-world-bottom')));
+ const bounds=async()=>JSON.parse((await viewer.getAttribute('data-face-ndc'))||'{}');
+ const bust=await bounds();
+ await page.getByRole('button',{name:'Face close-up',exact:true}).click();
+ await expect(viewer).toHaveAttribute('data-frame-mode','face');
+ await expect(page.getByRole('button',{name:'Face close-up',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect.poll(async()=>{const b=await bounds();return b.top-b.bottom;}).toBeGreaterThan(bust.top-bust.bottom);
+ const fits=async()=>{const b=await bounds();return b.top<.95&&b.bottom>-.95&&b.left>-.95&&b.right<.95&&b.top-b.bottom>.6;};
+ await expect.poll(fits).toBe(true);
+ await page.getByRole('button',{name:'Three-quarter',exact:true}).click();
+ await expect.poll(fits).toBe(true);
+ await expect.poll(async()=>JSON.parse((await viewer.getAttribute('data-camera-direction'))!)[0]).toBeGreaterThan(.5);
+ const direction=JSON.parse((await viewer.getAttribute('data-camera-direction'))!);
+ await page.getByRole('button',{name:'Full bust',exact:true}).click();
+ await expect(viewer).toHaveAttribute('data-frame-mode','bust');
+ await expect.poll(async()=>{
+  const current=JSON.parse((await viewer.getAttribute('data-camera-direction'))!);
+  return Math.max(...current.map((v:number,i:number)=>Math.abs(v-direction[i])));
+ }).toBeLessThan(.001);
+ await page.getByRole('button',{name:'Face close-up',exact:true}).click();
+ await page.getByRole('button',{name:'Front',exact:true}).click();
+ await expect.poll(async()=>Math.abs(JSON.parse((await viewer.getAttribute('data-camera-direction'))!)[0])).toBeLessThan(.001);
+ await page.screenshot({path:test.info().outputPath('face-desktop.png'),fullPage:true});
+ await page.setViewportSize({width:390,height:844});
+ await expect.poll(fits).toBe(true);
+ await page.screenshot({path:test.info().outputPath('face-mobile.png'),fullPage:true});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+ await page.getByRole('button',{name:'Reset camera',exact:true}).click();
+ await expect(viewer).toHaveAttribute('data-frame-mode','bust');
+ await expect(page.getByRole('button',{name:'Front',exact:true})).toHaveAttribute('aria-pressed','true');
+ await page.getByRole('button',{name:'Face close-up',exact:true}).click();
+ await page.getByLabel('Development model',{exact:true}).selectOption('face-study');
+ await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
+ await expect(viewer).toHaveAttribute('data-frame-mode','bust');
+});

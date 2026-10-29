@@ -63,3 +63,9 @@ skin-material-validation.json records samples, margin, color spaces, hashes and 
 The bound-study builder calls scripts/refine-scholar-groom.py after skin baking/binding. It adds deterministic beard/moustache ribbon clumps matched to actual head triangles, transferring real weights and nonzero jaw/rounding/compression/smile deltas. See groom-validation.json for counts, fit/orientation/lip-proxy guards and pose checks. docs/assets/groom-study-front.png and groom-study-profile.png are actual comparison renders. Original crown/scalp are deliberately unchanged. This is not production hair cards, anisotropic grooming or final likeness approval.
 
 The inspector now reports mesh_inventory with node/material labels, component geometry and actual nonzero deformation measurements. Original-head position/deformation tests remain separate from intentional added groom topology.
+
+## Crown coverage repair and repeatable review
+
+`refine-scholar-crown.py` runs within the bound-study build after skin bake and before facial groom. It changes only existing cap referenced vertices and weights:2.5mm anatomical-normal offset, unchanged topology/material, head-triangle barycentric binding. Loose unused cap vertices are excluded from coverage measurements. `crown-validation.json` records original and repaired nearest-surface checks, raw triangle disagreement positions, head/rest checks and limitations. The source head remains identical.
+
+Before/after front/profile views are under `docs/assets/crown-*`. Visible scalp holes are repaired; helmet hairline, coarse strands and ear coverage remain unfinished. Smooth-normal rest/+10degree clearance is positive, but27/28 raw triangle signs disagree near ears; do not claim a fully intersection-free groom. The lab now offers Face close-up and Full bust with actual loaded eye/crown/groom bounds and phone-aware fitting. Neither this repair nor framing constitutes final likeness approval.

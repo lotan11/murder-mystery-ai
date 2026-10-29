@@ -5,6 +5,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import "./character-lab.css";
 import { validateStudy, validateStudyAudio, studyPoseAt } from "./scholar-timing.mjs";
 
+type FrameMode = "bust" | "face";
 type Preset = "front" | "profile" | "three-quarter";
 type DevelopmentModel = "blockout" | "face-study" | "rig-study";
 type FacialControl =
@@ -81,7 +82,7 @@ export default function CharacterLab() {
     morphBindings = useRef<Partial<Record<FacialControl, MorphBinding[]>>>({}),
     headBinding = useRef<{ bone: THREE.Bone; rest: THREE.Quaternion } | null>(null),
     headVertex = useRef<{ mesh: THREE.SkinnedMesh; rest: THREE.Vector3 } | null>(null),
-    cameraPreset = useRef<(preset: Preset) => void>(() => {}),
+    cameraPreset = useRef<(preset?: Preset, mode?: FrameMode) => void>(() => {}),
     requestRender = useRef<() => void>(() => {});
   const speechAudio = useRef<HTMLAudioElement | null>(null),
     speechAbort = useRef<AbortController | null>(null),
@@ -97,7 +98,8 @@ export default function CharacterLab() {
       ...neutralFace,
     });
   const [state, setState] = useState<"loading" | "ready" | "failed">("loading"),
-    [preset, setPreset] = useState<Preset>("front");
+    [preset, setPreset] = useState<Preset>("front"),
+    [frameMode, setFrameMode] = useState<FrameMode>("bust");
   const [inventory, setInventory] = useState<Inventory | null>(null),
     [error, setError] = useState("");
   function setSpeechMouth(values: Partial<Record<FacialControl, number>>) {
@@ -197,6 +199,7 @@ export default function CharacterLab() {
     setInventory(null);
     setError("");
     setPreset("front");
+    setFrameMode("bust");
     setDiscoveredControls([]);
     setFaceValues({ ...neutralFace });
     morphBindings.current = {};
@@ -282,6 +285,8 @@ export default function CharacterLab() {
         const fill = new THREE.DirectionalLight(0xe2e9ed, 1.5);
         fill.position.set(4, 2, 3);
         scene.add(fill);
+        let reframe: (() => void) | null = null;
+        let faceBox: THREE.Box3 | null = null;
         const resize = () => {
           if (!renderer) return;
           const width = Math.max(host.clientWidth, 1),
@@ -289,6 +294,7 @@ export default function CharacterLab() {
           renderer.setSize(width, height);
           camera.aspect = width / height;
           camera.updateProjectionMatrix();
+          reframe?.();
           dirty = true;
         };
         observer = new ResizeObserver(resize);
@@ -322,6 +328,13 @@ export default function CharacterLab() {
               const posed = sample.mesh.getVertexPosition(0, new THREE.Vector3());
               posed.applyMatrix4(sample.mesh.matrixWorld);
               displacement = posed.distanceTo(sample.rest);
+            }
+            if (faceBox) {
+              camera.updateMatrixWorld();
+              const points: THREE.Vector3[] = [];
+              for (const x of [faceBox.min.x,faceBox.max.x]) for (const y of [faceBox.min.y,faceBox.max.y]) for (const z of [faceBox.min.z,faceBox.max.z]) points.push(new THREE.Vector3(x,y,z).project(camera));
+              viewer.current.dataset.faceNdc = JSON.stringify({left:Math.min(...points.map(p=>p.x)),right:Math.max(...points.map(p=>p.x)),bottom:Math.min(...points.map(p=>p.y)),top:Math.max(...points.map(p=>p.y))});
+              viewer.current.dataset.cameraDirection = JSON.stringify(camera.position.clone().sub(controls!.target).normalize().toArray());
             }
             viewer.current.dataset.headDisplacement = displacement.toFixed(6);
             const head = headBinding.current;
@@ -443,35 +456,51 @@ export default function CharacterLab() {
           fullBody ? bounds.min.y + height * 0.76 : center.y,
           center.z,
         );
-        // Bust exports need the whole head and shoulder silhouette, not full-body head framing.
-        const distance = fullBody
-          ? height * 1.17
-          : Math.max(
-              height / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))),
-              size.x /
-                (2 *
-                  Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) *
-                  camera.aspect),
-            ) * 1.12;
-        camera.near = Math.max(height / 1000, 0.001);
-        camera.far = height * 100;
-        camera.updateProjectionMatrix();
-        controls.minDistance = height * 0.38;
-        controls.maxDistance = height * 4;
-        cameraPreset.current = (view) => {
+        // Decode real eye anchors: glTF sanitizes spaces in source mesh names.
+        const eyes = new THREE.Box3(), head = new THREE.Box3(), groom = new THREE.Box3();
+        gltf.scene.traverse(object => {
+          if (!(object instanceof THREE.Mesh)) return;
+          const name = object.name.replace(/[^a-z]/gi, "").toLowerCase();
+          if (name.includes("naturaleyewhites")) eyes.union(new THREE.Box3().setFromObject(object));
+          let parentName = "";
+          for (let ancestor = object.parent; ancestor && ancestor !== gltf.scene; ancestor = ancestor.parent) parentName += ancestor.name;
+          if ((name+parentName.replace(/[^a-z]/gi,"").toLowerCase()).includes("facialgroom")) groom.union(new THREE.Box3().setFromObject(object));
+          const materials = Array.isArray(object.material) ? object.material : [object.material];
+          if (materials.some(material=>material.name === "Neutral aged skin blockout")) head.union(new THREE.Box3().setFromObject(object));
+        });
+        const eyeCenter = eyes.isEmpty() ? null : eyes.getCenter(new THREE.Vector3());
+        if (eyeCenter) {
+          const crownToEye = Math.max(bounds.max.y-eyeCenter.y,height*.08);
+          const headBounds = head.isEmpty() ? bounds : head;
+          const chin = Math.min(eyeCenter.y-crownToEye*1.4, groom.isEmpty() ? Infinity : groom.min.y-crownToEye*.05);
+          faceBox = new THREE.Box3(new THREE.Vector3(headBounds.min.x,chin,headBounds.min.z),new THREE.Vector3(headBounds.max.x,bounds.max.y,headBounds.max.z));
+          if (viewer.current) {
+            viewer.current.dataset.faceWorldBottom = String(chin);
+            viewer.current.dataset.groomWorldBottom = groom.isEmpty() ? "" : String(groom.min.y);
+          }
+        }
+        let activeMode: FrameMode = "bust";
+        const fit = (view?: Preset, mode?: FrameMode) => {
           if (!controls) return;
-          const direction =
-            view === "profile"
-              ? new THREE.Vector3(1, 0, 0)
-              : view === "three-quarter"
-                ? new THREE.Vector3(0.68, 0, 0.74)
-                : new THREE.Vector3(0, 0, 1);
-          camera.position.copy(target).addScaledVector(direction, distance);
-          controls.target.copy(target);
-          controls.update();
-          dirty = true;
+          if (mode) activeMode = mode;
+          const direction = view === "profile" ? new THREE.Vector3(1,0,0) : view === "three-quarter" ? new THREE.Vector3(.68,0,.74).normalize() : view === "front" ? new THREE.Vector3(0,0,1) : camera.position.clone().sub(controls.target).normalize();
+          const framing = activeMode === "face" && faceBox ? faceBox : bounds;
+          const aim = activeMode === "face" && faceBox ? faceBox.getCenter(new THREE.Vector3()) : target;
+          const dimensions = framing.getSize(new THREE.Vector3());
+          const right = new THREE.Vector3().crossVectors(camera.up,direction).normalize();
+          const up = new THREE.Vector3().crossVectors(direction,right).normalize();
+          const half = dimensions.clone().multiplyScalar(.5);
+          const extent = (axis: THREE.Vector3) => Math.abs(axis.x)*half.x+Math.abs(axis.y)*half.y+Math.abs(axis.z)*half.z;
+          const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
+          // Fit the complete box including its depth, retaining crown/chin space on phones.
+          const distance = activeMode === "bust" && fullBody ? height*1.17 : Math.max(extent(up)/tangent,extent(right)/(tangent*camera.aspect))*1.16+extent(direction);
+          camera.position.copy(aim).addScaledVector(direction,distance); controls.target.copy(aim);
+          controls.minDistance = Math.max(dimensions.y*.38,.03); controls.maxDistance = height*4;
+          camera.near = Math.max(height/1000,.001); camera.far = height*100;
+          camera.updateProjectionMatrix(); controls.update(); dirty = true;
+          if (viewer.current) {viewer.current.dataset.frameMode=activeMode; viewer.current.dataset.faceAnchor=eyeCenter ? "loaded-eye-geometry" : "unavailable";}
         };
-        cameraPreset.current("front");
+        cameraPreset.current = fit; reframe = () => fit(); fit("front","bust");
         setInventory({
           meshes,
           joints,
@@ -554,8 +583,11 @@ export default function CharacterLab() {
     setDiscoveredControls([]);
     setError("");
     setPreset("front");
+    setFrameMode("bust");
     setModel(next);
   }
+  function frameView(next: FrameMode) {setFrameMode(next); cameraPreset.current(undefined,next);}
+  function resetCamera() {setPreset("front"); setFrameMode("bust"); cameraPreset.current("front","bust");}
   function view(next: Preset) {
     setPreset(next);
     cameraPreset.current(next);
@@ -637,6 +669,7 @@ export default function CharacterLab() {
               aria-label="Scholar 3D workbench"
               data-model-state={state}
               data-development-model={model}
+              data-frame-mode={frameMode}
               data-speech-state={speechState}
               data-speech-time="0"
               data-speech-phoneme=""
@@ -704,11 +737,16 @@ export default function CharacterLab() {
               </button>
               <button
                 disabled={state !== "ready"}
-                onClick={() => view("front")}
+                onClick={resetCamera}
               >
                 Reset camera
               </button>
             </div>
+            <div className="character-lab-controls" aria-label="Model framing controls">
+              <button disabled={state !== "ready"} aria-pressed={frameMode === "bust"} onClick={() => frameView("bust")}>Full bust</button>
+              <button disabled={state !== "ready"} aria-pressed={frameMode === "face"} onClick={() => frameView("face")}>Face close-up</button>
+            </div>
+            <p className="character-lab-note">Face close-up frames the loaded eyes, crown and chin for inspection. The portrait remains the approved reference; this study is unfinished.</p>
             {model !== "blockout" && (
               <section
                 className="character-lab-face-controls"

@@ -246,3 +246,28 @@ def test_fitted_facial_groom_has_actual_weighted_geometry_and_nonzero_mouth_targ
         assert pose['inward_vertices']==0 and pose['minimum_outward_offset_m']>0
         assert pose['maximum_correspondence_distance_m']<.001
     assert report['morph_target_count']==11 and report['joint_count']==64 and not report['external_resources']
+
+
+def test_crown_repair_preserves_topology_and_reports_sharp_edge_limits():
+    import json
+    evidence=json.loads((ROOT/'assets/character-production/crown-validation.json').read_text(encoding='utf-8'))
+    assert evidence['existing_head_unchanged'] and not evidence['material_changed']
+    assert evidence['new_vertices']==evidence['new_polygons']==0
+    assert evidence['referenced_vertices']==9113 and evidence['unused_loose_vertices_ignored']==3730
+    assert .002 <= evidence['surface_offset_m'] <= .003
+    assert evidence['maximum_vertex_adjustment_m'] < .007
+    assert evidence['before_fit']['closest_triangle_inward_vertex_count'] > 0
+    for name in ['after_fit','head_turn_10_degrees_fit']:
+        fit=evidence[name]
+        assert fit['inward_vertex_count']==0 and fit['minimum_signed_outward_offset_m']>.001
+        # Smooth surface fitting does not erase sharp ear-edge triangle disagreements.
+        assert fit['closest_triangle_inward_vertex_count'] > 0
+        assert fit['triangle_vs_interpolated_normal_ambiguity_count']==fit['closest_triangle_inward_vertex_count']
+        assert len(fit['triangle_vs_interpolated_normal_ambiguous_world_positions'])==fit['triangle_vs_interpolated_normal_ambiguity_count']
+    report=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb',measure=True)
+    original=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-face-study.glb',measure=True)
+    cap=next(item for item in report['mesh_inventory'] if item['name']=='Anatomical scalp shell')
+    baseline=next(item for item in original['mesh_inventory'] if item['name']=='Anatomical scalp shell')
+    assert cap['vertices']==baseline['vertices']==evidence['referenced_vertices']
+    assert cap['triangles']==baseline['triangles'] and cap['materials']==baseline['materials']
+    assert not cap['morph_deformations']

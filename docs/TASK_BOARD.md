@@ -211,3 +211,9 @@ Matched front/profile previews caught inverted-card shading and an overly angula
 Actual browser playback on8018 loaded19renderprimitives/64joints/11controls/three skin maps, used approved1.05Lewis pace with pitch preserved, showed real mouth motion, and Stop returned to neutral. Reviewed the live screenshot and actual front/profile renders: moustache/beard are denser but still coarse ribbons/stubble with uneven coverage. No obvious new floating/black-face/lip-bridge issue appeared in those frames; this is not perceptual phoneme-level lip-sync certification. GLB16meshes/119,835vertices/177,239triangles, about13.27MB, no external resources.
 
 Inspector now exposes component-level geometry/morph inventory so deliberate groom growth cannot hide changes to the original head. Tests check original head positions across material splits plus real new weighted geometry and fit guards. Next P0: crown/hairline shape and matched-view facial likeness, then finer groom/material/oral quality. November10 final-art and first-generation speech-latency risks remain; no new user decision or casting approval is needed. No paid calls/downloads or default-game activation.
+
+## Crown fit and matched framing — October 29, 2026
+
+Completed: cap-only surface projection and anatomical weight transfer; front/profile before/after review removes visible scalp holes. Added explicit face/full-bust framing for desktop/phone inspection. Existing 64 joints, eleven controls, skin maps, facial groom and original head are preserved.
+
+Next: replace the helmet-like hairline/coarse guide appearance with coherent silver grooming, then refine portrait-matched facial proportions, eyes and tailoring. Sharp ear-edge cap coverage remains unresolved (raw triangle sign disagreements retained), as do full visemes and perceptual speech approval. November4 readiness gate and November10 portrait/Lewis fallback remain. No new casting selection or spending decision needed.

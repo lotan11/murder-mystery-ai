@@ -158,6 +158,15 @@ skin_spec=importlib.util.spec_from_file_location('scholar_skin_bake',ROOT/'scrip
 skin_module=importlib.util.module_from_spec(skin_spec);skin_spec.loader.exec_module(skin_module)
 report['skin_materials']=skin_module.bake_skin_materials(head_mesh,ROOT)
 
+# Conservative cap-only scalp coverage repair; preserve original head and facial geometry.
+crown_spec=importlib.util.spec_from_file_location('scholar_crown_refinement',ROOT/'scripts/refine-scholar-crown.py')
+crown_module=importlib.util.module_from_spec(crown_spec);crown_spec.loader.exec_module(crown_module)
+report['crown']=crown_module.refine_crown(head_mesh,objects,ROOT,rig)
+cap=next(obj for obj in objects if obj.name==report['crown']['object'])
+rest[cap.name]=positions(cap)
+cap_sums=[sum(entry.weight for entry in cap.data.vertices[index].groups) for index in {i for polygon in cap.data.polygons for i in polygon.vertices}]
+report['meshes'][cap.name].update({'method':'head-triangle correspondence crown cap','min_weight_sum':min(cap_sums),'max_weight_sum':max(cap_sums)})
+
 # Development facial groom only; the rejected crown-card experiment is not integrated.
 groom_spec=importlib.util.spec_from_file_location('scholar_groom_refinement',ROOT/'scripts/refine-scholar-groom.py')
 groom_module=importlib.util.module_from_spec(groom_spec);groom_spec.loader.exec_module(groom_module)

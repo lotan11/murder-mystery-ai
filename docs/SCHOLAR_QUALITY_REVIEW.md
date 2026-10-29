@@ -36,3 +36,7 @@ The subsequent skin-bake increment now embeds three1K supported maps and browser
 ## Follow-up: facial groom density
 
 A subsequent facial-only pass adds denser fitted beard/moustache ribbons, with actual head correspondence and real mouth morphs. Actual front/profile and browser speech frames were reviewed: coverage improves, but still reads coarse/uneven and does not meet premium likeness. Angular crown ribbons were rejected; existing cap/hairline gaps remain. Continue crown silhouette and matched-view facial proportions before claiming finished grooming or activating the custom rig in the game.
+
+## Follow-up: visible scalp holes repaired, hairstyle still open
+
+A cap-only anatomical surface fit closes the visible crown holes in matched front/profile comparisons. Existing cap topology/material and head anatomy are retained. This does not solve the helmet contour, coarse wire-like strands or ear coverage. Smooth-normal checks are positive at rest/head turn, but raw closest-triangle measurements still disagree at27/28 ear-edge vertices; all positions are retained in the evidence. Avoid claiming a watertight intersection-free hairstyle. Use the new Face close-up with Front/Profile/Three-quarter to review real exported geometry; its eye/crown/chin bounds fit desktop and phone viewports.
