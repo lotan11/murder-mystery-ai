@@ -1,6 +1,6 @@
 # AI Murder Mystery Dinner platform specification
 
-Status: authoritative working specification, updated October 29, 2026.
+Status: authoritative working specification, updated October 30, 2026.
 
 ## Integration deadline
 
