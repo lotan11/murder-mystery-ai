@@ -1,0 +1,70 @@
+{
+  "status": "Experimental rounded swept crown, not finished hair",
+  "clumps": 1500,
+  "vertices": 126000,
+  "polygons": 117000,
+  "retired_legacy_crown_guide_polygons": 37248,
+  "retired_legacy_crown_guide_polygons_by_object": {
+    "Scholar Grey strand 0": 5805,
+    "Scholar Grey strand 1": 9888,
+    "Scholar Grey strand 2": 7173,
+    "Scholar Grey strand 3": 7706,
+    "Scholar Grey strand 4": 6676
+  },
+  "preserved_position_sha256": {
+    "Scholar Brown tweed blocking": "9979f52a55e4b53e750a518ef968a0a86ec41133ee790bf7002b88013d2f9d60",
+    "Scholar Fitted silver facial groom": "cb7e940b401c39b8151c3e6e2482f6aa21ac8e7aecf7bb744b871bac9da293d4",
+    "Scholar Forest wool waistcoat": "b974bb323e56c7d1afff5a6426a62cf150e204aeabe41014e4edb28654ab392b",
+    "Scholar Grey hair underlayer": "7cef6323dcf1f00d9e9f46d428556a9304ac76f1e5843e8581f1976c836d5a18",
+    "Scholar Ivory shirt": "c1458da9283ba8d313bc3ea3cb84bebd6f2e58dda5c82a07ce93432899756ba2",
+    "Scholar Muted patterned tie blocking": "6c5a5d05f27e50b39b93b6c4bcaeff486ee7c5c119d00be9d5602948ac1a7650",
+    "Scholar Natural eye whites": "ff43e012960d50ed23d656221f09a0a6747d6065a51b8a91360b1f6aefe587e4",
+    "Scholar Neutral aged skin blockout": "37267eb6ede4390571636ed4ef25f194cafee861883a1d207c72a8c7405962a1",
+    "Scholar Pupils": "65afe9f075d906a4383509daa98ba40bfee742c1aca3f4b0fd82e72906bafdf2",
+    "Scholar Slate blue grey iris": "b33aca8c570bbcc0ca4bf9dcef049a0621846e9e2b07d1c75e6cfe96c673efe6",
+    "Scholar Thin dark bronze spectacle rims": "9bdb61da9b0d7b8f9324cdd86e429c4fe071cf21fa2bd861dd2826e78b3e3f1e"
+  },
+  "root_attachment": {
+    "neutral": {
+      "minimum_root_anchor_distance_m": 0.0004360590571241187,
+      "maximum_root_anchor_distance_m": 0.0011873476968006272
+    },
+    "-10": {
+      "minimum_root_anchor_distance_m": 0.0004359530312765336,
+      "maximum_root_anchor_distance_m": 0.001187268559470735
+    },
+    "10": {
+      "minimum_root_anchor_distance_m": 0.0004360977388946992,
+      "maximum_root_anchor_distance_m": 0.0011874017426432026
+    }
+  },
+  "root_anchor_count": 1500,
+  "attachment": "All new vertices weighted 1.0 to existing mixamorig:Head",
+  "original_head_unchanged": true,
+  "cap_geometry_unchanged": true,
+  "cap_basecolor_linear": [
+    0.14,
+    0.15,
+    0.155
+  ],
+  "limitations": [
+    "Rounded opaque tube clumps, not individual fibers or anisotropic production hair.",
+    "Ear/hairline cap contour remains inherited and unfinished."
+  ],
+  "visual_review": {
+    "status": "Not recommended for public integration pending lead review",
+    "issues": [
+      "Inherited cap/front hairline remains helmet-like.",
+      "Raised front volume improves silhouette but side/back retains exposed wire loops.",
+      "Does not yet match approved loose swept/wavy Scholar hair."
+    ],
+    "public_assets_modified": false
+  },
+  "lead_review": {
+    "decision": "rejected",
+    "public_integration": false,
+    "reason": "Helmet hairline, exposed side/back wire loops and excessive tube geometry; not the approved loose swept/wavy Scholar direction."
+  },
+  "active_public_glb_sha256": "87caf8e814bcc015bc1abb86eda508c4e42a4dc3653547c0970e93ab22a1d21f",
+  "active_public_glb_unchanged": true
+}

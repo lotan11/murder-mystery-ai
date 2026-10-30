@@ -49,6 +49,7 @@ type Inventory = {
   joints: number;
   skinnedMeshes: number;
   skinMaps: number;
+  irisMapInfo: string;
   morphs: string[];
   meshNames: string[];
   bytes: number;
@@ -380,7 +381,8 @@ export default function CharacterLab() {
         let meshes = 0,
           joints = 0,
           skinnedMeshes = 0,
-          skinMaps = 0;
+          skinMaps = 0,
+          irisMapInfo = "";
         const morphs = new Set<string>(),
           meshNames: string[] = [];
         gltf.scene.traverse((object) => {
@@ -393,6 +395,13 @@ export default function CharacterLab() {
                   return texture instanceof THREE.Texture && image?.width === 1024 && image?.height === 1024;
                 }).length;
                 skinMaps = Math.max(skinMaps, decodedMaps);
+              }
+              if (material instanceof THREE.MeshStandardMaterial && material.name === "Slate blue grey iris") {
+                const texture = material.map;
+                const image = texture?.image as {width?: number; height?: number} | undefined;
+                if (texture && image?.width && image?.height && texture.colorSpace === THREE.SRGBColorSpace) {
+                  irisMapInfo = `${image.width}x${image.height}/uv${texture.channel}/srgb`;
+                }
               }
             }
             meshNames.push(object.name || `Mesh ${meshes}`);
@@ -506,6 +515,7 @@ export default function CharacterLab() {
           joints,
           skinnedMeshes,
           skinMaps,
+          irisMapInfo,
           morphs: [...morphs].sort(),
           meshNames,
           bytes: bytes.byteLength,
@@ -648,13 +658,27 @@ export default function CharacterLab() {
               <h2>Approved concept</h2>
               <span>PORTRAIT REFERENCE</span>
             </div>
-            <img
-              src="/casting/vale.png"
-              alt="Approved Scholar portrait reference: an older British detective with round spectacles and a tweed waistcoat"
-            />
+            {frameMode === "face" ? (
+              <svg
+                className="character-lab-portrait-crop"
+                viewBox="230 -45 570 680"
+                preserveAspectRatio="xMidYMid meet"
+                role="img"
+                aria-label="Portrait head crop · same approved image"
+              >
+                <title>Portrait head crop · same approved image</title>
+                <image href="/casting/vale.png" x="0" y="0" width="1145" height="1374" />
+              </svg>
+            ) : (
+              <img
+                src="/casting/vale.png"
+                alt="Approved Scholar portrait reference: an older British detective with round spectacles and a tweed waistcoat"
+              />
+            )}
             <p>
-              The selected look for Reginald P. Wobblebottom. This image is not
-              a 3D model or an animation demonstration.
+              {frameMode === "face"
+                ? "Portrait head crop · same approved image. Display-only crop for comparing hair and face."
+                : "The selected look for Reginald P. Wobblebottom. This image is not a 3D model or an animation demonstration."}
             </p>
           </section>
           <section className="character-lab-model">
@@ -679,6 +703,7 @@ export default function CharacterLab() {
               data-morph-active="0"
               data-morph-max="0"
               data-skin-map-count={inventory?.skinMaps || 0}
+              data-iris-map-info={inventory?.irisMapInfo || ""}
               data-mesh-count={inventory?.meshes || 0}
               data-joint-count={inventory?.joints || 0}
               data-morph-count={inventory?.morphs.length || 0}

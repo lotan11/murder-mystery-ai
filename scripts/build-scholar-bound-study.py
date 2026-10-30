@@ -178,6 +178,12 @@ report['meshes'][groom.name]={'vertices':len(groom.data.vertices),'weighted_vert
  'max_nearest_source_distance_m':report['groom']['measured_neutral_fit_range_m'][1]}
 
 
+# Supported project-authored iris color detail; preserve existing anatomy and UV0.
+eyes_spec=importlib.util.spec_from_file_location('scholar_eye_refinement',ROOT/'scripts/refine-scholar-eyes.py')
+eyes_module=importlib.util.module_from_spec(eyes_spec);eyes_spec.loader.exec_module(eyes_module)
+report['eye_materials']=eyes_module.refine_eyes(objects,ROOT)
+
+
 head=rig.pose.bones['mixamorig:Head'];head.rotation_mode='XYZ';head.rotation_euler=(0,math.radians(10),0)
 posed={obj.name:positions(obj) for obj in objects}
 for obj in objects:

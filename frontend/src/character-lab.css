@@ -56,6 +56,7 @@
   color: #b69f70;
 }
 .character-lab-reference > img,
+.character-lab-portrait-crop,
 .character-lab-viewer {
   width: 100%;
   height: 580px;
@@ -170,6 +171,7 @@
 }
 @media (max-width: 1000px) {
   .character-lab-reference > img,
+  .character-lab-portrait-crop,
   .character-lab-viewer {
     height: 500px;
   }
@@ -238,6 +240,7 @@
     letter-spacing: 1.3px;
   }
   .character-lab-reference > img,
+  .character-lab-portrait-crop,
   .character-lab-viewer {
     height: 430px;
   }

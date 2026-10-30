@@ -843,6 +843,88 @@
       "profile": "docs/assets/groom-study-profile.png"
     }
   },
+  "eye_materials": {
+    "status": "Development iris albedo detail; not finished eyes, gaze rig, corneal refraction or likeness approval",
+    "object": "Scholar Slate blue grey iris",
+    "mesh": "Sphere.001",
+    "material": "Slate blue grey iris",
+    "material_name": "Slate blue grey iris",
+    "method": "Two existing connected iris sphere islands, front-projected X/Z UV coordinates and project-authored radial color fibers",
+    "uv_layer": "IrisFrontProjection",
+    "uv_index": 1,
+    "original_uv0_preserved": true,
+    "islands": [
+      {
+        "vertices": 610,
+        "local_min_m": [
+          -0.004899995401501656,
+          -0.0006499995943158865,
+          -0.004900000058114529
+        ],
+        "local_max_m": [
+          0.004899998661130667,
+          0.000649999245069921,
+          0.004900000058114529
+        ],
+        "local_center_m": [
+          1.6298145055770874e-09,
+          -1.7462298274040222e-10,
+          0.0
+        ],
+        "radii_xz_m": [
+          0.004899997031316161,
+          0.004900000058114529
+        ]
+      },
+      {
+        "vertices": 610,
+        "local_min_m": [
+          -0.06355917453765869,
+          -0.0006499995943158865,
+          -0.004900000058114529
+        ],
+        "local_max_m": [
+          -0.05375918373465538,
+          0.000649999245069921,
+          0.004900000058114529
+        ],
+        "local_center_m": [
+          -0.058659179136157036,
+          -1.7462298274040222e-10,
+          0.0
+        ],
+        "radii_xz_m": [
+          0.004899995401501656,
+          0.004900000058114529
+        ]
+      }
+    ],
+    "texture": {
+      "path": "assets/character-production/eye-materials/iris-base-color.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "0b1e32f595655fc84a85703ef44f34ac1eb2d93e8f1aa6099919f50f07f9cf5c",
+      "bytes": 146982,
+      "color_space": "sRGB",
+      "lighting_painted": false
+    },
+    "all_object_geometry_sha256": "ea5f8b4c8a48a0bd499dfdf5964070d2ece409e6b032a1e0209d4aba68e30bb9",
+    "eye_component_geometry_sha256": "cee51d71df13dd979b22dc7da3463ceab0cd1243e6288cf9d4c78bb3b1fefbed",
+    "all_geometry_unchanged": true,
+    "geometry_unchanged": true,
+    "eye_geometry_unchanged": true,
+    "pupil_and_sclera_materials_unchanged": true,
+    "pupil_diameter_changed": false,
+    "new_geometry": false,
+    "new_bones_or_morphs": false,
+    "iris_roughness_before": 0.3199999928474426,
+    "iris_roughness_after": 0.26,
+    "limitations": [
+      "No corneal volume/refraction, eye tracking, anatomical eyelid refinement or new gaze controls.",
+      "Supported albedo detail only; existing pupil/iris size, eye positions and white materials remain development geometry.",
+      "Radial color detail does not constitute finished portrait likeness or premium eye approval."
+    ]
+  },
   "negative_head_turn_max_delta_m": 0.023602554179462085,
   "combined_pose_max_delta_m": 0.023602554179462085,
   "mouth_preview_limits": {

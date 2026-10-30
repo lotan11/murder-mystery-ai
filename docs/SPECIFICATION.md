@@ -1,6 +1,6 @@
 # AI Murder Mystery Dinner platform specification
 
-Status: authoritative working specification, updated October 29, 2026.
+Status: authoritative working specification, updated October 30, 2026.
 
 ## Integration deadline
 
@@ -96,3 +96,11 @@ The isolated weighted Scholar study now repairs visible scalp-cap gaps without c
 ## Listener review boundary — October 29
 
 The separately developed listener is not an integrated product feature. Review now reproduces cancellation, audio-framing, claim-correctness and narration-continuity defects; see LISTENER_REVIEW.md. Consent, truthful capture state, bounded validated audio and no stale speech/transcripts across Stop/pause/reset are required before adoption. Existing scripted mystery and approved portrait/liveLewis remain the demonstration baseline.
+
+## Scholar iris material increment — October29
+
+The separate weighted development rig now uses project-authored slate-grey radial iris color on existing eye geometry. Actual iris/pupil/white positions and sizes remain unchanged; no gaze rig, corneal volume or final-eye approval is implied. The approved game portrait/liveLewis(+5%) remains the active presentation.
+
+## October30 comparison and hair review
+
+Face close-up now displays a labeled crop of the same approved portrait, with complete hair/chin and responsive letterboxing. Reset/model changes restore full bust. No portrait identity or actual rig change. Two procedural crown experiments were visually rejected and remain inactive; reviews/HAIR_REFINEMENT_REVIEW.md records the evidence and next reuse approach.
