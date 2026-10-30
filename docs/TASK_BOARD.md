@@ -2,9 +2,9 @@
 
 **Integration deadline: November 10, 2026 (America/Denver).** Track the avatar critical path and readiness gates in INTEGRATION_PLAN.md. The approved portrait + Lewis remains the runnable fallback.
 
-Updated October 29, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
+Updated October 30, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
 
-## Current priorities — October 29, 2026
+## Current priorities — October 30, 2026
 
 | Priority | Work | Current state / next gate |
 | --- | --- | --- |
@@ -13,7 +13,8 @@ Updated October 29, 2026. Lead/integrator owns this board. Status reflects commi
 | P0 | Speech deformation and oral detail | Fixed real Lewis lab study works; full natural visemes, teeth/tongue and perceptual review unfinished |
 | P1 | First-generation speech latency | Warm replay cache implemented; new/expired/evicted text still needs generation; no prefetch yet |
 | Completed foundation | Bounded public replay cache | Four entries/32MiB/15-minute reuse lifetime; actual local cold12.107s/warm0.005724s, one worker |
-| Done this increment | Restrained iris material | Supported512px slate-grey texture on actualUV1; preserved eye anatomy; final eyes/likeness unfinished |
+| Completed foundation | Restrained iris material | Supported512px slate-grey texture on actualUV1; preserved eye anatomy; final eyes/likeness unfinished |
+| Done this increment | Portrait head comparison | Same approved image cropped in Face close-up; full bust/reset preserved; new hair experiment rejected |
 | Protected baseline | Playable Blackthorn case | Approved portrait/live Lewis, private roles, recovery and existing modes preserved |
 
 November4 is the animated-character readiness gate; November10 remains integration deadline. See SCHOLAR_QUALITY_REVIEW.md for concrete visual priorities. Historical milestone records follow.
@@ -236,3 +237,9 @@ PR2 0b2e809 remote verification: both CI40996214412/40996209236 pass. Combined i
 ## Iris material refinement — October29
 
 Completed restrained512px radial iris albedo and supportedUV1 binding on the separate weighted Scholar. Actual front/profile before/after reviewed; eye geometry/pupils/sclera and all head/skin/rig/groom remain unchanged. Browser decoding and geometry/material guards accompany delivery. This reduces flat cyan appearance; heavy eyelids, anatomical likeness and premium eye finish remain open. Next P0 remains silver-hair silhouette/groom and portrait-matched face; tailoring/oral/perceived speech quality also remain. November4 gate/November10 fallback unchanged.
+
+## October30 hair gate and comparison increment
+
+Delivered display-only approved-portrait head crop synchronized with Faceclose-up; desktop/phone review and Reset/model restoration covered. Rejected two procedural tube-clump crown passes: helmet line/wire loops remained despite valid weights/attachment. Public rig/source unchanged; no new hair shipped. See reviews/HAIR_REFINEMENT_REVIEW.md.
+
+Next P0: inspect/license/hash and visually assess an existing swept-hair asset, then fit actual Scholar geometry and validate exported materials/attachment. Official MakeHuman inventories are source leads only; no hair asset selected/downloaded. Likeness/lids/tailoring/oral/perceived-speech quality and November4/10 risk remain. ListenerPR2 remains reviewed/green/unmerged.

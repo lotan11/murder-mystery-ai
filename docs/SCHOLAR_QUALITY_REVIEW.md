@@ -44,3 +44,7 @@ A cap-only anatomical surface fit closes the visible crown holes in matched fron
 ## Follow-up: restrained iris material
 
 A project-authored512px slate-grey radial albedo replaces the weighted study's uniform cyan iris material. Actual before/after renders were accepted as a bounded, subtler material change; source eye geometry, pupils and sclera are preserved. SupportedUV1 texture delivery is verified, with originalUV0 retained. This does not resolve heavy lid contours, mannequin-like facial proportions, corneal volume/refraction, eye tracking or final likeness. Hair silhouette, face and tailoring remain the larger quality gaps.
+
+## October30 rejected crown prototype
+
+Two rounded clump passes increased silver coverage and raised front volume, but still looked like a combed helmet with wire loops. Rejected for public integration; valid attachment and larger geometry are not visual readiness. Existing public rig unchanged. Next: assess reusable hair geometry/material against the actual portrait before fit/export. Full front/profile evidence and source leads are recorded in reviews/HAIR_REFINEMENT_REVIEW.md. New display-only portrait head crop makes the likeness gap easier to judge without replacing the approved image.

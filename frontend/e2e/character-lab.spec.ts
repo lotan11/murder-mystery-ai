@@ -243,6 +243,19 @@ test('face framing fits decoded crown and chin on desktop and phone while preser
  const bust=await bounds();
  await page.getByRole('button',{name:'Face close-up',exact:true}).click();
  await expect(viewer).toHaveAttribute('data-frame-mode','face');
+ const portraitCrop=page.getByRole('img',{name:'Portrait head crop · same approved image',exact:true});
+ await expect(portraitCrop).toBeVisible();
+ await expect(portraitCrop).toHaveAttribute('viewBox','230 -45 570 680');
+ await expect(portraitCrop).toHaveAttribute('preserveAspectRatio','xMidYMid meet');
+ await expect(portraitCrop.locator('image')).toHaveAttribute('href','/casting/vale.png');
+ await expect(portraitCrop.locator('image')).toHaveAttribute('width','1145');
+ await expect(portraitCrop.locator('image')).toHaveAttribute('height','1374');
+ // Original source-pixel landmarks: crown (~y20), ears and beard/chin (~y520)
+ // all remain inside this viewBox; meet letterboxes rather than cropping on phones.
+ expect(await portraitCrop.evaluate(element=>{
+  const box=(element as SVGSVGElement).viewBox.baseVal;
+  return box.x<=300 && box.x+box.width>=730 && box.y<=20 && box.y+box.height>=535;
+ })).toBe(true);
  await expect(page.getByRole('button',{name:'Face close-up',exact:true})).toHaveAttribute('aria-pressed','true');
  await expect.poll(async()=>{const b=await bounds();return b.top-b.bottom;}).toBeGreaterThan(bust.top-bust.bottom);
  const fits=async()=>{const b=await bounds();return b.top<.95&&b.bottom>-.95&&b.left>-.95&&b.right<.95&&b.top-b.bottom>.6;};
@@ -261,15 +274,21 @@ test('face framing fits decoded crown and chin on desktop and phone while preser
  await page.getByRole('button',{name:'Front',exact:true}).click();
  await expect.poll(async()=>Math.abs(JSON.parse((await viewer.getAttribute('data-camera-direction'))!)[0])).toBeLessThan(.001);
  await page.screenshot({path:test.info().outputPath('face-desktop.png'),fullPage:true});
+ const beforeResize=Number(await viewer.getAttribute('data-render-count'));
  await page.setViewportSize({width:390,height:844});
+ await expect.poll(async()=>Number(await viewer.getAttribute('data-render-count'))).toBeGreaterThan(beforeResize);
  await expect.poll(fits).toBe(true);
  await page.screenshot({path:test.info().outputPath('face-mobile.png'),fullPage:true});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
  await page.getByRole('button',{name:'Reset camera',exact:true}).click();
  await expect(viewer).toHaveAttribute('data-frame-mode','bust');
  await expect(page.getByRole('button',{name:'Front',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('img[src="/casting/vale.png"]')).toBeVisible();
+ await expect(portraitCrop).toHaveCount(0);
  await page.getByRole('button',{name:'Face close-up',exact:true}).click();
  await page.getByLabel('Development model',{exact:true}).selectOption('face-study');
  await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
  await expect(viewer).toHaveAttribute('data-frame-mode','bust');
+ await expect(page.locator('img[src="/casting/vale.png"]')).toBeVisible();
+ await expect(portraitCrop).toHaveCount(0);
 });

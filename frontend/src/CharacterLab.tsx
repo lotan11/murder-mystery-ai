@@ -658,13 +658,27 @@ export default function CharacterLab() {
               <h2>Approved concept</h2>
               <span>PORTRAIT REFERENCE</span>
             </div>
-            <img
-              src="/casting/vale.png"
-              alt="Approved Scholar portrait reference: an older British detective with round spectacles and a tweed waistcoat"
-            />
+            {frameMode === "face" ? (
+              <svg
+                className="character-lab-portrait-crop"
+                viewBox="230 -45 570 680"
+                preserveAspectRatio="xMidYMid meet"
+                role="img"
+                aria-label="Portrait head crop · same approved image"
+              >
+                <title>Portrait head crop · same approved image</title>
+                <image href="/casting/vale.png" x="0" y="0" width="1145" height="1374" />
+              </svg>
+            ) : (
+              <img
+                src="/casting/vale.png"
+                alt="Approved Scholar portrait reference: an older British detective with round spectacles and a tweed waistcoat"
+              />
+            )}
             <p>
-              The selected look for Reginald P. Wobblebottom. This image is not
-              a 3D model or an animation demonstration.
+              {frameMode === "face"
+                ? "Portrait head crop · same approved image. Display-only crop for comparing hair and face."
+                : "The selected look for Reginald P. Wobblebottom. This image is not a 3D model or an animation demonstration."}
             </p>
           </section>
           <section className="character-lab-model">
