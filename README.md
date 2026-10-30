@@ -40,7 +40,7 @@ cd frontend
 npm.cmd ci
 npm.cmd run build
 cd ..
-.\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --ws-max-size 16384 --no-access-log --log-level warning
+.\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --ws-max-size 614400 --no-access-log --log-level warning
 ```
 
 For frontend development, keep the backend running on port 8000 and run `npm.cmd run dev` in `frontend` from another terminal. Vite proxies API and WebSocket requests. On macOS/Linux use `python3`, `.venv/bin/python`, and `npm` instead of the Windows commands above.

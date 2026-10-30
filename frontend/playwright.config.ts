@@ -22,12 +22,13 @@ export default defineConfig({
   use: {
     baseURL: "http://127.0.0.1:8001",
     headless: true,
+    launchOptions: { args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"] },
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
   reporter: "list",
   webServer: {
-    command: `"${python}" scripts/prepare-audition-test.py --output "${auditionTestDirectory}" && "${python}" -m uvicorn backend.main:app --host 127.0.0.1 --port 8001 --ws-max-size 16384 --no-access-log --log-level warning`,
+    command: `"${python}" scripts/prepare-audition-test.py --output "${auditionTestDirectory}" && "${python}" -m uvicorn backend.main:app --host 127.0.0.1 --port 8001 --ws-max-size 614400 --no-access-log --log-level warning`,
     cwd: root,
     url: "http://127.0.0.1:8001/health",
     reuseExistingServer: false,

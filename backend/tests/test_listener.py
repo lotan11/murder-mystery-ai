@@ -1,5 +1,6 @@
 """Consent, bounded transcript memory and the three-guest contradiction demonstration."""
 import asyncio
+import struct
 import threading
 from contextlib import ExitStack
 from dataclasses import replace
@@ -31,6 +32,12 @@ def join(ws, name):
     return joined["guest_id"]
 
 
+def webm_clip(seconds=3.0):
+    info_payload = bytes.fromhex("448988") + struct.pack(">d", seconds * 1000)
+    info = bytes.fromhex("1549a966") + bytes([0x80 | len(info_payload)]) + info_payload
+    return bytes.fromhex("1a45dfa38018538067") + bytes([0x80 | len(info)]) + info
+
+
 def test_three_guest_contradiction_followup_and_answer_are_remembered(client):
     created = client.post("/api/rooms").json()
     room_id = created["room_id"]
@@ -49,7 +56,7 @@ def test_three_guest_contradiction_followup_and_answer_are_remembered(client):
         observations = (
             ("Iris", "Ada was in the library at 9:20."),
             ("Basil", "Felix remained in the music room at 9:20."),
-            ("Cecily", "I heard Ada remained in the music room at 9:20 on the recording."),
+            ("Cecily", "Ada remained in the music room at 9:20."),
         )
         for name, text in observations:
             ws = guests[name][0]
@@ -90,12 +97,25 @@ def test_listener_consent_pause_and_binary_audio_requirements(client):
         assert ws.receive_json()["type"] == "error"
         ws.send_json({"type": "listener.start", "consent": True})
         assert ws.receive_json()["type"] == "listener.status"
+        ws.send_json({"type": "listener.audio", "duration_seconds": 3, "mime_type": "audio/webm"})
+        assert ws.receive_json()["type"] == "listener.status"
         ws.send_bytes(b"not allowed")
-        assert "Microphone transcription is disabled" in ws.receive_json()["message"]
+        error = ws.receive_json()
+        assert error["type"] == "listener.error" and error["code"] == "invalid_audio"
         ws.send_json({"type": "listener.mute"})
         assert ws.receive_json()["type"] == "listener.status"
         ws.send_json({"type": "listener.transcript", "text": "A clue."})
         assert ws.receive_json()["type"] == "error"
+        ws.send_json({"type": "listener.resume", "consent": False})
+        assert ws.receive_json()["type"] == "error"
+        ws.send_json({"type": "listener.resume", "consent": True})
+        resumed = ws.receive_json()
+        assert resumed["type"] == "listener.status" and resumed["listening"] and not resumed["muted"]
+        ws.send_json({"type": "listener.transcript", "text": "A clue after resuming."})
+        while True:
+            packet = ws.receive_json()
+            if packet.get("type") == "state" and packet["data"]["listener"]["utterances"]:
+                break
         assert guest_id in rooms[room_id].guests
 
 
@@ -126,7 +146,8 @@ def test_delayed_transcription_is_cancelled_and_discarded_after_stop_or_reset(cl
             guest.send_json({"type": "listener.start", "consent": True, "source": "microphone"})
             assert guest.receive_json()["type"] == "listener.status"
             guest.send_json({"type": "listener.audio", "duration_seconds": 3, "mime_type": "audio/webm"})
-            guest.send_bytes(b"small injected clip")
+            assert guest.receive_json()["type"] == "listener.status"
+            guest.send_bytes(webm_clip())
             assert started.wait(3), "transcription worker did not start"
             if interruption == "stop":
                 guest.send_json({"type": "listener.stop"})
@@ -145,6 +166,106 @@ def test_delayed_transcription_is_cancelled_and_discarded_after_stop_or_reset(cl
             assert finished.wait(3), "cancelled transcription did not settle"
             assert room.listener["utterances"] == []
             assert all(item["text"] != "Stale audio from the previous listening session." for item in room.listener["utterances"])
+
+
+def test_audio_usage_uses_verified_container_duration_and_rejects_client_mismatch(client):
+    created = client.post("/api/rooms").json()
+    room = rooms[created["room_id"]]
+    app.state.transcription_config = replace(app.state.transcription_config, enabled=True, reason="ready")
+    observed = []
+
+    class RecordingTranscriber:
+        async def transcribe(self, audio, mime_type):
+            observed.append((audio, mime_type))
+            return "The guests discussed a test clip."
+
+    app.state.transcriber = RecordingTranscriber()
+    with client.websocket_connect(f"/ws/{room.room_id}?role=guest") as ws:
+        join(ws, "Audio Guest")
+        ws.send_json({"type": "listener.start", "consent": True, "source": "microphone"})
+        assert ws.receive_json()["type"] == "listener.status"
+        ws.send_json({"type": "listener.audio", "duration_seconds": 3.0, "mime_type": "audio/webm;codecs=opus"})
+        assert ws.receive_json()["type"] == "listener.status"
+        ws.send_bytes(webm_clip(3.0))
+        confirmation = None
+        while True:
+            packet = ws.receive_json()
+            if packet.get("type") == "listener.confirmation_required":
+                confirmation = packet
+                break
+        assert room.listener["utterances"] == []
+        assert confirmation["text"] == "The guests discussed a test clip."
+        assert confirmation["guests"] == [{"id": next(iter(room.guests)), "name": "Audio Guest"}]
+        ws.send_json({"type": "listener.confirm_transcript", "id": confirmation["id"], "speaker_id": next(iter(room.guests))})
+        while True:
+            packet = ws.receive_json()
+            if packet.get("type") == "state" and packet["data"]["listener"]["utterances"]:
+                break
+        assert room.listener["audio_seconds"] == 3
+        assert room.listener["transcription_calls"] == 1
+        assert observed == [(webm_clip(3.0), "audio/webm;codecs=opus")]
+        assert room.listener["utterances"][0]["guest_id"] == next(iter(room.guests))
+
+        ws.send_json({"type": "listener.resume", "consent": True})
+        while ws.receive_json()["type"] != "listener.status":
+            pass
+        ws.send_json({"type": "listener.audio", "duration_seconds": 1.0, "mime_type": "audio/webm"})
+        while ws.receive_json()["type"] != "listener.status":
+            pass
+        ws.send_bytes(webm_clip(3.0))
+        error = ws.receive_json()
+        while error["type"] != "listener.error":
+            error = ws.receive_json()
+        assert error["type"] == "listener.error" and error["code"] == "invalid_audio"
+        assert "does not match" in error["message"]
+        assert room.listener["audio_seconds"] == 3
+        assert room.listener["transcription_calls"] == 1
+
+
+def test_unattributed_audio_is_remembered_without_claims_or_interrogation():
+    memory = empty_memory()
+    result = accept_utterance(memory, guest_id=None, guest_name="Unattributed audio",
+                              text="Ada was in the library at 9:20.", evidence=[])
+    item = memory["utterances"][0]
+    assert item["guest_id"] is None
+    assert item["speaker"] == "Unattributed audio"
+    assert item["claims"] == []
+    assert memory["theories"] == {}
+    assert not any(event["type"] in {"listener.contradiction", "listener.follow_up"} for event in result["events"])
+
+
+def test_microphone_source_can_be_marked_uncertain_without_assigning_the_owner(client):
+    created = client.post("/api/rooms").json()
+    room = rooms[created["room_id"]]
+    app.state.transcription_config = replace(app.state.transcription_config, enabled=True, reason="ready")
+
+    class Transcriber:
+        async def transcribe(self, *_args):
+            return "I suspect Ada because she lied."
+
+    app.state.transcriber = Transcriber()
+    with client.websocket_connect(f"/ws/{room.room_id}?role=guest") as ws:
+        join(ws, "Mic Owner")
+        owner = next(iter(room.guests))
+        ws.send_json({"type": "listener.start", "consent": True, "source": "microphone"})
+        assert ws.receive_json()["type"] == "listener.status"
+        ws.send_json({"type": "listener.audio", "duration_seconds": 3, "mime_type": "audio/webm"})
+        assert ws.receive_json()["type"] == "listener.status"
+        ws.send_bytes(webm_clip())
+        confirmation = None
+        while confirmation is None:
+            packet = ws.receive_json()
+            if packet.get("type") == "listener.confirmation_required":
+                confirmation = packet
+        assert room.listener["utterances"] == []
+        ws.send_json({"type": "listener.confirm_transcript", "id": confirmation["id"], "speaker_id": "unattributed"})
+        while ws.receive_json()["type"] != "listener.confirmation_cleared":
+            pass
+        listener = client.get(f"/api/rooms/{room.room_id}/state").json()["listener"]
+        item = listener["utterances"][0]
+        assert item["guest_id"] is None and item["speaker"] == "Unattributed audio"
+        assert item["claims"] == [] and listener["theories"] == {}
+        assert owner in room.guests
 
 
 def test_transcription_stays_off_without_both_explicit_flags():

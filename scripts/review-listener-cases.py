@@ -3,7 +3,7 @@ Run explicitly against an isolated snapshot of that branch, never the live room 
 These expose known defects and are expected to fail until the listener is repaired.
 Not collected by the normal main-branch suite; see docs/LISTENER_REVIEW.md.
 """
-import asyncio, threading
+import asyncio, struct, threading
 from dataclasses import replace
 import pytest
 import importlib.util
@@ -27,6 +27,11 @@ def join(ws):
     ws.send_json({'type':'listener.start','consent':True})
     assert ws.receive_json()['type']=='listener.status'
 
+def webm_clip(seconds=3):
+    payload=bytes.fromhex('448988')+struct.pack('>d',seconds*1000)
+    info=bytes.fromhex('1549a966')+bytes([0x80|len(payload)])+payload
+    return bytes.fromhex('1a45dfa38018538067')+bytes([0x80|len(info)])+info
+
 @pytest.mark.parametrize('interruption',['stop','reset'])
 def test_delayed_audio_does_not_publish_after_interruption(client,interruption):
     created=client.post('/api/rooms').json();room_id=created['room_id'];room=rooms[room_id]
@@ -44,7 +49,8 @@ def test_delayed_audio_does_not_publish_after_interruption(client,interruption):
       with client.websocket_connect(f'/ws/{room_id}?role=guest') as guest:
         join(guest)
         guest.send_json({'type':'listener.audio','duration_seconds':3,'mime_type':'audio/webm'})
-        guest.send_bytes(b'fake audio handled only by injected offline transcriber')
+        assert guest.receive_json()['type']=='listener.status'
+        guest.send_bytes(webm_clip())
         assert started.wait(3)
         if interruption=='stop':guest.send_json({'type':'listener.stop'})
         else:

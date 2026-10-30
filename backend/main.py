@@ -1,7 +1,9 @@
 from __future__ import annotations
 import asyncio
 import copy
+import math
 import os
+import time
 from contextlib import asynccontextmanager
 import json
 import secrets
@@ -22,6 +24,7 @@ from .scholar_speech import ScholarSpeechRenderer, create_router as scholar_spee
 from .listener import (OpenAITranscriber, TranscriptionError, empty_memory,
                        load_transcription_config, public_usage, accept_utterance,
                        MAX_AUDIO_BYTES)
+from .audio_validation import AudioValidationError, validate_audio_chunk
 
 ROOT = Path(__file__).resolve().parents[1]
 @asynccontextmanager
@@ -227,7 +230,8 @@ def valid_listener_memory(memory, guests):
     sequences = []
     for item in utterances:
         if (not isinstance(item, dict) or set(item) != {"id", "sequence", "guest_id", "speaker", "text", "claims", "follow_up_answer"}
-                or item["guest_id"] not in guests or not isinstance(item["text"], str) or len(item["text"]) > 1200
+                or (item["guest_id"] not in guests if item["guest_id"] is not None else item["speaker"] != "Unattributed audio" or bool(item["claims"]) or item["follow_up_answer"])
+                or not isinstance(item["text"], str) or len(item["text"]) > 1200
                 or not isinstance(item["speaker"], str) or not 1 <= len(item["speaker"]) <= 40
                 or type(item["sequence"]) is not int or item["sequence"] < 1 or item["id"] != f"u{item['sequence']}"
                 or not isinstance(item["claims"], list) or type(item["follow_up_answer"]) is not bool
@@ -334,6 +338,7 @@ def _invalidate_room_listeners(room, *, stop=False):
     room.listener_generation += 1
     for session in list(room.listener_sessions.values()):
         _invalidate_listener_session(session, stop=stop)
+        session["pending_confirmation"] = None
 
 def control(room, msg):
     action = msg.get("action")
@@ -531,7 +536,8 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
     if identity:
         room.guest_clients[ws] = identity
     session = {"listening": False, "muted": False, "generation": 0,
-               "pending_audio": None, "queue": asyncio.Queue(maxsize=4), "worker": None}
+               "pending_audio": None, "pending_confirmation": None,
+               "queue": asyncio.Queue(maxsize=4), "worker": None}
     if identity:
         room.listener_sessions[ws] = session
 
@@ -580,29 +586,21 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                         continue
                     if not transcript or not session_is_current(session_generation, room_generation):
                         continue
-                    async with room.lock:
-                        if not session_is_current(session_generation, room_generation):
-                            continue
-                        before = room.record()
-                        try:
-                            result = accept_utterance(room.listener, guest_id=identity,
-                                guest_name=room.guests[identity]["name"], text=transcript,
-                                evidence=[item for item in EVIDENCE if item["id"] in room.revealed])
-                            app.state.room_store.save(room.record())
-                        except (StorageError, ValueError):
-                            room.restore(before)
-                            await ws.send_json({"type": "listener.error", "code": "storage_unavailable",
-                                                "message": "The transcript could not be saved; the room memory was unchanged."})
-                            continue
-                        await broadcast(room)
-                        for event in result["events"]:
-                            if not session_is_current(session_generation, room_generation):
-                                break
-                            for client in list(room.clients):
-                                try:
-                                    await client.send_json(event)
-                                except Exception:
-                                    room.clients.discard(client)
+                    # Speech recognition cannot reliably identify which guest spoke.
+                    # Hold the transcript privately until the listener confirms its source.
+                    if session_is_current(session_generation, room_generation):
+                        session["generation"] += 1
+                        session["muted"] = True
+                        session["pending_audio"] = None
+                        _drain_listener_queue(session["queue"])
+                        session["pending_confirmation"] = {"id": secrets.token_urlsafe(12), "text": transcript[:1200]}
+                        await ws.send_json({"type": "listener.confirmation_required",
+                                            "id": session["pending_confirmation"]["id"],
+                                            "text": session["pending_confirmation"]["text"],
+                                            "guests": [{"id": guest_id, "name": guest["name"]}
+                                                       for guest_id, guest in room.guests.items()]})
+                        await ws.send_json({"type": "listener.status", "listening": True, "muted": True,
+                                            "transcription": app.state.transcription_config.reason})
                 finally:
                     session["queue"].task_done()
         except asyncio.CancelledError:
@@ -624,14 +622,22 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                 if packet.get("text") is None:
                     if role != "guest" or not identity or not session["listening"] or session["muted"] or room.paused:
                         raise ValueError("Start listening as a joined guest and unpause the investigation before sending audio.")
-                    if not app.state.transcription_config.enabled:
-                        raise ValueError("Microphone transcription is disabled. Use typed observation or configure paid transcription.")
                     if session["pending_audio"] is None:
                         raise ValueError("Audio chunks require listener.audio metadata first.")
                     audio, metadata = packet.get("bytes"), session["pending_audio"]
                     session["pending_audio"] = None
+                    if time.monotonic() - metadata["created_at"] > 5:
+                        raise ValueError("Audio metadata expired before its binary clip arrived.")
                     if audio is None or len(audio) > MAX_AUDIO_BYTES:
                         raise ValueError("Audio chunk exceeds the 512 KB limit.")
+                    try:
+                        verified_duration = validate_audio_chunk(audio, metadata["mime_type"], metadata["duration_seconds"])
+                    except AudioValidationError as exc:
+                        await ws.send_json({"type": "listener.error", "code": "invalid_audio", "message": str(exc)})
+                        continue
+                    if not app.state.transcription_config.enabled:
+                        raise ValueError("Microphone transcription is disabled. Use typed observation or configure paid transcription.")
+                    metadata["duration_seconds"] = math.ceil(verified_duration)
                     try:
                         session["queue"].put_nowait((audio, metadata, session["generation"], room.listener_generation))
                     except asyncio.QueueFull:
@@ -646,16 +652,50 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                     msg = json.loads(packet["text"])
                 if not isinstance(msg, dict):
                     raise ValueError("Expected an object command.")
-                if msg.get("type") in ("listener.start", "listener.resume", "listener.mute", "listener.stop", "listener.audio", "listener.transcript"):
+                if session["pending_audio"] is not None and msg.get("type") != "listener.audio":
+                    session["pending_audio"] = None
+                if msg.get("type") in ("listener.start", "listener.resume", "listener.mute", "listener.stop", "listener.audio", "listener.transcript", "listener.confirm_transcript"):
                     if role != "guest" or not identity:
                         raise ValueError("Join as a guest before using the listener.")
                     kind = msg["type"]
+                    if kind == "listener.confirm_transcript":
+                        pending = session.get("pending_confirmation")
+                        if not pending or msg.get("id") != pending["id"]:
+                            raise ValueError("There is no current transcript awaiting source confirmation.")
+                        decision = msg.get("speaker_id")
+                        if decision == "discard":
+                            session["pending_confirmation"] = None
+                            await ws.send_json({"type": "listener.confirmation_cleared"})
+                            continue
+                        speaker_id = decision if isinstance(decision, str) and decision in room.guests else None
+                        speaker_name = room.guests[speaker_id]["name"] if speaker_id else "Unattributed audio"
+                        async with room.lock:
+                            before = room.record()
+                            try:
+                                result = accept_utterance(room.listener, guest_id=speaker_id,
+                                    guest_name=speaker_name, text=pending["text"],
+                                    evidence=[item for item in EVIDENCE if item["id"] in room.revealed])
+                                app.state.room_store.save(room.record())
+                            except (StorageError, ValueError):
+                                room.restore(before)
+                                raise ValueError("The transcript could not be saved; it remains awaiting confirmation.")
+                            session["pending_confirmation"] = None
+                            await broadcast(room)
+                            for event in result["events"]:
+                                for client in list(room.clients):
+                                    try:
+                                        await client.send_json(event)
+                                    except Exception:
+                                        room.clients.discard(client)
+                        await ws.send_json({"type": "listener.confirmation_cleared"})
+                        continue
                     if kind == "listener.start":
                         if msg.get("consent") is not True:
                             raise ValueError("Explicit consent is required before listening.")
                         if room.paused:
                             raise ValueError("The investigation is paused.")
                         _invalidate_listener_session(session, stop=True)
+                        session["pending_confirmation"] = None
                         session["listening"], session["muted"] = True, False
                         room.listener_sessions[ws] = session
                     elif kind == "listener.resume":
@@ -664,21 +704,26 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                         if room.paused:
                             raise ValueError("Resume listening after the host resumes the investigation.")
                         _invalidate_listener_session(session, stop=True)
+                        session["pending_confirmation"] = None
                         session["listening"], session["muted"] = True, False
                         room.listener_sessions[ws] = session
                     elif kind == "listener.mute":
                         _invalidate_listener_session(session)
                     elif kind == "listener.stop":
                         _invalidate_listener_session(session, stop=True)
+                        session["pending_confirmation"] = None
                     elif kind == "listener.audio":
                         if not session["listening"] or session["muted"] or room.paused:
                             raise ValueError("Listening is not active.")
+                        if session["pending_audio"] is not None:
+                            session["pending_audio"] = None
+                            raise ValueError("Previous audio metadata had no clip; request a fresh clip header.")
                         duration = msg.get("duration_seconds")
                         mime_type = msg.get("mime_type")
                         if (type(duration) not in (int, float) or not 0.5 <= duration <= 5
-                                or not isinstance(mime_type, str) or mime_type.lower() not in {"audio/webm", "audio/webm;codecs=opus", "audio/ogg;codecs=opus", "audio/mp4", "audio/mpeg"}):
+                                or not isinstance(mime_type, str) or mime_type.lower() not in {"audio/webm", "audio/webm;codecs=opus", "audio/ogg;codecs=opus", "audio/mp4"}):
                             raise ValueError("Audio metadata must specify a 0.5–5 second supported clip.")
-                        session["pending_audio"] = {"duration_seconds": int(duration + .5), "mime_type": mime_type.lower()}
+                        session["pending_audio"] = {"duration_seconds": float(duration), "mime_type": mime_type.lower(), "created_at": time.monotonic()}
                     elif kind == "listener.transcript":
                         if not session["listening"] or session["muted"] or room.paused:
                             raise ValueError("Start listening before submitting a transcript.")

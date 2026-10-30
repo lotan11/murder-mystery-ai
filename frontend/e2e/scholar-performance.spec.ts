@@ -7,6 +7,12 @@ test('approved Scholar and Lewis speak public game dialogue at approved pace',as
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await page.getByRole('button',{name:/Create an evening/}).click();await expect(page).toHaveURL(/room=/);
  const room=new URL(page.url()).searchParams.get('room')!;
+ const guest=await context.newPage();
+ await guest.goto(`/?view=guest&room=${room}`);
+ await guest.getByLabel('Your name',{exact:true}).fill('Listener Guest');
+ await guest.getByRole('button',{name:'Join the investigation'}).click();
+ guest.once('dialog',dialog=>dialog.accept());
+ await guest.getByRole('button',{name:'Enable typed listening',exact:true}).click();
  const tv=await context.newPage();tv.on('pageerror',e=>errors.push(e.message));let calls=0;
  await tv.route('**/api/scholar-speech/status',r=>r.fulfill({json:{available:true,provider:'kokoro-onnx',voice:'bm_lewis',playback_rate:1.05,message:'Offline test fixture'}}));
  await tv.route(`**/api/rooms/${room}/scholar-speech`,async route=>{
@@ -23,6 +29,12 @@ test('approved Scholar and Lewis speak public game dialogue at approved pace',as
  await expect.poll(()=>audio.evaluate((a:HTMLAudioElement)=>!a.paused)).toBe(true);
  expect(await audio.evaluate((a:HTMLAudioElement)=>a.playbackRate)).toBe(1.05);
  expect(await audio.evaluate((a:HTMLAudioElement)=>a.preservesPitch)).toBe(true);
+ const position=await audio.evaluate((a:HTMLAudioElement)=>a.currentTime);
+ await guest.getByLabel('Add what you heard').fill('The guests are discussing the untouched port.');
+ await guest.getByRole('button',{name:'Share observation with detective'}).click();
+ await expect(guest.getByText('The guests are discussing the untouched port.')).toBeVisible();
+ await expect.poll(()=>audio.evaluate((a:HTMLAudioElement)=>a.currentTime)).toBeGreaterThan(position+.25);
+ expect(calls).toBe(1);
  await page.getByRole('button',{name:'Begin case',exact:true}).click();
  await expect.poll(()=>calls).toBe(2);
  await expect(tv.locator('.stage-subtitles')).toContainText('Lord Blackthorn is dead');
