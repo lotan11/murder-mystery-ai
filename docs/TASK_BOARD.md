@@ -12,7 +12,7 @@ Updated October 29, 2026. Lead/integrator owns this board. Status reflects commi
 | P0 | Browser-delivered materials | Three1K baked maps now embedded/decoded; grain delivery fixed, final color/skin/eye artistry still unfinished |
 | P0 | Speech deformation and oral detail | Fixed real Lewis lab study works; full natural visemes, teeth/tongue and perceptual review unfinished |
 | P1 | First-generation speech latency | Warm replay cache implemented; new/expired/evicted text still needs generation; no prefetch yet |
-| P1 | Listener integration — `feature/listener` | First stale-session fix pushed; audio framing/limits, evidence-scoped claims, speaker confirmation and narration regression fixes pass local tests; remaining work: full browser/saved-room validation, push, PR and remote CI |
+| P1 | Listener integration — `feature/listener` | All review defects repaired; full local backend/client/build/browser checks pass; PR #2 is open. Remaining gate: final remote CI and main Work combined integration sign-off; do not merge before both |
 | Done this increment | Bounded public replay cache | Four entries/32MiB/15-minute reuse lifetime; actual local cold12.107s/warm0.005724s, one worker |
 | Protected baseline | Playable Blackthorn case | Approved portrait/live Lewis, private roles, recovery and existing modes preserved |
 

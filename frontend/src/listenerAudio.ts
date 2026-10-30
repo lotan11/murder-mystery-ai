@@ -64,11 +64,11 @@ export async function openListenerCapture(options: {
       const segmentStarted = performance.now();
       active.ondataavailable = (event) => {
         if (stopped || !options.isCurrent() || !event.data.size) return;
-        const seconds = Math.max(1, Math.ceil((performance.now() - segmentStarted) / 1000));
+        const seconds = Math.round(((performance.now() - segmentStarted) / 1000) * 10) / 10;
         const chunk = {
           blob: event.data,
           mimeType: active.mimeType.trim().toLowerCase(),
-          durationSeconds: Math.min(5, seconds),
+          durationSeconds: Math.max(0.5, Math.min(5, seconds)),
         };
         delivery = delivery.then(async () => {
           if (!stopped && options.isCurrent()) await options.onChunk(chunk);

@@ -119,6 +119,43 @@ def test_listener_consent_pause_and_binary_audio_requirements(client):
         assert guest_id in rooms[room_id].guests
 
 
+def test_room_reset_emits_listener_reset_for_lobby_sessions(client):
+    created = client.post("/api/rooms").json()
+    room = rooms[created["room_id"]]
+    with client.websocket_connect(f"/ws/{room.room_id}?role=organizer&token={created['organizer_token']}") as host:
+        host.receive_json()
+        with client.websocket_connect(f"/ws/{room.room_id}?role=guest") as guest:
+            join(guest, "Lobby Listener")
+            guest.send_json({"type": "listener.start", "consent": True, "source": "typed"})
+            assert guest.receive_json()["type"] == "listener.status"
+            host.send_json({"type": "control", "action": "reset"})
+            while True:
+                event = guest.receive_json()
+                if event.get("type") == "listener.reset":
+                    break
+            session = next(iter(room.listener_sessions.values()))
+            assert not session["listening"] and session["muted"]
+
+
+def test_disabled_transcription_reports_listener_error_without_calling_provider(client):
+    created = client.post("/api/rooms").json()
+    room = rooms[created["room_id"]]
+    with client.websocket_connect(f"/ws/{room.room_id}?role=guest") as ws:
+        join(ws, "Disabled Mic")
+        ws.send_json({"type": "listener.start", "consent": True, "source": "microphone"})
+        assert ws.receive_json()["type"] == "listener.status"
+        ws.send_json({"type": "listener.audio", "duration_seconds": 3, "mime_type": "audio/webm"})
+        assert ws.receive_json()["type"] == "listener.status"
+        ws.send_bytes(webm_clip())
+        while True:
+            event = ws.receive_json()
+            if event.get("type") == "listener.error":
+                break
+        assert event["code"] == "disabled"
+        assert "Microphone transcription is disabled" in event["message"]
+        assert room.listener["transcription_calls"] == 0
+
+
 @pytest.mark.parametrize("interruption", ["stop", "reset"])
 def test_delayed_transcription_is_cancelled_and_discarded_after_stop_or_reset(client, interruption):
     created = client.post("/api/rooms").json()

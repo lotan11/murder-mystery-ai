@@ -1,4 +1,51 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+async function interceptedMicrophoneGuest(page: Page, roomId?: string) {
+  const created = roomId ? { room_id: roomId } : await page.request.post("/api/rooms", { data: {} }).then(response => response.json());
+  let socket: { send: (message: string) => void } | null = null;
+  await page.routeWebSocket(/\/ws\//, routed => {
+    socket = routed;
+    const server = routed.connectToServer();
+    server.onMessage(message => {
+      if (typeof message === "string") {
+        try {
+          const event = JSON.parse(message);
+          if (event.type === "state" && event.data?.listener?.usage)
+            event.data.listener.usage.enabled = true;
+          message = JSON.stringify(event);
+        } catch { /* pass non-JSON WebSocket messages through */ }
+      }
+      routed.send(message);
+    });
+    routed.onMessage(message => server.send(message));
+  });
+  await page.context().grantPermissions(["microphone"]);
+  await page.addInitScript(() => {
+    const original = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+    Object.defineProperty(window, "__listenerTestStreams", { value: [], configurable: true });
+    Object.defineProperty(navigator.mediaDevices, "getUserMedia", {
+      configurable: true,
+      value: async (constraints: MediaStreamConstraints) => {
+        const stream = await original(constraints);
+        (window as any).__listenerTestStreams.push(stream);
+        return stream;
+      },
+    });
+  });
+  await page.goto(`/?view=guest&room=${created.room_id}`);
+  await page.getByLabel("Your name", { exact: true }).fill("Listener Guest");
+  await page.getByRole("button", { name: "Join the investigation" }).click();
+  await expect(page.getByRole("heading", { name: "Detective at the table" })).toBeVisible();
+  page.on("dialog", dialog => dialog.accept());
+  return { roomId: created.room_id as string, socket: () => socket };
+}
+
+async function micTracksEnded(page: Page) {
+  return page.evaluate(() => {
+    const streams = (window as any).__listenerTestStreams as MediaStream[];
+    return streams.length > 0 && streams.every(stream => stream.getTracks().every(track => track.readyState === "ended"));
+  });
+}
 
 test("consecutive finalized microphone clips independently decode", async ({ page }) => {
   await page.context().grantPermissions(["microphone"]);
@@ -76,10 +123,58 @@ test("the local Uvicorn WebSocket validates a real finalized clip above the form
       return { type: result.type, message: result.message, bytes: clip.size, duration };
     } finally { socket.close(); stream.getTracks().forEach((track) => track.stop()); }
   });
-  expect(outcome.type).toBe("error");
+  expect(outcome.type).toBe("listener.error");
   expect(outcome.message).toContain("Microphone transcription is disabled");
   expect(outcome.bytes).toBeGreaterThan(16 * 1024);
   expect(outcome.bytes).toBeLessThan(512 * 1024);
   expect(outcome.duration).toBeGreaterThan(2.5);
   expect(outcome.duration).toBeLessThan(3.5);
+});
+
+test("lobby reset stops live capture and Resume clears a stale confirmation", async ({ browser, page }) => {
+  const organizerContext = await browser.newContext();
+  const organizer = await organizerContext.newPage();
+  const created = await page.request.post("/api/rooms", { data: {} }).then(response => response.json());
+  const token = created.organizer_token as string;
+  await organizer.addInitScript(({ room, organizerToken }) => localStorage.setItem(`organizer:${room}`, organizerToken),
+    { room: created.room_id, organizerToken: token });
+  organizer.on("dialog", dialog => dialog.accept());
+  await organizer.goto(`/?view=organizer&room=${created.room_id}`);
+  const guest = await interceptedMicrophoneGuest(page, created.room_id);
+  expect(guest.roomId).toBe(created.room_id);
+
+  await page.getByRole("button", { name: "Enable microphone" }).click();
+  await expect(page.getByText(/Microphone live/)).toBeVisible();
+  const state = await page.request.get(`/api/rooms/${guest.roomId}/state`).then(response => response.json());
+  const guestRow = state.guests.find((entry: { name: string }) => entry.name === "Listener Guest");
+  guest.socket()?.send(JSON.stringify({ type: "listener.confirmation_required", id: "old", text: "A stale sentence." ,
+    guests: [{ id: guestRow.id, name: guestRow.name }] }));
+  await expect(page.getByText("A stale sentence.", { exact: true })).toBeVisible();
+  await expect.poll(() => micTracksEnded(page)).toBe(true);
+
+  await page.getByRole("button", { name: "Resume listening" }).click();
+  await expect(page.getByText("A stale sentence.", { exact: true })).toHaveCount(0);
+  await expect(page.getByText(/Microphone live/)).toBeVisible();
+  await expect.poll(() => page.evaluate(() => ((window as any).__listenerTestStreams as MediaStream[]).length)).toBe(2);
+
+  await organizer.getByRole("button", { name: "Reset this room" }).click();
+  await expect(page.getByText("Microphone and listener stopped by room reset.")).toBeVisible();
+  await expect.poll(() => micTracksEnded(page)).toBe(true);
+  await expect(page.getByRole("button", { name: "Enable microphone" })).toBeVisible();
+  await organizerContext.close();
+});
+
+test("terminal microphone errors stop capture and keep their explanation visible", async ({ page }) => {
+  const guest = await interceptedMicrophoneGuest(page);
+  await page.getByRole("button", { name: "Enable microphone" }).click();
+  await expect(page.getByText(/Microphone live/)).toBeVisible();
+  await expect.poll(async () => {
+    const message = await page.locator(".listener-panel [role=status]").innerText();
+    if (message.includes("disabled")) return "disabled";
+    if (message.includes("does not match")) return "mismatch";
+    return message;
+  }, { timeout: 8000 }).toBe("disabled");
+  await expect(page.getByText("Microphone transcription is disabled. Use typed observation or configure paid transcription.")).toBeVisible({ timeout: 8000 });
+  await expect.poll(() => micTracksEnded(page)).toBe(true);
+  await expect(page.getByRole("button", { name: "Enable microphone" })).toBeVisible();
 });

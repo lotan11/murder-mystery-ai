@@ -4,6 +4,7 @@ from __future__ import annotations
 import math
 import struct
 
+DECLARED_DURATION_TOLERANCE_SECONDS = 1.25
 
 class AudioValidationError(ValueError):
     pass
@@ -165,6 +166,8 @@ def validate_audio_chunk(data: bytes, mime_type: str, declared_seconds: float) -
         raise AudioValidationError("This microphone audio format is not supported.")
     if not math.isfinite(duration) or not 0.5 <= duration <= 5.25:
         raise AudioValidationError("Audio clips must contain 0.5–5 seconds of finalized audio.")
-    if abs(duration - declared_seconds) > 0.75:
+    # MediaRecorder stop/dataavailable scheduling can drift by about a second;
+    # usage is always charged from this parsed duration, never the declaration.
+    if abs(duration - declared_seconds) > DECLARED_DURATION_TOLERANCE_SECONDS:
         raise AudioValidationError("The announced audio duration does not match the clip.")
     return duration

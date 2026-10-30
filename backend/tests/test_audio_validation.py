@@ -20,10 +20,14 @@ def test_webm_duration_is_read_from_finalized_container(seconds):
     assert actual == pytest.approx(seconds)
 
 
-@pytest.mark.parametrize("declared", [0.5, 1.0, 4.0, 5.0])
+@pytest.mark.parametrize("declared", [0.5, 1.0, 4.5, 5.0])
 def test_duration_mismatch_is_rejected(declared):
     with pytest.raises(AudioValidationError, match="does not match"):
         validate_audio_chunk(webm_clip(3.0), "audio/webm", declared)
+
+
+def test_container_duration_remains_authoritative_when_browser_timer_drifts():
+    assert validate_audio_chunk(webm_clip(3.0), "audio/webm", 4.0) == pytest.approx(3.0)
 
 
 def test_malformed_or_unsupported_audio_is_rejected():

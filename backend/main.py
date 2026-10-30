@@ -636,7 +636,9 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                         await ws.send_json({"type": "listener.error", "code": "invalid_audio", "message": str(exc)})
                         continue
                     if not app.state.transcription_config.enabled:
-                        raise ValueError("Microphone transcription is disabled. Use typed observation or configure paid transcription.")
+                        await ws.send_json({"type": "listener.error", "code": "disabled",
+                                            "message": "Microphone transcription is disabled. Use typed observation or configure paid transcription."})
+                        continue
                     metadata["duration_seconds"] = math.ceil(verified_duration)
                     try:
                         session["queue"].put_nowait((audio, metadata, session["generation"], room.listener_generation))
@@ -820,6 +822,12 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                         room.guest_clients[ws] = identity
                         await ws.send_json(joined_packet)
                     await broadcast(room)
+                    if kind == "control" and msg.get("action") == "reset":
+                        for connected in list(room.guest_clients):
+                            try:
+                                await connected.send_json({"type": "listener.reset"})
+                            except Exception:
+                                room.clients.discard(connected)
             except (ValueError, TypeError) as exc:
                 await ws.send_json({"type": "error", "message": str(exc)})
     except WebSocketDisconnect:

@@ -64,6 +64,7 @@ export default function App() {
   const [observation, setObservation] = useState("");
   const [listenerConfirmation, setListenerConfirmation] = useState<{ id: string; text: string } | null>(null);
   const [confirmedSpeaker, setConfirmedSpeaker] = useState("");
+  const listenerError = useRef<string | null>(null);
   const recorderStop = useRef<(() => void) | null>(null), listenerGeneration = useRef(0),
     listenerSource = useRef<"microphone" | "typed" | null>(null);
   const animated = presentation === "animated";
@@ -134,10 +135,20 @@ export default function App() {
           setJoined(true);
           return;
         }
+        if (message?.type === "listener.reset") {
+          listenerGeneration.current += 1;
+          recorderStop.current?.(); recorderStop.current = null;
+          listenerSource.current = null;
+          listenerError.current = null;
+          setListening(false); setMuted(false);
+          setListenerConfirmation(null); setConfirmedSpeaker("");
+          setListenerStatus("Microphone and listener stopped by room reset.");
+          return;
+        }
         if (message?.type === "listener.status") {
           setListening(Boolean(message.listening));
           setMuted(Boolean(message.muted));
-          if (!message.listening) setListenerStatus("Listener stopped.");
+          if (!message.listening) setListenerStatus(listenerError.current || "Listener stopped.");
           else if (message.muted) setListenerStatus("Listening muted.");
           return;
         }
@@ -157,8 +168,8 @@ export default function App() {
         }
         if (message?.type === "listener.error") {
           const messageText = typeof message.message === "string" ? message.message : "Listener error.";
-          setListenerStatus(messageText);
-          if (message.code !== "backpressure") stopListener(false);
+          if (message.code !== "backpressure") stopListener(false, messageText);
+          else setListenerStatus(messageText);
           return;
         }
         if (message?.type === "private") {
@@ -227,6 +238,7 @@ export default function App() {
         setError("Cannot connect to the room. Check the server and room code.");
       ws.onclose = (e) => {
         setStatus("Offline");
+        listenerError.current = null;
         setListenerConfirmation(null);
         setConfirmedSpeaker("");
         listenerGeneration.current += 1;
@@ -281,6 +293,8 @@ export default function App() {
     const generation = ++listenerGeneration.current;
     listenerSource.current = useMicrophone ? "microphone" : "typed";
     if (!send({ type: resume ? "listener.resume" : "listener.start", consent: true, source: listenerSource.current })) return;
+    listenerError.current = null;
+    setListenerConfirmation(null); setConfirmedSpeaker("");
     setListening(true); setMuted(false);
     if (!useMicrophone) { setListenerStatus("Listening for typed observations. Microphone remains off."); return; }
     if (!state.listener?.usage.enabled) { setListenerStatus("Microphone transcription is not configured. Typed observations remain available."); return; }
@@ -288,7 +302,7 @@ export default function App() {
       const stop = await openListenerCapture({
         isCurrent: () => generation === listenerGeneration.current && socket.current?.readyState === WebSocket.OPEN,
         onStatus: (echoCancellation) => setListenerStatus(echoCancellation ? "Microphone live · device echo cancellation enabled." : "Microphone live · use headphones or mute the TV to prevent echo."),
-        onError: (reason) => { if (generation === listenerGeneration.current) { setListenerStatus(reason); stopListener(false); } },
+        onError: (reason) => { if (generation === listenerGeneration.current) stopListener(false, reason); },
         onChunk: async ({ blob, mimeType, durationSeconds }) => {
           if (generation !== listenerGeneration.current || !blob.size || socket.current?.readyState !== WebSocket.OPEN) return;
           try {
@@ -297,7 +311,7 @@ export default function App() {
             socket.current.send(JSON.stringify({ type: "listener.audio", duration_seconds: durationSeconds, mime_type: mimeType }));
             socket.current.send(payload);
           } catch {
-            if (generation === listenerGeneration.current) { setListenerStatus("Audio transport failed. Listening stopped."); stopListener(false); }
+            if (generation === listenerGeneration.current) stopListener(false, "Audio transport failed. Listening stopped.");
           }
         },
       });
@@ -305,18 +319,18 @@ export default function App() {
       recorderStop.current = stop;
     } catch {
       if (generation === listenerGeneration.current) {
-        stopListener(false);
-        setListenerStatus("Microphone permission was unavailable. You can continue with typed observations.");
+        stopListener(false, "Microphone permission was unavailable. You can continue with typed observations.");
       }
     }
   }
-  function stopListener(mute = false) {
+  function stopListener(mute = false, errorMessage?: string) {
+    listenerError.current = errorMessage || null;
     listenerGeneration.current += 1;
     if (socket.current?.readyState === WebSocket.OPEN) send({ type: mute ? "listener.mute" : "listener.stop" });
     recorderStop.current?.(); recorderStop.current = null;
     if (!mute) listenerSource.current = null;
     setListening(mute); setMuted(mute);
-    setListenerStatus(mute ? "Listening muted. Resume when ready." : "Microphone and listener stopped.");
+    setListenerStatus(errorMessage || (mute ? "Listening muted. Resume when ready." : "Microphone and listener stopped."));
     if (!mute) { setListenerConfirmation(null); setConfirmedSpeaker(""); }
   }
   function resumeListener() {

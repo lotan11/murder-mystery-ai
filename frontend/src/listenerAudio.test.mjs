@@ -74,7 +74,7 @@ test("capture finalizes each interval with a fresh recorder and stops cleanly", 
   assert.equal(runtime.requestedConstraints.audio.noiseSuppression.ideal, true);
   assert.equal(runtime.requestedConstraints.audio.autoGainControl.ideal, true);
   assert.equal(runtime.recorders.length, 1);
-  runtime.advance(3000);
+  runtime.advance(3050);
   runtime.advance(0); // start the next independently finalized container segment
   assert.equal(runtime.recorders.length, 2);
   runtime.advance(3000);
@@ -82,7 +82,7 @@ test("capture finalizes each interval with a fresh recorder and stops cleanly", 
   assert.equal(runtime.recorders.length, 3);
   await new Promise(resolve => setImmediate(resolve)); // serialized blob delivery completes asynchronously
   assert.equal(clips.length, 2);
-  assert.deepEqual(clips.map(chunk => chunk.durationSeconds), [3, 3]);
+  assert.deepEqual(clips.map(chunk => chunk.durationSeconds), [3.1, 3]);
   assert.notEqual(runtime.recorders[0], runtime.recorders[1]);
   stop();
   assert.equal(runtime.tracksStopped, 1);
