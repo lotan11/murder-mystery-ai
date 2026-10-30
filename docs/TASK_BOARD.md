@@ -229,3 +229,5 @@ PR2 d160344 follow-up: null-attribution decoder blocker verified fixed (25client
 PR2 0b2e809: scoped review clears previously reported reset/Resume/error defects;370backend+review checks and25client/build pass. Final24browser run and CI pending before integration disposition. No merge or microphone activation.
 
 PR2 reviewed0b2e809: all previously reported findings cleared; independent370backend/review,25client,build,24browser checks pass (3Windows skips). Remote CI pending; no merge/activation. Actual device/provider acceptance stays separate from offline integration.
+
+PR2 0b2e809 remote verification: both CI40996214412/40996209236 pass. Combined integration review cleared; PR remains unmerged.
