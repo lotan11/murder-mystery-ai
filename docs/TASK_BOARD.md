@@ -225,3 +225,7 @@ Completed deeper code/offline review of unmerged1f8bab0. **Blocked from merge**:
 PR2 follow-up: original listener repair probes pass, but merge remains blocked by unattributed snapshot contract and lobby Reset microphone cleanup; stale confirmation/error state also need repair. Formal review:reviews/PR2_INTEGRATION_REVIEW.md. Keep one authoritative main and rerun affected integrations on the repaired PR revision.
 
 PR2 d160344 follow-up: null-attribution decoder blocker verified fixed (25client/build pass). Remaining lobby Reset capture blocker and Resume/error cleanup are unchanged; retain no-merge disposition pending their repair/retest and current CI.
+
+PR2 0b2e809: scoped review clears previously reported reset/Resume/error defects;370backend+review checks and25client/build pass. Final24browser run and CI pending before integration disposition. No merge or microphone activation.
+
+PR2 reviewed0b2e809: all previously reported findings cleared; independent370backend/review,25client,build,24browser checks pass (3Windows skips). Remote CI pending; no merge/activation. Actual device/provider acceptance stays separate from offline integration.
