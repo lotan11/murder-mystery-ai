@@ -250,3 +250,5 @@ Next P0: inspect/license/hash and visually assess an existing swept-hair asset, 
 Accepted bounded development improvement: real MHCLO-fitted short02silver hair and45%masked skin-color blend. Seven images embed; canonical studies, face/eyes/controls and defaultgame portrait/liveLewis retained. Excluded mixed-header community candidates and eye-obstructing short03. 317backend tests pass (3Windows skips); no finalhair/skin/likeness claim. NextP0: facial/eyelid proportions, shapedfacialgroom, tailoring/oral and loosehair refinement; November4gate/November10 risk unchanged.
 
 ListenerPR2 advanced toddf2778 with speaking-state signaling; priorapproval0b2e809 doesnotcovernewhead. Freshreview finds guestdevice read-aloud bypasses local mic suppression. Keepunmerged pendingrepair/combinedchecks.
+
+Finalvalidation: main6de53db CI41061277059 green;317backend/3Windows skips,21client/build,20browser pass. Combinedlistener generalchecks374+28client+28browser pass, but targetedguest-device-narration testfails (mictracklive); no PR2approval/merge. Resolve localaudio suppression and docs/PROGRESS conflict before integration.
