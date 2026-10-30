@@ -259,12 +259,10 @@ Completed: reviewed/published local narration capture fix4646c5c to the existing
 
 Character: rejected wider alpha-card facial groom after actual browser review (patch-like appearance despite valid weights/deformations). Retained a modest localized eyelid preview for guarded future integration; not in publicsource/GLB. See reviews/SCHOLAR_EYELID_GROOM_REVIEW.md. Next: integrate declared eyelid offsets before groom with strict original-head guards, then natural facial-groom/tailoring/oral work and perceived speech review. Existing approved portrait/liveLewis1.05 remains the game default. November4/10 risk persists; no new casting decision or spending needed.
 
-## October30 eyelid integration and disconnect reliability
+## October 30 eyelid integration and disconnect reliability
 
-Completed: integrated reviewed localized eyelid correction before skin bake/groom, explicit419-vertex offset manifest and strict exported-head preservation test. Rebuilt weighted source/GLB/maps; actual8018neutral/closedblink andLewis1.05pitch/Stop verified.317backend/3Windows skips,16assetchecks,21client/build pass;20mainbrowser run finishing.
-
-ListenerPR2: deterministic disconnect cancellation race reproduced and repaired on existingbranch2c6ecde. Cleanup now precedes awaiting and recovery notification is shielded/bounded2s; new regression fails before and passes after.368branchbackend/3skips and18listener checks pass. Old4-hourCI canceled; newCI runs with60s diagnosticstack dumps and15minjob bound. AwaitCI/current-main integration; no merge/liveDBmigration.
-
-Next: natural facial-groom/likeness/tailoring/oral and perceived speech review. November4animatedreadiness andNovember10fallback baseline remain. No user input needed; no paidcalls/purchases.
-
-Final local main validation: all20browser scenarios pass in2.3minutes;317backend/3Windows skips,21client/build and16assetchecks pass. NewincrementCI follows push.
+- Done: reviewed eyelid adjustment integrated before skin baking/groom fitting, with 419 explicit offsets and strict exported-head preservation. Source/GLB/maps rebuilt; actual app neutral/blink, Lewis pace/pitch and Stop verified.
+- Local validation: 317 backend tests (three Windows skips), 16 asset checks, 21 client checks, build and 20 browser scenarios pass. Main CI 41125253884 passed.
+- Listener PR2: reproduced disconnect cancellation race repaired on 2c6ecde. Cleanup precedes awaiting; recovery notification shielded for at most two seconds. Regression fails before repair and passes afterward. Branch backend: 368 pass/three skips. Combined current-main: 370 backend pass/three skips, 28 client checks/build; all 30 browser scenarios and branch CI 41125090564 pass. Sole conflict: progress document. PR unmerged.
+- Next: natural facial groom, portrait likeness, tailoring/oral detail, perceived speech review and controlled listener integration with verified local startup/database recovery.
+- Risk: November 4 character readiness and November 10 finished-avatar quality. Approved portrait/live Lewis at 1.05 remains the stable playable baseline. No new user input or purchase needed.
