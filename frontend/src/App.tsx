@@ -66,7 +66,8 @@ export default function App() {
   const [listenerConfirmation, setListenerConfirmation] = useState<{ id: string; text: string } | null>(null);
   const [confirmedSpeaker, setConfirmedSpeaker] = useState("");
   const listenerError = useRef<string | null>(null), detectiveSpeaking = useRef(false), scholarSpeaking = useRef(false),
-    microphoneEchoCancellation = useRef(false);
+    microphoneEchoCancellation = useRef(false), roomDetectiveSpeaking = useRef(false),
+    localBrowserSpeaking = useRef(false);
   const recorderStop = useRef<ListenerCaptureStop | null>(null), listenerGeneration = useRef(0),
     listenerSource = useRef<"microphone" | "typed" | null>(null);
   const animated = presentation === "animated";
@@ -78,10 +79,27 @@ export default function App() {
   const socket = useRef<WebSocket | null>(null),
     voiceRef = useRef(false),
     lastSpoken = useRef("");
+  // Room playback and this device's fallback narration are independent sources.
+  // Refs apply speech changes immediately, including during microphone permission.
+  function syncMicrophoneSuppression() {
+    detectiveSpeaking.current = roomDetectiveSpeaking.current || localBrowserSpeaking.current;
+    recorderStop.current?.setSuppressed(detectiveSpeaking.current);
+    if (recorderStop.current && listenerSource.current === "microphone")
+      setListenerStatus(detectiveSpeaking.current
+        ? "Microphone paused while the detective speaks."
+        : microphoneEchoCancellation.current
+          ? "Microphone live · device echo cancellation enabled."
+          : "Microphone live · use headphones or mute the TV to prevent echo.");
+  }
+  function updateBrowserSpeechActive(active: boolean) {
+    localBrowserSpeaking.current = active;
+    setBrowserSpeechActive(active);
+    syncMicrophoneSuppression();
+  }
   animatedRef.current = view === "tv" && presentation !== "original";
   useEffect(() => {
     voiceRef.current = voice;
-    if (!voice) { window.speechSynthesis?.cancel(); setBrowserSpeechActive(false); }
+    if (!voice) { window.speechSynthesis?.cancel(); updateBrowserSpeechActive(false); }
   }, [voice]);
   useEffect(() => {
     if (!room || (view !== "organizer" && view !== "tv")) return;
@@ -204,21 +222,15 @@ export default function App() {
           setRequestNotice("");
         }
         if (result.state) {
-          detectiveSpeaking.current = result.state.scholar_speaking === true;
-          recorderStop.current?.setSuppressed(detectiveSpeaking.current);
-          if (recorderStop.current && listenerSource.current === "microphone")
-            setListenerStatus(detectiveSpeaking.current
-              ? "Microphone paused while the detective speaks."
-              : microphoneEchoCancellation.current
-                ? "Microphone live · device echo cancellation enabled."
-                : "Microphone live · use headphones or mute the TV to prevent echo.");
+          roomDetectiveSpeaking.current = result.state.scholar_speaking === true;
+          syncMicrophoneSuppression();
           if (
             lastSpeechRevision.current !== result.state.revision ||
             result.state.paused
           )
             localSpeechStop.current();
           lastSpeechRevision.current = result.state.revision;
-          if (result.state.paused) { window.speechSynthesis?.cancel(); setBrowserSpeechActive(false); }
+          if (result.state.paused) { window.speechSynthesis?.cancel(); updateBrowserSpeechActive(false); }
           if (
             previousAct.current !== null &&
             previousAct.current !== 0 &&
@@ -242,9 +254,9 @@ export default function App() {
             speechSynthesis.cancel();
             const speech = new SpeechSynthesisUtterance(result.state.dialogue);
             speech.rate = 0.93;
-            speech.onstart = () => setBrowserSpeechActive(true);
-            speech.onend = () => setBrowserSpeechActive(false);
-            speech.onerror = () => setBrowserSpeechActive(false);
+            speech.onstart = () => updateBrowserSpeechActive(true);
+            speech.onend = () => updateBrowserSpeechActive(false);
+            speech.onerror = () => updateBrowserSpeechActive(false);
             speechSynthesis.speak(speech);
           }
           lastSpoken.current = result.state.dialogue;
@@ -263,7 +275,7 @@ export default function App() {
         setListening(false); setMuted(false);
         setListenerStatus("Connection closed. Reconnect and opt in to listen again.");
         localSpeechStop.current();
-        window.speechSynthesis?.cancel(); setBrowserSpeechActive(false);
+        window.speechSynthesis?.cancel(); updateBrowserSpeechActive(false);
         setJoined(false);
         setPrivateState(null);
         setPrivateVisible(false);
@@ -289,7 +301,7 @@ export default function App() {
       localSpeechStop.current();
       setPrivateState(null);
       setPrivateVisible(false);
-      window.speechSynthesis?.cancel(); setBrowserSpeechActive(false);
+      window.speechSynthesis?.cancel(); updateBrowserSpeechActive(false);
     };
   }, [room, view, tvSpeechToken]);
   function send(message: object) {
@@ -447,7 +459,7 @@ export default function App() {
     animatedRef.current = value !== "original";
     voiceRef.current = false;
     setVoice(false);
-    window.speechSynthesis?.cancel(); setBrowserSpeechActive(false);
+    window.speechSynthesis?.cancel(); updateBrowserSpeechActive(false);
   }
   const control = (action: string) => send({ type: "control", action });
   function link(role: View) {

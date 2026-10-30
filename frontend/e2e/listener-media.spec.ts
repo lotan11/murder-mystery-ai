@@ -66,6 +66,52 @@ async function micTracksEnabled(page: Page) {
   });
 }
 
+async function holdDeviceNarration(page: Page) {
+  await page.addInitScript(() => {
+    const win = window as any;
+    win.__deviceNarration = null;
+    win.__listenerRecorderStarts = 0;
+    win.__listenerAudioHeaders = 0;
+    Object.defineProperty(speechSynthesis, "cancel", { configurable: true, value: () => {} });
+    Object.defineProperty(speechSynthesis, "speak", {
+      configurable: true,
+      value: (utterance: SpeechSynthesisUtterance) => {
+        win.__deviceNarration = utterance;
+        utterance.onstart?.(new Event("start") as SpeechSynthesisEvent);
+      },
+    });
+    const start = MediaRecorder.prototype.start;
+    MediaRecorder.prototype.start = function (...args: Parameters<MediaRecorder["start"]>) {
+      win.__listenerRecorderStarts += 1;
+      return start.apply(this, args);
+    };
+    const send = WebSocket.prototype.send;
+    WebSocket.prototype.send = function (data) {
+      if (typeof data === "string") {
+        try { if (JSON.parse(data).type === "listener.audio") win.__listenerAudioHeaders += 1; }
+        catch { /* non-JSON application messages are unrelated to this check */ }
+      }
+      return send.call(this, data);
+    };
+  });
+}
+
+async function beginDeviceNarration(page: Page, guest: Awaited<ReturnType<typeof interceptedMicrophoneGuest>>) {
+  const state = await page.request.get(`/api/rooms/${guest.roomId}/state`).then(response => response.json());
+  state.dialogue = "This device's detective narration is speaking.";
+  state.scholar_speaking = false;
+  state.listener.usage.enabled = true;
+  guest.socket()?.send(JSON.stringify({ type: "state", data: state }));
+  await expect.poll(() => page.evaluate(() => Boolean((window as any).__deviceNarration))).toBe(true);
+}
+
+async function endDeviceNarration(page: Page) {
+  await page.evaluate(() => {
+    const win = window as any;
+    win.__deviceNarration.onend?.(new Event("end"));
+  });
+}
+
 async function publishScholarSpeaking(page: Page, room: string, token: string, speaking: boolean) {
   return page.evaluate(({ roomId, capability, active }) => new Promise<void>((resolve, reject) => {
     const win = window as any;
@@ -284,4 +330,52 @@ test("authorized Lewis speaking state suppresses and resumes guest microphone ca
   await page.evaluate(() => (window as any).__scholarSignalSocket?.close());
   await page.getByRole("button", { name: "Stop", exact: true }).click();
   await expect.poll(() => micTracksEnded(page)).toBe(true);
+});
+
+test("guest device narration suppresses capture immediately and resumes with a fresh clip", async ({ page }) => {
+  await holdDeviceNarration(page);
+  const guest = await interceptedMicrophoneGuest(page);
+  await page.getByRole("checkbox", { name: /Read dialogue aloud/ }).check();
+  await page.getByRole("button", { name: "Enable microphone", exact: true }).click();
+  await expect(page.getByText(/Microphone live/)).toBeVisible();
+  await expect.poll(() => micTracksEnabled(page)).toBe(true);
+  const starts = await page.evaluate(() => (window as any).__listenerRecorderStarts as number);
+  await beginDeviceNarration(page, guest);
+  await expect.poll(() => micTracksEnabled(page)).toBe(false);
+  await expect(page.getByText("Microphone paused while the detective speaks.")).toBeVisible();
+  // Longer than a recording interval: the interrupted segment must never be uploaded.
+  await page.waitForTimeout(3250);
+  expect(await page.evaluate(() => (window as any).__listenerAudioHeaders)).toBe(0);
+  await endDeviceNarration(page); // no room update is sent to trigger recovery
+  await expect.poll(() => micTracksEnabled(page)).toBe(true);
+  await expect.poll(() => page.evaluate(() => (window as any).__listenerRecorderStarts)).toBeGreaterThan(starts);
+  await expect(page.getByText(/Microphone live/)).toBeVisible();
+  await page.getByRole("button", { name: "Stop", exact: true }).click();
+  await expect.poll(() => micTracksEnded(page)).toBe(true);
+  const state = await page.request.get(`/api/rooms/${guest.roomId}/state`).then(response => response.json());
+  expect(state.listener.usage.transcription_calls).toBe(0);
+  expect(state.listener.usage.audio_seconds).toBe(0);
+});
+
+test("permission granted during local narration starts suppressed and resumes without a room update", async ({ page }) => {
+  await holdDeviceNarration(page);
+  const guest = await interceptedMicrophoneGuest(page, undefined, "pending");
+  await page.getByRole("checkbox", { name: /Read dialogue aloud/ }).check();
+  await page.getByRole("button", { name: "Enable microphone", exact: true }).click();
+  await expect.poll(() => page.evaluate(() => typeof (window as any).__resolveListenerPermission)).toBe("function");
+  await beginDeviceNarration(page, guest);
+  await page.evaluate(() => (window as any).__resolveListenerPermission());
+  await expect.poll(() => page.evaluate(() => ((window as any).__listenerTestStreams as MediaStream[]).length)).toBe(1);
+  await expect.poll(() => micTracksEnabled(page)).toBe(false);
+  await expect(page.getByText("Microphone paused while the detective speaks.")).toBeVisible();
+  const starts = await page.evaluate(() => (window as any).__listenerRecorderStarts as number);
+  await endDeviceNarration(page);
+  await expect.poll(() => micTracksEnabled(page)).toBe(true);
+  await expect.poll(() => page.evaluate(() => (window as any).__listenerRecorderStarts)).toBeGreaterThan(starts);
+  await page.getByRole("button", { name: "Stop", exact: true }).click();
+  await expect.poll(() => micTracksEnded(page)).toBe(true);
+  expect(await page.evaluate(() => (window as any).__listenerAudioHeaders)).toBe(0);
+  const state = await page.request.get(`/api/rooms/${guest.roomId}/state`).then(response => response.json());
+  expect(state.listener.usage.transcription_calls).toBe(0);
+  expect(state.listener.usage.audio_seconds).toBe(0);
 });
