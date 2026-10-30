@@ -48,6 +48,7 @@ function validSpeech(value: unknown): value is ScholarSpeech {
 export function useScholarPerformance(options: Options): {
   avatar: ReactNode;
   controls: ReactNode;
+  speaking: boolean;
   stop: () => void;
 } {
   const audio = useRef<HTMLAudioElement | null>(null),
@@ -290,6 +291,7 @@ export function useScholarPerformance(options: Options): {
     options.online && !options.paused && !!options.token && available === true;
   return {
     stop,
+    speaking: playing,
     avatar: (
       <div
         className="scholar-portrait"
@@ -360,6 +362,8 @@ export function useScholarPerformance(options: Options): {
           ref={bindAudio}
           aria-label="Lewis dialogue audio"
           preload="none"
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
           onEnded={() => {
             setPlaying(false);
             setMessage(

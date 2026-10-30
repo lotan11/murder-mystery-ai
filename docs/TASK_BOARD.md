@@ -12,12 +12,15 @@ Updated October 30, 2026. Lead/integrator owns this board. Status reflects commi
 | P0 | Browser-delivered materials | Three1K baked maps now embedded/decoded; grain delivery fixed, final color/skin/eye artistry still unfinished |
 | P0 | Speech deformation and oral detail | Fixed real Lewis lab study works; full natural visemes, teeth/tongue and perceptual review unfinished |
 | P1 | First-generation speech latency | Warm replay cache implemented; new/expired/evicted text still needs generation; no prefetch yet |
+| P1 | Listener integration — `feature/listener` | Recorded review defects fixed; authenticated detective-speaking mic suppression passes local backend/client/build/browser suites. Next: remote CI and main Work review of speaking-state contract; do not merge before combined integration sign-off |
 | Completed foundation | Bounded public replay cache | Four entries/32MiB/15-minute reuse lifetime; actual local cold12.107s/warm0.005724s, one worker |
 | Completed foundation | Restrained iris material | Supported512px slate-grey texture on actualUV1; preserved eye anatomy; final eyes/likeness unfinished |
 | Done this increment | Portrait head comparison | Same approved image cropped in Face close-up; full bust/reset preserved; new hair experiment rejected |
 | Protected baseline | Playable Blackthorn case | Approved portrait/live Lewis, private roles, recovery and existing modes preserved |
 
 November4 is the animated-character readiness gate; November10 remains integration deadline. See SCHOLAR_QUALITY_REVIEW.md for concrete visual priorities. Historical milestone records follow.
+
+Listener branch status, event contract and integration gate: [LISTENER.md](LISTENER.md) and [LISTENER_REVIEW.md](LISTENER_REVIEW.md). Remaining gates are full browser/saved-room validation, host/guest/TV synchronization, push, pull request and green remote CI. Paid transcription remains disabled unless explicitly configured.
 
 ## Accepted foundation: M1 — reliable Blackthorn rehearsal
 

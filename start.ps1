@@ -33,7 +33,8 @@ try {
     $bindAddress = if ($Lan) { '0.0.0.0' } else { '127.0.0.1' }
     Write-Host "Open http://localhost:$Port and create an evening. Press Ctrl+C to stop."
     if ($Lan) { Write-Host 'For guests, open the app using this computer''s LAN IPv4 address, then share its guest link.' }
-    $serverArguments = @('-m', 'uvicorn', 'backend.main:app', '--host', $bindAddress, '--port', "$Port", '--ws-max-size', '16384', '--no-access-log', '--log-level', 'warning')
+    # Binary microphone clips are separately capped at 512 KiB by the listener; the app still validates every text command.
+    $serverArguments = @('-m', 'uvicorn', 'backend.main:app', '--host', $bindAddress, '--port', "$Port", '--ws-max-size', '614400', '--no-access-log', '--log-level', 'warning')
     if ($EnvFile) {
         $resolvedEnvFile = (Resolve-Path -LiteralPath $EnvFile).Path
         if (-not (Test-Path -LiteralPath $resolvedEnvFile -PathType Leaf)) { throw 'The selected environment file is missing.' }

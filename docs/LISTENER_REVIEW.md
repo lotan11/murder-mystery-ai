@@ -29,19 +29,12 @@ References below are to the pinned listener revision, not current main line numb
 
 `docs/reviews/listener-1f8bab0-evidence.json` records the original-function VM and actual Chromium fake-device observations. No audio recordings, real microphone samples, keys or participant data are committed.
 
-The backend review probes are `scripts/review-listener-cases.py`. They are deliberately outside normal main test discovery: main has no listener module. Run them explicitly against an isolated listener snapshot; **four failures and one passing migration probe are expected on the reviewed revision**. Those failures demonstrate defects, not a failing playable main.
+The repaired backend regression probes are `scripts/review-listener-cases.py`. They are deliberately outside normal main test discovery because main has no listener module. From the `feature/listener` working tree, run them explicitly; the fixture uses a temporary SQLite database:
 
 From the authoritative repository in PowerShell:
 
 ```powershell
-$listenerReviewRoot = (Get-Location).Path
-# Unique ignored review snapshot, never the active checkout or its room database.
-git archive --format=zip -o data/listener-review-1f8bab0.zip 1f8bab0
-Expand-Archive -LiteralPath data/listener-review-1f8bab0.zip -DestinationPath data/listener-review-1f8bab0 -Force
-Push-Location data/listener-review-1f8bab0
-& "$listenerReviewRoot/.venv/Scripts/python.exe" -m pytest backend/tests -q
-& "$listenerReviewRoot/.venv/Scripts/python.exe" -m pytest "$listenerReviewRoot/scripts/review-listener-cases.py" -q
-Pop-Location
+& ".venv/Scripts/python.exe" -m pytest scripts/review-listener-cases.py -q
 ```
 
 Existing frontend dependencies/Playwright and the local8018 app are prerequisites for the independent frontend probe:
@@ -50,7 +43,7 @@ Existing frontend dependencies/Playwright and the local8018 app are prerequisite
 node scripts/review-listener-frontend.mjs
 ```
 
-It extracts the pinned original functions into a mocked VM, then uses Chromium's **synthetic** microphone to examine media fragments. It never enables the listener in the working game or calls a transcription provider. Output goes to ignored `data/listener-review-frontend/evidence.json`. Clip sizes/timing can vary by run. This proves the observed container/lifecycle defects, not complete real-device/browser compatibility.
+It extracts the pinned original functions into a mocked VM, then uses Chromium's **synthetic** microphone to examine media fragments. It never enables the listener in the working game or calls a transcription provider. Output goes to ignored `data/listener-review-frontend/evidence.json`. Clip sizes/timing can vary by run. This script preserves the review reproduction for the original implementation; the repaired behavior is exercised by `frontend/e2e/listener-media.spec.ts`.
 
 ## Integration order
 
@@ -60,4 +53,29 @@ It extracts the pinned original functions into a mocked VM, then uses Chromium's
 4. Validate schema migration/backups, full main regression and CI; keep default microphone off.
 5. Human/device and authorized live-provider acceptance remain separate gates. No purchase, paid provider call or public deployment occurred in this review.
 
+## Repair status on `feature/listener`
+
+This section records the implementation after the pinned review. It supersedes the original disposition for code defects, while preserving the review evidence and its live-provider limits.
+
+| Finding | Repair and regression evidence |
+| --- | --- |
+| Stale work after controls or connection changes | Bounded worker queue, per-session and room generations, cancellation, commit-time checks, queue draining; tests cover Stop, Reset, pause/resume, and disconnect/reconnect. |
+| Late microphone permission and Resume lifecycle | Permission promise is session-guarded and late streams release tracks; explicit resumed capture requests consent and cleans up on stop/error; client lifecycle tests cover late permission and finalized data after Stop. |
+| Fragmented containers / message-size mismatch | New finalized recorder per clip, exact declared MIME, Uvicorn/Playwright cap 614400 bytes with app cap 512 KiB; fake-Chromium decodes consecutive clips and the real Uvicorn scenario validates a >16 KiB clip. |
+| Unsupported contradiction claims and evidence | Claim parsing abstains on negation, hearsay, uncertainty and ambiguous clauses; evidence must match the canonical released clue and authored time/location scope. Adversarial claim and clue tests pass. |
+| Lewis narration interrupted by listener updates | Listener changes do not increment narration revision. A browser test submits a table observation while Lewis is actually playing and checks playback advances without another audio start. Device echo cancellation is requested; headphones/TV mute remain useful for room acoustics. |
+| Missing status and provider errors | Client handles listener status/errors, stops capture on terminal errors, and preserves only backpressure as recoverable. Provider failure and allowance exhaustion are covered offline. |
+| Unbounded theory links | Theory references are pruned to retained utterances and restored memory validation bounds/validates collections. Retention probes pass. |
+| Client-trusted duration accounting | EBML/WebM, Ogg Opus and MP4 duration is parsed server-side; invalid type/duration and header mismatch are rejected before provider call; cost allowance uses verified duration. |
+
+The main Work follow-up review found three additional integration defects: a room Reset in the lobby did not stop the guest's microphone, Resume could leave an obsolete transcript prompt visible, and server stop acknowledgements replaced the actionable capture/provider error. These are fixed with a guest-only `listener.reset` event, confirmation clearing on new consented sessions, and retained terminal status. The same review caught the `guest_id: null` state-decoder mismatch; it is fixed and malformed unknown-speaker records remain rejected. MediaRecorder's timer can drift around one second from container duration; the header mismatch tolerance accounts for that scheduling jitter while usage remains based only on parsed container duration.
+
+Local verification after these repairs: 365 backend passed/3 skipped, 5 main-review probes passed, 25 client passed, build passed and all24 browser scenarios passed. No paid transcription was called. A physical microphone test has not occurred. The branch remains unmerged until remote CI and main-team combined integration checks pass; any device-specific or live-provider acceptance should use explicitly configured credentials and a deliberate test session.
+
 This review does not change the November4 custom-avatar gate or November10 integration deadline. Scholar visual work remains the critical path; listener integration must not destabilize the playable portrait/Lewis baseline.
+
+## October 30 follow-up — detective speech echo gate
+
+The pinned review's Lewis continuity test proved listener state changes do not restart narration, but it did not prove that nearby detective audio could not be transcribed. The guest microphone is now gated by an authenticated TV `scholar.speaking` signal. While Lewis, animated local speech, or browser speech plays, the guest MediaStream audio tracks are disabled and the in-flight segment is discarded; capture resumes with a fresh recorder once playback ends. The projected `scholar_speaking` flag is transient, omitted from durable records and does not increment narration revision.
+
+Regression checks: TV capability authorization and disconnect cleanup; capture mute/drop/resume unit test; browser run with a live synthetic mic and local WebSocket TV signal; approved Lewis playback browser scenario. After current-main merge, local suites:367backend passed/3 skipped; five offline review probes;27client passed; production build; all25browser scenarios passed. This remains synthetic-device/local-speech verification only. Remote CI and main Work review for this follow-up are pending.

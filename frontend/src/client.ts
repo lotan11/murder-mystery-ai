@@ -35,6 +35,7 @@ export type RoomState = {
   act: number;
   paused: boolean;
   revision: number;
+  scholar_speaking?: boolean;
   guests: {
     id: string;
     name: string;
@@ -62,6 +63,13 @@ export type RoomState = {
   performance?: { emotion: string; gesture: string };
   votes: unknown;
   solution: string | null;
+  listener?: {
+    utterances: { id: string; sequence: number; guest_id: string | null; speaker: string; text: string; follow_up_answer: boolean }[];
+    theories: Record<string, { status: string; supporting: string[]; challenging: string[] }>;
+    follow_up: { target_guest_id: string; target_name: string; question: string; answer?: string; answered?: boolean } | null;
+    interventions: { target_guest_id: string; target_name: string; question: string }[];
+    usage: { enabled: boolean; reason: string; audio_seconds: number; audio_limit_seconds: number; transcription_calls: number; estimated_cost_usd: number; retained_audio: false };
+  };
 };
 export function socketURL(
   room: string,
@@ -94,6 +102,19 @@ export function decodeState(raw: string): {
         typeof value === "object" && value !== null && !Array.isArray(value);
       const strings = (value: unknown, keys: string[]) =>
         record(value) && keys.every((key) => typeof value[key] === "string");
+      const validListener = (value: unknown) => {
+        if (value === undefined) return true;
+        if (!record(value) || !Array.isArray(value.utterances) || !record(value.theories) || !Array.isArray(value.interventions) ||
+            !(value.follow_up === null || record(value.follow_up)) || !record(value.usage)) return false;
+        if (!value.utterances.every((item) => record(item) && strings(item, ["id", "speaker", "text"]) &&
+            ((typeof item.guest_id === "string" && item.guest_id.length > 0) ||
+              (item.guest_id === null && item.speaker === "Unattributed audio" && item.follow_up_answer === false)) &&
+            Number.isInteger(item.sequence) && typeof item.follow_up_answer === "boolean")) return false;
+        return value.usage.retained_audio === false && typeof value.usage.enabled === "boolean" &&
+          typeof value.usage.reason === "string" && Number.isInteger(value.usage.audio_seconds) &&
+          Number.isInteger(value.usage.audio_limit_seconds) && Number.isInteger(value.usage.transcription_calls) &&
+          typeof value.usage.estimated_cost_usd === "number";
+      };
       if (
         record(data) &&
         strings(data, ["room_id", "title", "dialogue"]) &&
@@ -103,6 +124,7 @@ export function decodeState(raw: string): {
         Number.isInteger(data.revision) &&
         Number(data.revision) >= 0 &&
         typeof data.paused === "boolean" &&
+        (data.scholar_speaking === undefined || typeof data.scholar_speaking === "boolean") &&
         Array.isArray(data.guests) &&
         data.guests.every(
           (guest) =>
@@ -148,6 +170,7 @@ export function decodeState(raw: string): {
         ) &&
         (data.dialogue_meta === undefined ||
           validDialogueMeta(data.dialogue_meta)) &&
+        validListener(data.listener) &&
         (data.solution === null || typeof data.solution === "string")
       )
         return { state: data as RoomState };

@@ -316,6 +316,7 @@ def test_shutdown_cancels_pending_task_and_keeps_reserved_cost(database, monkeyp
 def test_schema_two_migrates_without_resetting_existing_game(database, monkeypatch):
     legacy = Room("ABC123", "host", act=1, paused=True, revision=12, revealed=["glass"]).record()
     legacy["schema_version"] = 2
+    legacy.pop("listener")
     for field in ("ai_calls", "dialogue_source", "dialogue_reason"):
         legacy.pop(field)
     RoomStore(database).save(legacy)
@@ -323,7 +324,7 @@ def test_schema_two_migrates_without_resetting_existing_game(database, monkeypat
         state = client.get("/api/rooms/ABC123/state").json()
         assert state["act"] == 1 and state["paused"] and state["revision"] == 12
         assert state["dialogue_meta"]["calls_used"] == 0
-    assert RoomStore(database).load_all()[0]["schema_version"] == 3
+    assert RoomStore(database).load_all()[0]["schema_version"] == 4
 
 
 @pytest.mark.parametrize("bad", [{"ai_calls": -1}, {"ai_calls": True}, {"dialogue_source": "external-raw"}, {"dialogue_reason": "secret-provider-error"}])

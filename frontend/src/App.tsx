@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Stage from "./Stage";
 import { useScholarPerformance } from "./ScholarPerformance";
 import { useLocalDetectivePerformance } from "./TalkingDetective";
+import { openListenerCapture, type ListenerCaptureStop } from "./listenerAudio";
 import {
   decodePrivate,
   decodeState,
@@ -57,6 +58,17 @@ export default function App() {
     [introduction, setIntroduction] = useState(""),
     [rationale, setRationale] = useState(""),
     [assignments, setAssignments] = useState<Record<string, string>>({});
+  const [listening, setListening] = useState(false),
+    [muted, setMuted] = useState(false),
+    [listenerStatus, setListenerStatus] = useState("Microphone is off.");
+  const [browserSpeechActive, setBrowserSpeechActive] = useState(false);
+  const [observation, setObservation] = useState("");
+  const [listenerConfirmation, setListenerConfirmation] = useState<{ id: string; text: string } | null>(null);
+  const [confirmedSpeaker, setConfirmedSpeaker] = useState("");
+  const listenerError = useRef<string | null>(null), detectiveSpeaking = useRef(false), scholarSpeaking = useRef(false),
+    microphoneEchoCancellation = useRef(false);
+  const recorderStop = useRef<ListenerCaptureStop | null>(null), listenerGeneration = useRef(0),
+    listenerSource = useRef<"microphone" | "typed" | null>(null);
   const animated = presentation === "animated";
   const privateRole = useRef(""),
     previousAct = useRef<number | null>(null);
@@ -69,7 +81,7 @@ export default function App() {
   animatedRef.current = view === "tv" && presentation !== "original";
   useEffect(() => {
     voiceRef.current = voice;
-    if (!voice) window.speechSynthesis?.cancel();
+    if (!voice) { window.speechSynthesis?.cancel(); setBrowserSpeechActive(false); }
   }, [voice]);
   useEffect(() => {
     if (!room || (view !== "organizer" && view !== "tv")) return;
@@ -93,13 +105,16 @@ export default function App() {
     let closed = false,
       timer: ReturnType<typeof setTimeout>,
       attempt = 0;
-    const token =
-      view === "organizer"
-        ? localStorage.getItem(`organizer:${room}`) || ""
+    const token = view === "organizer"
+      ? localStorage.getItem(`organizer:${room}`) || ""
+      : view === "tv"
+        ? tvSpeechToken || localStorage.getItem(`organizer:${room}`) || ""
         : "";
     const connect = () => {
       if (closed) return;
       setJoined(false);
+      setListenerConfirmation(null);
+      setConfirmedSpeaker("");
       setPrivateState(null);
       setPrivateVisible(false);
       privateRole.current = "";
@@ -112,6 +127,8 @@ export default function App() {
       ws.onopen = () => {
         attempt = 0;
         setStatus("Live");
+        if (view === "tv" && token)
+          ws.send(JSON.stringify({ type: "scholar.speaking", speaking: scholarSpeaking.current }));
       };
       ws.onmessage = (e) => {
         let message;
@@ -121,6 +138,43 @@ export default function App() {
         if (message?.type === "joined") {
           localStorage.setItem(`guest:${room}`, message.guest_token);
           setJoined(true);
+          return;
+        }
+        if (message?.type === "listener.reset") {
+          listenerGeneration.current += 1;
+          recorderStop.current?.(); recorderStop.current = null;
+          listenerSource.current = null;
+          listenerError.current = null;
+          setListening(false); setMuted(false);
+          setListenerConfirmation(null); setConfirmedSpeaker("");
+          setListenerStatus("Microphone and listener stopped by room reset.");
+          return;
+        }
+        if (message?.type === "listener.status") {
+          setListening(Boolean(message.listening));
+          setMuted(Boolean(message.muted));
+          if (!message.listening) setListenerStatus(listenerError.current || "Listener stopped.");
+          else if (message.muted) setListenerStatus("Listening muted.");
+          return;
+        }
+        if (message?.type === "listener.confirmation_required") {
+          listenerGeneration.current += 1;
+          recorderStop.current?.(); recorderStop.current = null;
+          setListenerConfirmation({ id: message.id, text: message.text });
+          setConfirmedSpeaker("");
+          setListening(true); setMuted(true);
+          setListenerStatus("Transcription ready. Confirm who spoke before adding it to the table memory.");
+          return;
+        }
+        if (message?.type === "listener.confirmation_cleared") {
+          setListenerConfirmation(null);
+          setConfirmedSpeaker("");
+          return;
+        }
+        if (message?.type === "listener.error") {
+          const messageText = typeof message.message === "string" ? message.message : "Listener error.";
+          if (message.code !== "backpressure") stopListener(false, messageText);
+          else setListenerStatus(messageText);
           return;
         }
         if (message?.type === "private") {
@@ -150,18 +204,27 @@ export default function App() {
           setRequestNotice("");
         }
         if (result.state) {
+          detectiveSpeaking.current = result.state.scholar_speaking === true;
+          recorderStop.current?.setSuppressed(detectiveSpeaking.current);
+          if (recorderStop.current && listenerSource.current === "microphone")
+            setListenerStatus(detectiveSpeaking.current
+              ? "Microphone paused while the detective speaks."
+              : microphoneEchoCancellation.current
+                ? "Microphone live · device echo cancellation enabled."
+                : "Microphone live · use headphones or mute the TV to prevent echo.");
           if (
             lastSpeechRevision.current !== result.state.revision ||
             result.state.paused
           )
             localSpeechStop.current();
           lastSpeechRevision.current = result.state.revision;
-          if (result.state.paused) window.speechSynthesis?.cancel();
+          if (result.state.paused) { window.speechSynthesis?.cancel(); setBrowserSpeechActive(false); }
           if (
             previousAct.current !== null &&
             previousAct.current !== 0 &&
             result.state.act === 0
           ) {
+            stopListener(false);
             setPrivateVisible(false);
             setIntroduction("");
             setRationale("");
@@ -179,6 +242,9 @@ export default function App() {
             speechSynthesis.cancel();
             const speech = new SpeechSynthesisUtterance(result.state.dialogue);
             speech.rate = 0.93;
+            speech.onstart = () => setBrowserSpeechActive(true);
+            speech.onend = () => setBrowserSpeechActive(false);
+            speech.onerror = () => setBrowserSpeechActive(false);
             speechSynthesis.speak(speech);
           }
           lastSpoken.current = result.state.dialogue;
@@ -188,8 +254,16 @@ export default function App() {
         setError("Cannot connect to the room. Check the server and room code.");
       ws.onclose = (e) => {
         setStatus("Offline");
+        listenerError.current = null;
+        setListenerConfirmation(null);
+        setConfirmedSpeaker("");
+        listenerGeneration.current += 1;
+        recorderStop.current?.(); recorderStop.current = null;
+        listenerSource.current = null;
+        setListening(false); setMuted(false);
+        setListenerStatus("Connection closed. Reconnect and opt in to listen again.");
         localSpeechStop.current();
-        window.speechSynthesis?.cancel();
+        window.speechSynthesis?.cancel(); setBrowserSpeechActive(false);
         setJoined(false);
         setPrivateState(null);
         setPrivateVisible(false);
@@ -208,13 +282,16 @@ export default function App() {
     return () => {
       closed = true;
       clearTimeout(timer);
+      listenerGeneration.current += 1;
+      recorderStop.current?.(); recorderStop.current = null;
+      listenerSource.current = null;
       socket.current?.close();
       localSpeechStop.current();
       setPrivateState(null);
       setPrivateVisible(false);
-      window.speechSynthesis?.cancel();
+      window.speechSynthesis?.cancel(); setBrowserSpeechActive(false);
     };
-  }, [room, view]);
+  }, [room, view, tvSpeechToken]);
   function send(message: object) {
     if (socket.current?.readyState !== WebSocket.OPEN) {
       setError("You are offline. Reconnect before sending.");
@@ -225,6 +302,73 @@ export default function App() {
     setRequestNotice("Request sent. Waiting for the room to update.");
     return true;
   }
+  async function startListener(useMicrophone: boolean, resume = false) {
+    if (!joined || !state || state.paused) return;
+    const consent = window.confirm("Allow the detective to process your live speech for this room? Transcript text will be shared with the table and saved with room memory. Audio is sent in short clips for transcription and is not retained.");
+    if (!consent) return;
+    const generation = ++listenerGeneration.current;
+    listenerSource.current = useMicrophone ? "microphone" : "typed";
+    if (!send({ type: resume ? "listener.resume" : "listener.start", consent: true, source: listenerSource.current })) return;
+    listenerError.current = null;
+    setListenerConfirmation(null); setConfirmedSpeaker("");
+    setListening(true); setMuted(false);
+    if (!useMicrophone) { setListenerStatus("Listening for typed observations. Microphone remains off."); return; }
+    if (!state.listener?.usage.enabled) { setListenerStatus("Microphone transcription is not configured. Typed observations remain available."); return; }
+    try {
+      const stop = await openListenerCapture({
+        isCurrent: () => generation === listenerGeneration.current && socket.current?.readyState === WebSocket.OPEN,
+        onStatus: (echoCancellation) => {
+          microphoneEchoCancellation.current = echoCancellation;
+          setListenerStatus(detectiveSpeaking.current
+            ? "Microphone paused while the detective speaks."
+            : echoCancellation
+              ? "Microphone live · device echo cancellation enabled."
+              : "Microphone live · use headphones or mute the TV to prevent echo.");
+        },
+        onError: (reason) => { if (generation === listenerGeneration.current) stopListener(false, reason); },
+        onChunk: async ({ blob, mimeType, durationSeconds }) => {
+          if (generation !== listenerGeneration.current || detectiveSpeaking.current || !blob.size || socket.current?.readyState !== WebSocket.OPEN) return;
+          try {
+            const payload = await blob.arrayBuffer();
+            if (generation !== listenerGeneration.current || detectiveSpeaking.current || socket.current?.readyState !== WebSocket.OPEN) return;
+            socket.current.send(JSON.stringify({ type: "listener.audio", duration_seconds: durationSeconds, mime_type: mimeType }));
+            socket.current.send(payload);
+          } catch {
+            if (generation === listenerGeneration.current) stopListener(false, "Audio transport failed. Listening stopped.");
+          }
+        },
+      });
+      if (generation !== listenerGeneration.current || socket.current?.readyState !== WebSocket.OPEN) { stop(); return; }
+      recorderStop.current = stop;
+      stop.setSuppressed(detectiveSpeaking.current);
+      if (detectiveSpeaking.current)
+        setListenerStatus("Microphone paused while the detective speaks.");
+    } catch {
+      if (generation === listenerGeneration.current) {
+        stopListener(false, "Microphone permission was unavailable. You can continue with typed observations.");
+      }
+    }
+  }
+  function stopListener(mute = false, errorMessage?: string) {
+    listenerError.current = errorMessage || null;
+    listenerGeneration.current += 1;
+    if (socket.current?.readyState === WebSocket.OPEN) send({ type: mute ? "listener.mute" : "listener.stop" });
+    recorderStop.current?.(); recorderStop.current = null;
+    if (!mute) listenerSource.current = null;
+    setListening(mute); setMuted(mute);
+    setListenerStatus(errorMessage || (mute ? "Listening muted. Resume when ready." : "Microphone and listener stopped."));
+    if (!mute) { setListenerConfirmation(null); setConfirmedSpeaker(""); }
+  }
+  function resumeListener() {
+    void startListener(listenerSource.current === "microphone", true);
+  }
+  useEffect(() => {
+    if (state?.paused) {
+      setListenerConfirmation(null);
+      setConfirmedSpeaker("");
+      if (listening) stopListener(true);
+    }
+  }, [state?.paused]);
   async function create() {
     setBusy(true);
     setError("");
@@ -287,6 +431,12 @@ export default function App() {
         : "",
     active: view === "tv" && presentation === "scholar",
   });
+  scholarSpeaking.current = localPerformance.speaking || scholarPerformance.speaking || browserSpeechActive;
+  useEffect(() => {
+    const signalToken = tvSpeechToken || localStorage.getItem(`organizer:${room}`) || "";
+    if (view === "tv" && signalToken && socket.current?.readyState === WebSocket.OPEN)
+      socket.current.send(JSON.stringify({ type: "scholar.speaking", speaking: scholarSpeaking.current }));
+  }, [room, view, tvSpeechToken, localPerformance.speaking, scholarPerformance.speaking, browserSpeechActive]);
   localSpeechStop.current = () => {
     localPerformance.stop();
     scholarPerformance.stop();
@@ -297,7 +447,7 @@ export default function App() {
     animatedRef.current = value !== "original";
     voiceRef.current = false;
     setVoice(false);
-    window.speechSynthesis?.cancel();
+    window.speechSynthesis?.cancel(); setBrowserSpeechActive(false);
   }
   const control = (action: string) => send({ type: "control", action });
   function link(role: View) {
@@ -904,12 +1054,35 @@ export default function App() {
                     </button>
                   </div>
                   <p className="tiny">
-                    No audio is recorded.{" "}
+                    Typed observations do not use audio. Microphone listening is separate and opt-in; raw audio is not retained.{" "}
                     {detective.aiAvailable
                       ? "Optional AI assistance uses released evidence; scripted fallback remains available."
                       : "Scripted responses work without an AI service."}
                   </p>
                 </section>
+                {view === "guest" && joined && state?.listener && (
+                  <section className="panel listener-panel" aria-label="Continuous listening detective">
+                    <div className="eyebrow">TABLE LISTENER</div>
+                    <h3>Detective at the table</h3>
+                    <p className="tiny">Serious, evidence-led interruptions with the occasional dry observation. Listening requires your consent. Transcripts and detective notes are visible to the table and saved; raw audio is not retained.</p>
+                    <div className="listener-controls">
+                      {!listening ? <>
+                        <button disabled={!canContribute} onClick={() => void startListener(false)}>Enable typed listening</button>
+                        <button disabled={!canContribute || !state.listener?.usage.enabled} onClick={() => void startListener(true)}>Enable microphone</button>
+                      </> : <>
+                        <button onClick={() => muted ? resumeListener() : stopListener(true)}>{muted ? "Resume listening" : "Mute"}</button>
+                        <button onClick={() => stopListener(false)}>Stop</button>
+                      </>}
+                    </div>
+                    <p className="tiny" role="status">{listenerStatus}{state.listener.usage.enabled ? ` · ${state.listener.usage.audio_seconds}/${state.listener.usage.audio_limit_seconds}s · est. $${state.listener.usage.estimated_cost_usd.toFixed(4)}` : " · transcription disabled"}</p>
+                    {state.listener.follow_up && <blockquote className="guest-response" aria-live="polite"><span>WOBBLEBOTTOM · FOLLOW-UP</span><p>{state.listener.follow_up.question}</p>{state.listener.follow_up.answered && <p><strong>{state.listener.follow_up.target_name}:</strong> {state.listener.follow_up.answer}</p>}</blockquote>}
+                    {listenerConfirmation && <form onSubmit={(event) => { event.preventDefault(); if (confirmedSpeaker && send({ type: "listener.confirm_transcript", id: listenerConfirmation.id, speaker_id: confirmedSpeaker })) setListenerStatus("Transcript source confirmed."); }}><label htmlFor="listener-speaker">Who spoke in this clip?</label><p>{listenerConfirmation.text}</p><select id="listener-speaker" value={confirmedSpeaker} onChange={(event) => setConfirmedSpeaker(event.target.value)}><option value="">Choose a source</option>{state.guests.map((guest) => <option key={guest.id} value={guest.id}>{guest.name} (I can confirm)</option>)}<option value="unattributed">I can’t tell</option></select><button disabled={!confirmedSpeaker}>Confirm source</button><button type="button" onClick={() => send({ type: "listener.confirm_transcript", id: listenerConfirmation.id, speaker_id: "discard" })}>Discard clip</button></form>}
+                    {listening && <form onSubmit={(event) => { event.preventDefault(); const value = observation.trim(); if (value && send({ type: "listener.transcript", text: value })) setObservation(""); }}><label htmlFor="listener-observation">Add what you heard</label><textarea id="listener-observation" value={observation} onChange={(event) => setObservation(event.target.value)} maxLength={1200} placeholder="Ada was in the library at 9:20."/><button disabled={!observation.trim() || muted}>Share observation with detective</button></form>}
+                    <h4>Table memory</h4>
+                    <ol className="listener-transcript">{state.listener.utterances.slice(-12).map((item) => <li key={item.id}><strong>{item.speaker}{item.follow_up_answer ? " · answer" : ""}:</strong> {item.text}</li>)}</ol>
+                    <p className="tiny">Usage is estimated from audio duration. The detective’s contradiction checks are deterministic and cite released evidence only; they cannot set or reveal the solution.</p>
+                  </section>
+                )}
                 {view === "guest" && (
                   <section className="panel">
                     <div className="eyebrow">YOUR DEDUCTION</div>
