@@ -224,3 +224,7 @@ Next: replace the helmet-like hairline/coarse guide appearance with coherent sil
 ## Listener review — October 29
 
 Completed deeper code/offline review of unmerged1f8bab0. **Blocked from merge**: pending permission/Stop/reset cancellation, broken Resume, invalid later WebM fragments,16KiB transport mismatch, Lewis interruption, dropped error states and false cross-clause claims. P2: theory retention and duration accounting. See LISTENER_REVIEW.md for evidence/reusable probes and ordered acceptance work. Branch baseline252pass/2skips; additional probes4fail/1migration pass. No provider calls or product activation. Avatar visual work resumes next; no avatar changes in this run.
+
+PR2 follow-up: original listener repair probes pass, but merge remains blocked by unattributed snapshot contract and lobby Reset microphone cleanup; stale confirmation/error state also need repair. Formal review:reviews/PR2_INTEGRATION_REVIEW.md. Keep one authoritative main and rerun affected integrations on the repaired PR revision.
+
+PR2 d160344 follow-up: null-attribution decoder blocker verified fixed (25client/build pass). Remaining lobby Reset capture blocker and Resume/error cleanup are unchanged; retain no-merge disposition pending their repair/retest and current CI.
