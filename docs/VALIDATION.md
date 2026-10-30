@@ -197,3 +197,9 @@ Main regression rerun after adding review tooling:314backend tests pass,3Windows
 PR2 review: isolated7b2b918 passes367backend+review checks/3Windows skips,24client/build; runtime unchanged at91b08e3 test-only update. Found null-attribution snapshot rejection, same-act lobby Reset capture gap, stale confirmation after Resume and overwritten errors. See reviews/PR2_INTEGRATION_REVIEW.md. Main CI40980550600 green; no merge or paid/live microphone call. Browser/PR CI result follows.
 
 Final local result: all22browser scenarios pass (2.5minutes), including synchronized host/guest/TV, private roles, audio transport and Lewis continuity. Re-ran backend+5review probes and24client checks with the91b08e3 test-only delta:367pass/3Windows skips and24pass. Build/runtime bytes are unchanged from tested7b2b918. PR CI remains running at review close. Findings1–4 remain applicable; no merge approval.
+
+## Follow-up: d160344 nullable attribution fix
+
+Reviewed `d16034465ae8fe0da00405a0337c6ad135826ab3`. Finding1 is resolved in the client contract: null attribution is accepted only with the fixed Unattributed audio label and no follow-up-answer attribution. All25client checks and production build pass locally. The original null-snapshot reproduction now accepts the legitimate record; a null record falsely claiming a follow-up answer is rejected. Backend/runtime outside this decoder is unchanged. No repeated full-browser claim: previous reviewer run22pass was before this decoder change; author reports22pass on8011, and d160344 CI is running.
+
+Findings2–4 remain: same-act lobby Reset capture cleanup (P1), stale confirmation after Resume (P2), and overwritten actionable error status (P2). App.tsx is unchanged by d160344. PR2 remains unmerged and not approved.
