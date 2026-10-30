@@ -11,7 +11,7 @@ const compiled = ts.transpileModule(source, {
 
 function createCaptureRuntime({ permission, current = () => true } = {}) {
   const timers = new Map();
-  let timerId = 0, now = 0, tracksStopped = 0;
+  let timerId = 0, now = 0, tracksStopped = 0, requestedConstraints;
   const recorders = [];
   class FakeRecorder {
     static isTypeSupported() { return true; }
@@ -31,7 +31,7 @@ function createCaptureRuntime({ permission, current = () => true } = {}) {
   const context = {
     exports: {},
     require() { return {}; },
-    navigator: { mediaDevices: { getUserMedia: () => permission ?? Promise.resolve(stream) } },
+    navigator: { mediaDevices: { getUserMedia: constraints => { requestedConstraints = constraints; return permission ?? Promise.resolve(stream); } } },
     MediaRecorder: FakeRecorder,
     performance: { now: () => now },
     setTimeout(callback, delay) { const id = ++timerId; timers.set(id, { callback, delay }); return id; },
@@ -41,6 +41,7 @@ function createCaptureRuntime({ permission, current = () => true } = {}) {
   return {
     open: context.exports.openListenerCapture,
     recorders, stream,
+    get requestedConstraints() { return requestedConstraints; },
     advance(milliseconds = 3000) {
       now += milliseconds;
       const [id, timer] = timers.entries().next().value || [];
@@ -69,6 +70,9 @@ test("capture finalizes each interval with a fresh recorder and stops cleanly", 
   const runtime = createCaptureRuntime();
   const clips = [];
   const stop = await runtime.open({ isCurrent: runtime.isCurrent, onChunk: chunk => clips.push(chunk), onError: assert.fail, onStatus() {} });
+  assert.equal(runtime.requestedConstraints.audio.echoCancellation.ideal, true);
+  assert.equal(runtime.requestedConstraints.audio.noiseSuppression.ideal, true);
+  assert.equal(runtime.requestedConstraints.audio.autoGainControl.ideal, true);
   assert.equal(runtime.recorders.length, 1);
   runtime.advance(3000);
   runtime.advance(0); // start the next independently finalized container segment
