@@ -252,3 +252,9 @@ Accepted bounded development improvement: real MHCLO-fitted short02silver hair a
 ListenerPR2 advanced toddf2778 with speaking-state signaling; priorapproval0b2e809 doesnotcovernewhead. Freshreview finds guestdevice read-aloud bypasses local mic suppression. Keepunmerged pendingrepair/combinedchecks.
 
 Finalvalidation: main6de53db CI41061277059 green;317backend/3Windows skips,21client/build,20browser pass. Combinedlistener generalchecks374+28client+28browser pass, but targetedguest-device-narration testfails (mictracklive); no PR2approval/merge. Resolve localaudio suppression and docs/PROGRESS conflict before integration.
+
+## October30 listener repair and character experiments
+
+Completed: reviewed/published local narration capture fix4646c5c to the existing listenerPR2;28client/build and30fullbrowser scenarios pass, including two new real fake-microphone regressions. Backend rerun/remoteCI follow. PR is still unmerged; current-main reconciliation and device acceptance remain.
+
+Character: rejected wider alpha-card facial groom after actual browser review (patch-like appearance despite valid weights/deformations). Retained a modest localized eyelid preview for guarded future integration; not in publicsource/GLB. See reviews/SCHOLAR_EYELID_GROOM_REVIEW.md. Next: integrate declared eyelid offsets before groom with strict original-head guards, then natural facial-groom/tailoring/oral work and perceived speech review. Existing approved portrait/liveLewis1.05 remains the game default. November4/10 risk persists; no new casting decision or spending needed.
