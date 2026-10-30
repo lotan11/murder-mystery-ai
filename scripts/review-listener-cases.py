@@ -1,7 +1,6 @@
-"""Offline acceptance probes for unmerged listener commit 1f8bab0.
-Run explicitly against an isolated snapshot of that branch, never the live room DB.
-These expose known defects and are expected to fail until the listener is repaired.
-Not collected by the normal main-branch suite; see docs/LISTENER_REVIEW.md.
+"""Offline regression probes for listener fixes on feature/listener.
+Run explicitly from the listener branch; the fixture creates a temporary room DB.
+Not collected by the main-branch suite, which has no listener module; see docs/LISTENER_REVIEW.md.
 """
 import asyncio, struct, threading
 from dataclasses import replace

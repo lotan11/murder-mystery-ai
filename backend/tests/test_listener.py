@@ -168,6 +168,92 @@ def test_delayed_transcription_is_cancelled_and_discarded_after_stop_or_reset(cl
             assert all(item["text"] != "Stale audio from the previous listening session." for item in room.listener["utterances"])
 
 
+@pytest.mark.parametrize("interruption", ["pause_resume", "disconnect_reconnect"])
+def test_delayed_transcription_cannot_cross_pause_or_socket_reconnect(client, interruption):
+    created = client.post("/api/rooms").json()
+    room = rooms[created["room_id"]]
+    room.act = 1
+    app.state.room_store.save(room.record())
+    started, release, finished = threading.Event(), threading.Event(), threading.Event()
+
+    class DelayedTranscriber:
+        async def transcribe(self, *_args):
+            started.set()
+            try:
+                while not release.is_set():
+                    await asyncio.sleep(0.01)
+                return "An answer from before the session boundary."
+            finally:
+                finished.set()
+
+    app.state.transcriber = DelayedTranscriber()
+    app.state.transcription_config = replace(app.state.transcription_config, enabled=True, reason="ready")
+    with client.websocket_connect(f"/ws/{room.room_id}?role=organizer&token={created['organizer_token']}") as host:
+        host.receive_json()
+        with client.websocket_connect(f"/ws/{room.room_id}?role=guest") as guest:
+            guest_id = join(guest, "Boundary Guest")
+            guest.send_json({"type": "listener.start", "consent": True, "source": "microphone"})
+            assert guest.receive_json()["type"] == "listener.status"
+            guest.send_json({"type": "listener.audio", "duration_seconds": 3, "mime_type": "audio/webm"})
+            assert guest.receive_json()["type"] == "listener.status"
+            guest.send_bytes(webm_clip())
+            assert started.wait(3)
+            if interruption == "pause_resume":
+                host.send_json({"type": "control", "action": "pause"})
+                while not host.receive_json().get("data", {}).get("paused", False):
+                    pass
+                host.send_json({"type": "control", "action": "resume"})
+                while host.receive_json().get("data", {}).get("paused", True):
+                    pass
+                guest.send_json({"type": "listener.resume", "consent": True})
+                while guest.receive_json()["type"] != "listener.status":
+                    pass
+                release.set()
+                assert finished.wait(3)
+            else:
+                token = room.guests[guest_id]["token"]
+                guest.close()
+                assert finished.wait(3), "disconnect did not cancel transcription"
+                with client.websocket_connect(f"/ws/{room.room_id}?role=guest&guest_token={token}") as reconnected:
+                    reconnected.receive_json()  # current authoritative state
+                    assert reconnected.receive_json()["type"] == "joined"
+                    reconnected.receive_json()  # private character state
+                    release.set()
+                    assert room.listener["utterances"] == []
+            assert room.listener["utterances"] == []
+            assert all(item["text"] != "An answer from before the session boundary." for item in room.listener["utterances"])
+
+
+@pytest.mark.parametrize("failure", ["provider", "allowance"])
+def test_provider_failure_and_allowance_exhaustion_are_reported_without_transcript(client, failure):
+    created = client.post("/api/rooms").json()
+    room = rooms[created["room_id"]]
+    app.state.transcription_config = replace(app.state.transcription_config, enabled=True, reason="ready",
+                                               max_audio_seconds=1 if failure == "allowance" else 900)
+
+    class FailingTranscriber:
+        async def transcribe(self, *_args):
+            from backend.listener import TranscriptionError
+            raise TranscriptionError("provider_error")
+
+    app.state.transcriber = FailingTranscriber()
+    with client.websocket_connect(f"/ws/{room.room_id}?role=guest") as ws:
+        join(ws, "Listener Guest")
+        ws.send_json({"type": "listener.start", "consent": True, "source": "microphone"})
+        assert ws.receive_json()["type"] == "listener.status"
+        ws.send_json({"type": "listener.audio", "duration_seconds": 3, "mime_type": "audio/webm"})
+        assert ws.receive_json()["type"] == "listener.status"
+        ws.send_bytes(webm_clip())
+        while True:
+            packet = ws.receive_json()
+            if packet.get("type") == "listener.error":
+                break
+        assert packet["code"] == ("provider_error" if failure == "provider" else "allowance_exhausted")
+        assert room.listener["utterances"] == []
+        if failure == "allowance":
+            assert room.listener["transcription_calls"] == 0
+
+
 def test_audio_usage_uses_verified_container_duration_and_rejects_client_mismatch(client):
     created = client.post("/api/rooms").json()
     room = rooms[created["room_id"]]
