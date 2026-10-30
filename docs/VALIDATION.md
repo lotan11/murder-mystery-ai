@@ -101,3 +101,95 @@ Full integrated regression: all seven browser scenarios pass, including complete
 ## Approved Scholar live performance — October 28, 2026
 
 247 backend tests pass, two Windows symlink privilege skips. Fifteen client tests and production build pass. All eleven browser scenarios pass, including Scholar current-public-line playback, exact 1.05 pace/pitch request, pause/mute/replay, missing optional runtime and explicit original-stage recovery. Existing complete case/private-role/animated sample/audition coverage remains. Real Windows TV decoded and played Lewis opening at 1.05x with pitch preservation enabled; pause stopped it; no page errors/mobile page overflow. Full authored finale generated in 17.09 seconds (41.56-second source WAV), within the 40-second limit. Browser automated audio fixtures remain synthetic waveforms; real audio was checked separately. Custom Scholar rig/likeness deformation and lip-sync remain undelivered, not claimed from static imagery.
+
+## Actual Scholar authoring blockout — October 28, 2026
+
+251 backend tests pass, two Windows symlink privilege skips. Fifteen client tests, production build and thirteen browser scenarios pass. New asset tests inspect actual embedded GLB geometry and distinguish the existing sample's missing silence target from full rig approval; malformed containers are rejected. Browser workbench loads 15 actual meshes, reports zero joints/morphs, handles camera presets/missing model/context loss and makes no speech requests. Real front/profile browser views and Blender renders inspected; clothing intersections fixed and static meshes merged from 736 to 15. The development model is not deployed in the game. Exact likeness, final groom/material quality, rigging and speech deformation remain unpassed art gates. No finished avatar quality is inferred from file loading or structural counts.
+
+## October 28 hourly refinement checkpoint
+
+Reviewed rebuilt front/profile render after symmetric eye-height/fold and eye-bag changes; eyes are more open while age, placement and approved reference remain stable. Denser beard remains a development proxy. GLB inspection: 15 meshes, 101835 exported vertices,165239 triangles, 4263452 bytes, zero joints/morphs and no external resources. This increment passes 251 backend tests (two Windows privilege skips), four asset checks, production build and both workbench browser scenarios including failure recovery. The live game health endpoint remains good. Previous full CI run 40792819175 passed; the new source run is checked after push. No rig/deformation gate is marked complete.
+
+## October 28 weighted source and face study
+
+252 backend tests pass, two Windows symlink privilege skips; 15 client checks and production build pass. All thirteen existing browser scenarios pass. The new face-control scenario initially failed solely on expected numeric attribute formatting (0.38 versus 0.380); corrected assertion and focused rerun recorded below after completion. Binary GLB inspection confirms actual nonzero jaw and eyelid deltas, 15 meshes/3 morph names/0 exported joints/no external resources. Source proof measures real head movement, full source weights and exact rest restoration. Visual review confirms closed eyelids in the blink render; hair, materials, mouth interior and complete deformation remain unfinished. No paid providers invoked.
+
+Final local verification: all three character-lab browser scenarios pass after the assertion correction; thirteen existing browser scenarios passed in the full run. Backend 252 pass/2 Windows skips, client 15 pass, build pass. New push CI pending; preceding main run 40800185053 passed.
+
+## October 28 bound bust checkpoint
+
+253 backend tests pass with two Windows symlink privilege skips; 15 client checks and production build pass. Four focused character-lab browser scenarios pass, including measured movement of an actual skinned spectacle vertex, plus/minus ten-degree bone rotation and reset. Binary export test checks every mesh vertex has normalized weights and valid joint references; 15 meshes, one skin, 64 joints and three nonzero morphs. Blender checks neutral preservation/restoration within 0.000001m, fixed wardrobe under head turn and finite combined head/jaw/blink pose. Actual head-turn render visually inspected. Full browser regression and new push CI recorded after completion; preceding main CI 40812785651 is green. No paid calls.
+
+Final local verification for the bound study: 253 backend tests pass (two Windows permission skips), 15 client checks pass, production build and all fifteen browser scenarios pass. Live local app health is good with scripted dialogue and paid AI disabled. Previous main CI 40812785651 passed; new increment CI follows push.
+
+## October 28 brow expression increment
+
+254 backend tests pass, two Windows symlink privilege skips. Production build, 15 client checks and four focused character-lab browser scenarios pass. New checks measure actual five-target deltas, source upper-face localization, skin/groom coverage, unchanged jaw/blink deformations and neutral/rest preservation. Browser exercises all five actual influences at their caps and resets. Reviewed the actual brow-lift render; appearance remains a development blockout. Source target hashes recorded; no paid calls or live game presentation changes. Previous main CI 40817990427 passed. Full browser regression and new source CI are recorded after completion.
+
+Full regression completed: all fifteen browser scenarios pass, alongside backend254/client15/build. New increment CI follows push.
+
+## October 29 mouth units
+
+255 backend tests pass, two Windows symlink privilege skips. New binary checks measure nonzero mouth displacements, restrained preview limits, localized source motion and distinct target hashes. All eight prior displacement inventories compared equal against HEAD before this increment. Reviewed actual rounding/compression/slight-smile renders; no finished speech or interior claim. Previous main CI40823323676 passed. Frontend/browser results follow after completion.
+
+During the full Windows browser run, the test server logged Proactor connection-reset callbacks as clients disconnected; affected guest/full-case scenarios still passed. This is a teardown-log observation, not a new application exception-handler suppression or an assertion of failure-free logs.
+
+Final mouth-increment regression: all fifteen browser scenarios pass, production build and client15 pass; backend255 pass/two skips. New push CI follows.
+
+## October29 CI performance correction and timing probe
+
+Prior CI40829947023 failed only the90s rig browser budget (fourteen others passed). Root cause was unnecessary continuous drawing of the static dense model. New actual render-count tests prove idle settling and camera/pose redraw; no timeout relaxation.264 backend tests pass/two Windows skips, client15/build pass, all15 browser scenarios pass locally (rig5.7s). Optional real local timing probe:73 model spans/5.502s, same-inference audio object and PCM unchanged. Rejects empty, nonfinite, overlapping, out-of-range or extra-field timing data. Live voice worker untouched; no paid calls. New source CI follows push.
+
+Hosted CI confirmation: run40836345515 passes for code commit7385b78. All browser scenarios pass without timeout relaxation; prior40829947023 rig timeout resolved.
+
+## October29 first timed speech study
+
+291 backend tests pass/three Windows permission skips,21 client checks pass. Optional realworker smoke accepted5.502s/73cues from bm_lewis at unchangedpace. Client tests verify exact clip hash/duration, sourceclock, gaps, soft/capped poses and malformed data rejection. Backend tests verify strict sidecar limits, exact sample-clock reconstruction, Unicode/surrogate rejection, legacy compatibility, projection/auth/stale protections. Reviewed actual timed-model screenshot; blockout quality remains explicit. Build/eight focusedlab scenarios pass, including realusergestureaudio1.05, actualmorph motion, missingmetadata/hashmismatch, cancellation/latefetch/hidden/contextloss/modelchange. Full browser regression follows; no paid calls/downloads.
+
+Final local regression: all19 browser scenarios pass,291 backend tests pass/three Windows permission skips,21 client checks and production build pass. Actual fixed-study screenshot reviewed locally; routine CI retains failure screenshots. Hosted CI follows push.
+
+Hosted CI40843961780 passes for code commit5a7ccca, including all19 browser scenarios. The timed lab study and existing playable game regression are green.
+
+## October29 oral lining and longer narration
+
+293 backend tests pass/three Windows permission skips,21 client checks, production build and all19 browser scenarios pass. Material test verifies the existing weighted cavity primitive, anatomical mask bounds and unchanged vertices/triangles plus jaw/blink displacement magnitude/count. Extra primitive reflects material separation only. Actual mouth-lining open-jaw render reviewed. Realworker59-word public narration:25.0606s/391cues, zerooverlap/outofbounds,21.096s observedgeneration under40s budget; source/hash/public-fields recorded. One sample is not maximum-length or perceptual/performance certification. Windows testserver still emits known Proactor socket-close logs during disconnection scenarios; scenarios pass. New source CI follows push.
+
+CI portability correction: run40850873555 found a raw source-hash mismatch between Windows CRLF and Linux LF. Evidence now retains the raw observed hash and adds canonical JSON content SHA256 for cross-platform fact validation; an LF/CRLF and changed-content regression check protects the distinction. No game/voice/geometry change.
+
+After portability correction:294 backend tests pass/three Windows permission skips. The application/asset code is unchanged from the passing21client/build/19browser local run. New CI follows the evidence-hash fix.
+
+Hosted CI40851331046 passes for corrected code commitaf0d1a8, including backend/client/build/all19 browser scenarios. Prior40850873555 evidence-hash failure resolved without changing game/voice behavior.
+
+## October29 bounded speech cache
+
+310 backend tests pass/three Windows permission skips,21 client checks/build/all19 browser scenarios pass. Tests cover successful repeatedworker avoidance, pairedtiming/audio identity, freshcopies, exact UTF8payload budget, count/LRU/TTL, unavailable/textchecks beforelookup, warmhits duringothercoldgeneration, oversized/error/timeout/cancellation nonretention, cachefaultfallback and unchanged auth/pause/currentrevision/staleprojection. Realprobe:59publicwords,391cues/25.06s,12.107123s initialcachemiss/0.005724s immediatehit,oneworker,1,630,999retainedbytes and no generationfiles left. Local observation only; misses stillcold. Artreview documentsactualmissing skinmaps and remaininglikeness/groom/wardrobe/oral quality. New source CI follows push.
+
+Hosted CI40859619619 passes for source commitb17ee59, including new cache boundaries and all19 browser regressions.
+
+## October29 baked runtime skin maps
+
+311 backend tests pass/three Windows permission skips,21 client checks/build/all19 browser scenarios pass. Actual1K Cycles color-only/roughness/normal bakes, bump-disablednormalbaselineRMSXY0.009305 over259045 coveredpixels. Embeddednormal/basecolorSHA matchsourcePNGbytes; inspectorverifies actualskin base/normal/ORM references andfour embeddedimages. Browsermaterialcheckcountsthree decoded1Ktextures(static/face-onlyzero). Actualbrowsercloseup+openjawrender reviewed: subtlegrain only, no finishedskin/groom/likeness claim. Geometry101835vertices/165239triangles,64joints/11targets preserved; oral material andapprovedspeech intact. New source CI follows push.
+
+Hosted CI40867962436 passes for source commit5659c0e, including actual texture-binding checks and all19 browser scenarios.
+
+## October29 fitted facial groom
+
+313 backend tests pass/three Windows permission skips,21 client checks/build/all19 browser scenarios pass. Newexportcomponent checks preserve originalhead pointcloud/triangles/rest mouth-blink delta counts/magnitudes acrossmaterial splits while validating intentionalgroomaddition(18kverts/12ktris/4nonzero mouthtargets). Allverticesnormalized/validboneindices; zerooutwardfaceinversions, fiveindividualposeattachmentchecks0inwardpoints, weight/morphcorrespondenceerrorsunder1e-6, restlipproxygap2mm. Actualbrowser8018 confirms19primitives/64joints/11controls/3maps,1.05pitch-preservedLewis, visiblemouthmotion andStopneutral/noaudio. No pageerrors orroomAPIcalls. Screenshotreviewnotescoarse/unevendensity; no finalhair orphoneme-accuracy certification. Crownexperimentrejectedandnotexported. New source CI follows push.
+
+Hosted CI40916235913 passes for source commita4888d6, including genuine fitted-groom/component checks and all19 browser scenarios.
+
+## October 29, 2026 — crown coverage and face review framing
+
+Completed during this scheduled run: repaired visible scalp-cap holes in the isolated weighted Scholar study, retaining original anatomy, cap topology/material,64bones/11controls and existing skin/facial-groom assets. Actual before/after front/profile renders show coverage improvement. Cap-only anatomical weights follow restrained head motion. Smooth-normal checks are positive;27/28 raw triangle sign disagreements near ears remain recorded and unresolved. Helmet hairline, coarse strands and premium likeness remain unfinished. Added geometry-based Face close-up/Full bust with actual crown/chin visibility, desktop/phone fitting and preserved orbit direction; Reset/model change restores full bust.
+
+Validation:314backend tests pass,3Windows permission skips;21client checks pass; production build and all20browser scenarios pass, including complete synchronized case, private roles, speech/pause/cancellation and framing.13actual asset tests pass. Actual8018 browser playback confirms1.05 pace, pitch preserved, advancing source clock, Stop removes audio and zero page errors; reviewed actual exported close-up. GLB13,266,176bytes,119,835vertices/177,239triangles,64joints/11controls, no external resources.
+
+Previous code CI40916235913 passed; this increment's remote CI pending push. No paid calls, purchase, public deployment, new casting choice or saved-room change. No claim of development between scheduled runs. Next: coherent silver hair silhouette, portrait-matched facial proportions/eyes/tailoring and perceived speech review. Custom-avatar readiness remains the main November10 risk; preserve November4 gate and approved portrait/liveLewis game fallback.
+
+Remote verification: code commit `15f8f5f` passed CI run `40951937765`, including all20browser scenarios. This closes the crown/framing increment; the custom character remains a development study and the portrait/liveLewis fallback stays active.
+
+## Listener branch review, October 29 evening
+
+Pinned1f8bab0 isolated baseline:252backend pass/2Windows permission skips. Explicit review acceptance probes:4fail (Stop,reset,claim scoping,theory bound),1pass(schema3round-trip). These are recorded defects on the unmerged branch, not failures in main. Original-function VM and Chromium synthetic microphone evidence are recorded in docs/reviews/listener-1f8bab0-evidence.json; no real mic/provider. Formal findings and rerun commands:LISTENER_REVIEW.md. Product code/assets remain unchanged; preceding full main CI40951937765 green.
+
+Main regression rerun after adding review tooling:314backend tests pass,3Windows permission skips. Frontend probe rerun succeeds using synthetic capture; the pinned branch acceptance probes intentionally remain4fail/1pass. New review increment CI follows push.

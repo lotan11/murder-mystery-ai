@@ -154,10 +154,10 @@ def test_response_allows_no_renderer_diagnostics_and_rejects_unapproved_pace(cli
     assert client.post(endpoint(created), headers=auth(created["organizer_token"]), json={}).status_code == 503
 
 
-def fake_renderer(tmp_path):
+def fake_renderer(tmp_path, **cache_options):
     executable = tmp_path / "python.exe"
     executable.write_bytes(b"test marker, never executed")
-    instance = ScholarSpeechRenderer(base_dir=tmp_path / "generated", model_dir=tmp_path / "models", executable=executable, timeout=0.03)
+    instance = ScholarSpeechRenderer(base_dir=tmp_path / "generated", model_dir=tmp_path / "models", executable=executable, timeout=0.03, **cache_options)
     instance.available = True
     return instance
 
@@ -266,4 +266,174 @@ def test_generated_output_must_match_approved_voice_and_current_text(tmp_path, m
     async def run():
         with pytest.raises(ScholarSpeechError, match="invalid_output"):
             await fake_renderer(tmp_path).render("Public text.")
+    asyncio.run(run())
+
+
+def timing_value(end=0.5):
+    return {'source':'kokoro-model-duration','clock':'audio-seconds','phonemes':[{'phoneme':'ə','start':0.1,'end':end}]}
+
+def test_worker_sidecar_is_optional_bounded_and_validated(tmp_path):
+    from backend.scholar_speech import _read_render
+    write_result(tmp_path,'Public text.')
+    assert 'phoneme_timing' not in _read_render(tmp_path,'Public text.')
+    path=tmp_path/'speech-timing.json';path.write_text(json.dumps(timing_value()),encoding='utf-8')
+    result=_read_render(tmp_path,'Public text.')
+    assert result['phoneme_timing']==timing_value() and result['playback_rate']==1.05
+    path.write_text(json.dumps(timing_value(1.01)),encoding='utf-8')
+    with pytest.raises(ScholarSpeechError,match='invalid_output'):_read_render(tmp_path,'Public text.')
+    path.write_bytes(b' '*(512*1024+1))
+    with pytest.raises(ScholarSpeechError,match='invalid_output'):_read_render(tmp_path,'Public text.')
+    path.write_text('{broken',encoding='utf-8')
+    with pytest.raises(ScholarSpeechError,match='invalid_output'):_read_render(tmp_path,'Public text.')
+
+
+def test_worker_sidecar_symlink_is_rejected(tmp_path):
+    from backend.scholar_speech import _read_render
+    write_result(tmp_path,'Public text.')
+    outside=tmp_path/'other.json';outside.write_text(json.dumps(timing_value()),encoding='utf-8')
+    try:(tmp_path/'speech-timing.json').symlink_to(outside)
+    except OSError:pytest.skip('Local Windows symlink permission unavailable')
+    with pytest.raises(ScholarSpeechError,match='invalid_output'):_read_render(tmp_path,'Public text.')
+
+
+def test_endpoint_exposes_only_validated_optional_timing_for_current_public_text(client,monkeypatch):
+    created=room(client)
+    fake=FakeScholar(extra={'phoneme_timing':timing_value(),'private_extra':'never exposed'})
+    monkeypatch.setattr(app.state,'scholar_speech',fake)
+    response=client.post(endpoint(created),headers=auth(created['organizer_token']),json={})
+    assert response.status_code==200
+    assert response.json()['phoneme_timing']==timing_value()
+    assert 'private_extra' not in response.json()
+    assert response.headers['cache-control']=='no-store'
+
+
+@pytest.mark.parametrize('value', [timing_value(1.01),{'source':'guessed','clock':'audio-seconds','phonemes':[]},None,{'source':'kokoro-model-duration','clock':'audio-seconds','phonemes':[{'phoneme':'\ud800','start':0,'end':.1}]}])
+def test_endpoint_revalidates_timing_from_injected_renderer(client,monkeypatch,value):
+    created=room(client)
+    monkeypatch.setattr(app.state,'scholar_speech',FakeScholar(extra={'phoneme_timing':value}))
+    response=client.post(endpoint(created),headers=auth(created['organizer_token']),json={})
+    assert response.status_code==503 and 'phoneme_timing' not in response.json()
+
+
+def test_endpoint_recovers_exact_source_sample_clock_from_rounded_milliseconds(client,monkeypatch):
+    created=room(client);duration=24001/24000
+    cue={'source':'kokoro-model-duration','clock':'audio-seconds','phonemes':[{'phoneme':'ə','start':0.1,'end':duration}]}
+    monkeypatch.setattr(app.state,'scholar_speech',FakeScholar(extra={'duration_ms':round(duration*1000,2),'phoneme_timing':cue}))
+    response=client.post(endpoint(created),headers=auth(created['organizer_token']),json={})
+    assert response.status_code==200 and response.json()['phoneme_timing']==cue
+
+
+def install_cache_worker(monkeypatch, calls, *, hold_after=None, invalid_first=False):
+    async def create_process(*args,**kwargs):
+        directory=Path(args[args.index('--output')+1])
+        payload=json.loads((directory/'input.json').read_text(encoding='utf-8'))
+        calls.append(payload['text'])
+        write_result(directory,payload['text'])
+        (directory/'speech-timing.json').write_text(json.dumps(timing_value()),encoding='utf-8')
+        if invalid_first and len(calls)==1:
+            (directory/'speech.json').write_text('{}',encoding='utf-8')
+        process=FakeProcess(held=hold_after is not None and len(calls)>hold_after)
+        holders=getattr(create_process,'holders',[]);holders.append(process);create_process.holders=holders
+        return process
+    monkeypatch.setattr(asyncio,'create_subprocess_exec',create_process)
+    return create_process
+
+
+def test_repeat_validated_clip_and_its_timing_are_reused_without_spawning(tmp_path,monkeypatch):
+    calls=[];install_cache_worker(monkeypatch,calls)
+    async def run():
+        instance=fake_renderer(tmp_path)
+        first=await instance.render('Current public line.')
+        expected_audio=first['audio_base64'];first['phoneme_timing']['phonemes'][0]['end']=999
+        second=await instance.render('Current public line.')
+        assert second['audio_base64']==expected_audio and second['phoneme_timing']==timing_value()
+        assert len(calls)==1 and not list(instance.base_dir.iterdir())
+        second['text']='Caller mutation'
+        assert (await instance.render('Current public line.'))['text']=='Current public line.'
+        instance.available=False
+        with pytest.raises(ScholarSpeechError,match='unavailable'):await instance.render('Current public line.')
+    asyncio.run(run())
+
+
+def test_warm_hit_can_serve_while_another_cold_clip_is_busy(tmp_path,monkeypatch):
+    calls=[];worker=install_cache_worker(monkeypatch,calls,hold_after=1)
+    async def run():
+        instance=fake_renderer(tmp_path);instance.timeout=10
+        warm=await instance.render('Warm public line.')
+        cold=asyncio.create_task(instance.render('Cold public line.'));await asyncio.sleep(0)
+        assert instance._busy
+        assert (await instance.render('Warm public line.'))==warm
+        with pytest.raises(ScholarSpeechError,match='busy'):await instance.render('Third public line.')
+        assert len(calls)==2
+        worker.holders[-1].event.set();await cold
+    asyncio.run(run())
+
+
+def test_expired_and_oversized_clips_recompute_and_failed_output_is_not_cached(tmp_path,monkeypatch):
+    calls=[];install_cache_worker(monkeypatch,calls,invalid_first=True)
+    async def run():
+        now=[0.0];instance=fake_renderer(tmp_path,cache_ttl=5,clock=lambda:now[0])
+        with pytest.raises(ScholarSpeechError,match='invalid_output'):await instance.render('Public line.')
+        good=await instance.render('Public line.')
+        assert (await instance.render('Public line.'))==good and len(calls)==2
+        now[0]=5
+        await instance.render('Public line.');assert len(calls)==3
+        instance=fake_renderer(tmp_path,cache_max_bytes=1)
+        await instance.render('Public line.');await instance.render('Public line.')
+        assert len(calls)==5
+    asyncio.run(run())
+
+
+def test_warm_response_retains_authorization_pause_current_revision_and_stale_guards(client,tmp_path,monkeypatch):
+    calls=[];install_cache_worker(monkeypatch,calls)
+    created=room(client);saved=rooms[created['room_id']];saved.dialogue='Public warm line.'
+    instance=fake_renderer(tmp_path);monkeypatch.setattr(app.state,'scholar_speech',instance)
+    assert client.post(endpoint(created),headers=auth(created['organizer_token']),json={}).status_code==200
+    assert len(calls)==1
+    assert client.post(endpoint(created),headers=auth('wrong'),json={}).status_code==403
+    saved.paused=True
+    assert client.post(endpoint(created),headers=auth(created['organizer_token']),json={}).status_code==409
+    saved.paused=False;saved.revision+=1
+    response=client.post(endpoint(created),headers=auth(created['organizer_token']),json={})
+    assert response.status_code==200 and response.json()['revision']==saved.revision and len(calls)==1
+    assert response.headers['cache-control']=='no-store'
+    original=instance.render
+    async def stale(text):
+        result=await original(text);saved.revision+=1;return result
+    monkeypatch.setattr(instance,'render',stale)
+    assert client.post(endpoint(created),headers=auth(created['organizer_token']),json={}).status_code==409
+    assert len(calls)==1
+
+
+def test_optional_cache_failure_does_not_replace_valid_speech_with_an_error(tmp_path,monkeypatch):
+    calls=[];install_cache_worker(monkeypatch,calls)
+    async def run():
+        instance=fake_renderer(tmp_path)
+        def cannot_read(key):raise RuntimeError('Simulated cache failure')
+        def cannot_store(key,value):raise MemoryError('Simulated storage failure')
+        monkeypatch.setattr(instance._cache,'get',cannot_read)
+        monkeypatch.setattr(instance._cache,'put',cannot_store)
+        result=await instance.render('Public valid line.')
+        assert result['voice']=='bm_lewis' and result['phoneme_timing']==timing_value() and len(calls)==1
+        assert not instance._busy and not list(instance.base_dir.iterdir())
+    asyncio.run(run())
+
+
+def test_timeout_and_cancellation_never_leave_a_reusable_clip(tmp_path,monkeypatch):
+    calls=[];holders=[]
+    async def process(*args,**kwargs):
+        directory=Path(args[args.index('--output')+1]);text=json.loads((directory/'input.json').read_text())['text']
+        calls.append(text);write_result(directory,text)
+        child=FakeProcess(held=len(calls) in (1,3));holders.append(child);return child
+    monkeypatch.setattr(asyncio,'create_subprocess_exec',process)
+    async def run():
+        instance=fake_renderer(tmp_path)
+        with pytest.raises(ScholarSpeechError,match='timeout'):await instance.render('Retry timeout line.')
+        assert instance._cache.info()['entries']==0 and holders[0].killed
+        await instance.render('Retry timeout line.');assert len(calls)==2
+        instance.timeout=10
+        task=asyncio.create_task(instance.render('Retry cancelled line.'));await asyncio.sleep(0);task.cancel()
+        with pytest.raises(asyncio.CancelledError):await task
+        assert holders[-1].killed
+        await instance.render('Retry cancelled line.');assert len(calls)==4
     asyncio.run(run())

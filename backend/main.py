@@ -687,6 +687,8 @@ if DIST.exists():
         app.mount("/audition", StaticFiles(directory=DIST / "audition"), name="audition-assets")
     if (DIST / "casting").exists():
         app.mount("/casting", StaticFiles(directory=DIST / "casting"), name="casting-assets")
+    if (DIST / "character-lab").exists():
+        app.mount("/character-lab", StaticFiles(directory=DIST / "character-lab"), name="character-lab-assets")
     @app.get("/{path:path}")
     def frontend(path: str):
         if path.startswith(("api/", "ws/")):

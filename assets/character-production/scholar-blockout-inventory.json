@@ -1,0 +1,13 @@
+{
+  "status": "Work in progress; not approved likeness, not facially rigged, not active in TV",
+  "base_vertices": 19158,
+  "runtime_objects": 15,
+  "runtime_vertices": 93017,
+  "joints": 0,
+  "facial_morphs": 0,
+  "mpfb_commit": "6ff1eb358f6c1959ced77e79e6dd2406d9a71f49",
+  "source_asset_license": "CC0-1.0",
+  "procedural_accessories": "Project-authored mesh blocking",
+  "orientation": "Blender -Y forward; glTF +Z forward",
+  "source_config": "assets/character-production/scholar.json"
+}

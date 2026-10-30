@@ -1,0 +1,397 @@
+{
+  "text": "Good evening. I am Detective Wobblebottom. Let us examine the evidence.",
+  "provider": "kokoro-onnx",
+  "version": "0.6.1",
+  "voice": "bm_lewis",
+  "generation_speed": 0.92,
+  "approved_playback_rate": 1.05,
+  "timing_clock": "seconds on original WAV; use audio.currentTime at 1.05 playback",
+  "timing_source": "model duration output mapped by kokoro-onnx to emitted audio samples; not text-proportional estimates or external forced alignment",
+  "sample_rate": 24000,
+  "frames": 132048,
+  "duration_seconds": 5.502,
+  "phoneme_count": 73,
+  "capture_method": "Timing captured from the same inference inside existing create(); no second synthesis or audio alteration",
+  "same_audio_object": true,
+  "identical_pcm_wav": true,
+  "original_wav_sha256": "4f21d61d4c4344e606667721915189a3597b0545dbef35345773bd3c2d8c8499",
+  "timed_wav_sha256": "4f21d61d4c4344e606667721915189a3597b0545dbef35345773bd3c2d8c8499",
+  "max_float_difference": 0.0,
+  "models_sha256": {
+    "kokoro-v1.0.onnx": "beb0d1848dee9a49da392cc3df26958d46cfa35d321edf434f52949153f0df3a",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "phonemes": [
+    {
+      "phoneme": "ɡ",
+      "start": 0.06966666666666667,
+      "end": 0.11966666666666667
+    },
+    {
+      "phoneme": "ˈ",
+      "start": 0.11966666666666667,
+      "end": 0.16966666666666666
+    },
+    {
+      "phoneme": "ʊ",
+      "start": 0.16966666666666666,
+      "end": 0.21966666666666668
+    },
+    {
+      "phoneme": "d",
+      "start": 0.21966666666666668,
+      "end": 0.26966666666666667
+    },
+    {
+      "phoneme": " ",
+      "start": 0.26966666666666667,
+      "end": 0.3446666666666667
+    },
+    {
+      "phoneme": "ˈ",
+      "start": 0.3446666666666667,
+      "end": 0.4196666666666667
+    },
+    {
+      "phoneme": "i",
+      "start": 0.4196666666666667,
+      "end": 0.4696666666666667
+    },
+    {
+      "phoneme": "ː",
+      "start": 0.4696666666666667,
+      "end": 0.5196666666666667
+    },
+    {
+      "phoneme": "v",
+      "start": 0.5196666666666667,
+      "end": 0.5946666666666667
+    },
+    {
+      "phoneme": "n",
+      "start": 0.5946666666666667,
+      "end": 0.6696666666666666
+    },
+    {
+      "phoneme": "ɪ",
+      "start": 0.6696666666666666,
+      "end": 0.7446666666666667
+    },
+    {
+      "phoneme": "ŋ",
+      "start": 0.7446666666666667,
+      "end": 1.0446666666666666
+    },
+    {
+      "phoneme": ".",
+      "start": 1.0446666666666666,
+      "end": 1.1696666666666666
+    },
+    {
+      "phoneme": " ",
+      "start": 1.1696666666666666,
+      "end": 1.2696666666666667
+    },
+    {
+      "phoneme": "a",
+      "start": 1.2696666666666667,
+      "end": 1.3446666666666667
+    },
+    {
+      "phoneme": "ɪ",
+      "start": 1.3446666666666667,
+      "end": 1.4196666666666666
+    },
+    {
+      "phoneme": "ɐ",
+      "start": 1.4196666666666666,
+      "end": 1.4946666666666666
+    },
+    {
+      "phoneme": "m",
+      "start": 1.4946666666666666,
+      "end": 1.5446666666666666
+    },
+    {
+      "phoneme": " ",
+      "start": 1.5446666666666666,
+      "end": 1.5946666666666667
+    },
+    {
+      "phoneme": "d",
+      "start": 1.5946666666666667,
+      "end": 1.6446666666666667
+    },
+    {
+      "phoneme": "ɪ",
+      "start": 1.6446666666666667,
+      "end": 1.7696666666666667
+    },
+    {
+      "phoneme": "t",
+      "start": 1.7696666666666667,
+      "end": 1.8446666666666667
+    },
+    {
+      "phoneme": "ˈ",
+      "start": 1.8446666666666667,
+      "end": 1.8946666666666667
+    },
+    {
+      "phoneme": "ɛ",
+      "start": 1.8946666666666667,
+      "end": 1.9446666666666668
+    },
+    {
+      "phoneme": "k",
+      "start": 1.9446666666666668,
+      "end": 2.0196666666666667
+    },
+    {
+      "phoneme": "t",
+      "start": 2.0196666666666667,
+      "end": 2.0946666666666665
+    },
+    {
+      "phoneme": "ɪ",
+      "start": 2.0946666666666665,
+      "end": 2.1946666666666665
+    },
+    {
+      "phoneme": "v",
+      "start": 2.1946666666666665,
+      "end": 2.2696666666666667
+    },
+    {
+      "phoneme": " ",
+      "start": 2.2696666666666667,
+      "end": 2.369666666666667
+    },
+    {
+      "phoneme": "w",
+      "start": 2.369666666666667,
+      "end": 2.4196666666666666
+    },
+    {
+      "phoneme": "ˈ",
+      "start": 2.4196666666666666,
+      "end": 2.4696666666666665
+    },
+    {
+      "phoneme": "ɒ",
+      "start": 2.4696666666666665,
+      "end": 2.5196666666666667
+    },
+    {
+      "phoneme": "b",
+      "start": 2.5196666666666667,
+      "end": 2.5696666666666665
+    },
+    {
+      "phoneme": "ə",
+      "start": 2.5696666666666665,
+      "end": 2.619666666666667
+    },
+    {
+      "phoneme": "l",
+      "start": 2.619666666666667,
+      "end": 2.6946666666666665
+    },
+    {
+      "phoneme": "b",
+      "start": 2.6946666666666665,
+      "end": 2.744666666666667
+    },
+    {
+      "phoneme": "ˌ",
+      "start": 2.744666666666667,
+      "end": 2.7946666666666666
+    },
+    {
+      "phoneme": "ɒ",
+      "start": 2.7946666666666666,
+      "end": 2.869666666666667
+    },
+    {
+      "phoneme": "t",
+      "start": 2.869666666666667,
+      "end": 2.9446666666666665
+    },
+    {
+      "phoneme": "ə",
+      "start": 2.9446666666666665,
+      "end": 3.0196666666666667
+    },
+    {
+      "phoneme": "m",
+      "start": 3.0196666666666667,
+      "end": 3.3196666666666665
+    },
+    {
+      "phoneme": ".",
+      "start": 3.3196666666666665,
+      "end": 3.4196666666666666
+    },
+    {
+      "phoneme": " ",
+      "start": 3.4196666666666666,
+      "end": 3.494666666666667
+    },
+    {
+      "phoneme": "l",
+      "start": 3.494666666666667,
+      "end": 3.5196666666666667
+    },
+    {
+      "phoneme": "ˈ",
+      "start": 3.5196666666666667,
+      "end": 3.5696666666666665
+    },
+    {
+      "phoneme": "ɛ",
+      "start": 3.5696666666666665,
+      "end": 3.619666666666667
+    },
+    {
+      "phoneme": "t",
+      "start": 3.619666666666667,
+      "end": 3.6446666666666667
+    },
+    {
+      "phoneme": " ",
+      "start": 3.6446666666666667,
+      "end": 3.6696666666666666
+    },
+    {
+      "phoneme": "ˌ",
+      "start": 3.6696666666666666,
+      "end": 3.6946666666666665
+    },
+    {
+      "phoneme": "ʌ",
+      "start": 3.6946666666666665,
+      "end": 3.744666666666667
+    },
+    {
+      "phoneme": "s",
+      "start": 3.744666666666667,
+      "end": 3.8446666666666665
+    },
+    {
+      "phoneme": " ",
+      "start": 3.8446666666666665,
+      "end": 3.9196666666666666
+    },
+    {
+      "phoneme": "ɛ",
+      "start": 3.9196666666666666,
+      "end": 3.994666666666667
+    },
+    {
+      "phoneme": "ɡ",
+      "start": 3.994666666666667,
+      "end": 4.119666666666666
+    },
+    {
+      "phoneme": "z",
+      "start": 4.119666666666666,
+      "end": 4.219666666666667
+    },
+    {
+      "phoneme": "ˈ",
+      "start": 4.219666666666667,
+      "end": 4.3196666666666665
+    },
+    {
+      "phoneme": "a",
+      "start": 4.3196666666666665,
+      "end": 4.369666666666666
+    },
+    {
+      "phoneme": "m",
+      "start": 4.369666666666666,
+      "end": 4.4446666666666665
+    },
+    {
+      "phoneme": "ɪ",
+      "start": 4.4446666666666665,
+      "end": 4.494666666666666
+    },
+    {
+      "phoneme": "n",
+      "start": 4.494666666666666,
+      "end": 4.544666666666667
+    },
+    {
+      "phoneme": " ",
+      "start": 4.544666666666667,
+      "end": 4.594666666666667
+    },
+    {
+      "phoneme": "ð",
+      "start": 4.594666666666667,
+      "end": 4.644666666666667
+    },
+    {
+      "phoneme": "ɪ",
+      "start": 4.644666666666667,
+      "end": 4.6946666666666665
+    },
+    {
+      "phoneme": " ",
+      "start": 4.6946666666666665,
+      "end": 4.769666666666667
+    },
+    {
+      "phoneme": "ˈ",
+      "start": 4.769666666666667,
+      "end": 4.8196666666666665
+    },
+    {
+      "phoneme": "ɛ",
+      "start": 4.8196666666666665,
+      "end": 4.869666666666666
+    },
+    {
+      "phoneme": "v",
+      "start": 4.869666666666666,
+      "end": 4.919666666666667
+    },
+    {
+      "phoneme": "ɪ",
+      "start": 4.919666666666667,
+      "end": 4.969666666666667
+    },
+    {
+      "phoneme": "d",
+      "start": 4.969666666666667,
+      "end": 5.044666666666667
+    },
+    {
+      "phoneme": "ə",
+      "start": 5.044666666666667,
+      "end": 5.094666666666667
+    },
+    {
+      "phoneme": "n",
+      "start": 5.094666666666667,
+      "end": 5.1946666666666665
+    },
+    {
+      "phoneme": "s",
+      "start": 5.1946666666666665,
+      "end": 5.312
+    },
+    {
+      "phoneme": ".",
+      "start": 5.312,
+      "end": 5.312
+    }
+  ],
+  "game_worker_modified": false,
+  "limitations": [
+    "Short fixed-line proof only; long-line boundaries, perception and runtime bounds still require review.",
+    "Separate neural renders are not byte-deterministic; retain timestamps from the same inference as their waveform.",
+    "Model-predicted durations are not manually annotated ground truth. No viseme mapping, facial playback or production activation."
+  ]
+}

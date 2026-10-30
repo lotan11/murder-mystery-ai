@@ -1,0 +1,50 @@
+{
+  "source_blend_sha256": "cb9f8708f3d5f4d8d3c016866242363ae521b83718dd64e2f814889daaf868a5",
+  "source": "Imported MPFB mixamo_unity real bone weights; pose snapshots transferred to exact head vertices and nearby beard guides",
+  "controls": {
+    "jawOpen": {
+      "changed_vertices": 21579,
+      "max_delta_m": 0.017957069580828346,
+      "meshes": [
+        "Scholar Grey strand 0",
+        "Scholar Grey strand 1",
+        "Scholar Grey strand 2",
+        "Scholar Grey strand 3",
+        "Scholar Grey strand 4",
+        "Scholar Neutral aged skin blockout"
+      ]
+    },
+    "eyeBlinkLeft": {
+      "changed_vertices": 324,
+      "max_delta_m": 0.005803928693393922,
+      "meshes": [
+        "Scholar Neutral aged skin blockout"
+      ]
+    },
+    "eyeBlinkRight": {
+      "changed_vertices": 323,
+      "max_delta_m": 0.005803928693393922,
+      "meshes": [
+        "Scholar Neutral aged skin blockout"
+      ]
+    }
+  },
+  "canonical_modified": false,
+  "skeleton_in_export": false,
+  "speech_connected": false,
+  "limitations": [
+    "Experimental jaw/eyelid studies only; no full expression/viseme set or production deformation approval.",
+    "Mouth interior, teeth/tongue, facial hair deformation and complete blink quality require visual review."
+  ],
+  "head_vertex_count": 4353,
+  "head_max_mapping_error_m": 1.2737007182295201e-07,
+  "neutral_max_error_m": 0.0,
+  "blink_angles_radians": {
+    "mixamorig:LeftOrbicularisTop": 0.3105765785378386,
+    "mixamorig:LeftOrbicularisBottom": -0.6713871393516729,
+    "mixamorig:RightOrbicularisTop": 0.3105765785378386,
+    "mixamorig:RightOrbicularisBottom": -0.6713871393516729
+  },
+  "preview_jaw_weight": 0.38,
+  "preview_blink_weight": 1
+}

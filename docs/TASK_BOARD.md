@@ -1,6 +1,21 @@
 # Authoritative task backlog
 
-Updated October 27, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
+**Integration deadline: November 10, 2026 (America/Denver).** Track the avatar critical path and readiness gates in INTEGRATION_PLAN.md. The approved portrait + Lewis remains the runnable fallback.
+
+Updated October 29, 2026. Lead/integrator owns this board. Status reflects committed milestones and current acceptance; no duplicate component implementations.
+
+## Current priorities — October 29, 2026
+
+| Priority | Work | Current state / next gate |
+| --- | --- | --- |
+| P0 | Premium Scholar likeness and groom | Denser fitted facial groom tested; crown/hairline and matched-view facial likeness remain P0 |
+| P0 | Browser-delivered materials | Three1K baked maps now embedded/decoded; grain delivery fixed, final color/skin/eye artistry still unfinished |
+| P0 | Speech deformation and oral detail | Fixed real Lewis lab study works; full natural visemes, teeth/tongue and perceptual review unfinished |
+| P1 | First-generation speech latency | Warm replay cache implemented; new/expired/evicted text still needs generation; no prefetch yet |
+| Done this increment | Bounded public replay cache | Four entries/32MiB/15-minute reuse lifetime; actual local cold12.107s/warm0.005724s, one worker |
+| Protected baseline | Playable Blackthorn case | Approved portrait/live Lewis, private roles, recovery and existing modes preserved |
+
+November4 is the animated-character readiness gate; November10 remains integration deadline. See SCHOLAR_QUALITY_REVIEW.md for concrete visual priorities. Historical milestone records follow.
 
 ## Accepted foundation: M1 — reliable Blackthorn rehearsal
 
@@ -93,3 +108,116 @@ Casting source commit `ec39e04` passed independent CI run 40769768890, including
 - Frontend: selected Scholar portrait/voice stage, explicit audio controls, preserved original/animated modes — implemented and tested.
 - QA: auth/privacy, stale audio, pause/mute, approved pace, full existing regression — 247 backend / 15 client / eleven browser checks pass locally; CI pending.
 - Asset production: likeness-matched Scholar 3D rig remains pending; concrete brief recorded separately. Portrait mode must not be represented as the finished rig.
+
+## Scholar 3D authoring foundation
+
+- Done: verified portable Blender and pinned anatomical MPFB authoring environment, no paid service/system install.
+- Done: actual editable development bust, reproducible settings/build, exported 15-mesh GLB and front/profile renders; zero rig joints/facial morphs explicitly recorded.
+- Done: separate character workbench with actual geometry inventory and camera/failure controls; active TV remains approved portrait + Lewis.
+- Local checks: 251 backend / 15 client / thirteen browser scenarios and production build pass; source CI pending.
+- Next: improve likeness, eyelids, hair/scalp/beard and wardrobe materials, then create real facial topology/targets and compatible rig. This blockout is not awaiting another casting decision and is not production ready.
+
+## Deadline planning checkpoint — October 28, 2026
+
+- Recorded November 10 deadline and internal asset/rig/integration/freeze/rehearsal checkpoints; hourly automation now includes the deadline.
+- Confirmed authoring milestone CI run 40792819175 passed.
+- Active asset increment: reduce heavy eyelids and refine mature facial proportions/beard against approved reference; no TV activation.
+- Remote feature/listener discovered and documented as unmerged; saved-room/privacy/transcription review needed before reuse. No paid transcription or branch merge performed.
+
+- Completed this checkpoint: alert-eye/cheek refinement and denser beard guide; editable source/export/renders/inventory rebuilt together. Verified 251 backend tests, build and both focused browser scenarios. Live game health remains good. Facial rig still absent; next priority is actual weighted/deformable rig work under the deadline plan.
+
+## Weighted skeleton proof and facial study — October 28, 2026
+
+Completed a real MPFB weighted-source experiment: 64 bones, all 19,158 source vertices weighted, measured head motion and exact rest restoration. This proof remains separate from the public bust. Created an editable face study with three actual pose-derived morphs (jawOpen, eyeBlinkLeft, eyeBlinkRight), transferred to the existing head and beard without changing neutral geometry. Export contains 15 meshes, three morph names and zero skeleton joints. Binary inspection measures nonzero displacement; these are not inventory placeholders.
+
+The separate character lab now selects the face study and exposes real sliders: jaw capped at 0.38, full blinks and reset. Reviewed close-up neutral/jaw/blink renders; eyelids close, but groom, materials, mouth interior and production deformation still need refinement. This is an early study, not the finished Scholar or a speech-connected rig. Default game portrait, Lewis at 1.05x, existing animation modes and saved-room format are untouched. Next: refine deformation quality, complete expressive/viseme controls and bind the finished bust before voice alignment. November 10 risk remains custom avatar quality; the playable portrait/Lewis fallback is preserved.
+
+## Bound Scholar development study — October 28, 2026
+
+Bound a separate copy of the Scholar face study to the actual imported MPFB skeleton. Public GLB now contains 15 skinned meshes, one skin, 64 joints and the same three real facial morphs. Every exported vertex has normalized positive weights and valid joint references. Skin uses anatomical source weights; groom uses four-neighbour weight transfer; glasses/eyes/scalp attach rigidly to Head and wardrobe to Spine2. This intentionally avoids claiming cloth or shoulder deformation.
+
+Measured positive/negative ten-degree head turns, combined head/jaw/blink evaluation, neutral preservation and rest restoration. A real close-up render verifies head accessories following the head. Character lab adds a separate weighted-rig choice and manual restrained head-turn control, while static and face-only studies remain available. Browser validation measures both the actual bone quaternion and a skinned spectacle vertex. No live game activation, paid provider, speech connection or saved-room change. Likeness, groom/materials, mouth interior, complete facial controls and Lewis alignment remain unfinished and the main November 10 risk. Approved portrait/Lewis +5% remains the playable baseline.
+
+## Restrained Scholar brow expressions — October 28, 2026
+
+Added five actual brow morphs to the existing weighted rig study: inner lift, independent outer lifts and independent lowering. These derive from pinned MPFB legacy expression-unit target geometry, with source hashes recorded and deltas transferred to skin and nearby brow/hair guides. This corrects an earlier incomplete tool inventory: data/expressions is empty, but raw targets/expression/units contains usable units. It is not a supplied complete ARKit/viseme package.
+
+Rig study now has 64 weighted joints and eight real facial controls. Manual lifts cap at 0.35 and lowering at 0.25. Reviewed an actual close-up brow-lift render. Binary checks measure nonzero displacement and confirm the three original jaw/blink deformations are unchanged; source checks locate brow motion above 1.5m and neutral/rest errors remain below one micrometre. The original static and three-control face-only studies remain intact. Game portrait/Lewis at 1.05x, interfaces and saved rooms are unchanged. No paid provider or speech connection was added.
+
+Next: mouth interior/lip shaping and complete speech deformation, followed by actual Lewis alignment. Likeness/groom/materials still need substantial polish. The animated Scholar remains the main November 10 risk; portrait/live Lewis stays the stable playable baseline. No user decision is required for this increment.
+
+## Restrained mouth-shape study — October 29, 2026
+
+Added three real anatomical mouth units to the existing weighted Scholar study: lip rounding (0.25 cap), compression (0.25 cap) and slight bilateral smile (0.20 cap). Source target hashes are recorded; skin and nearby beard guides receive actual geometry deltas. The rig now has 64 joints and eleven facial controls. All eight earlier morph displacement inventories match the preceding commit exactly. Neutral/rest geometry is preserved.
+
+Reviewed actual renders for each mouth control. At the manual caps, maximum displacement is about 4.1mm rounding, 2.2mm compression and 2.6mm smile; this is deliberately restrained. Binary tests verify actual motion, source localization, distinct targets, normalized skin weights and missing viseme inventory. These are manual expression units, not complete phoneme shapes or voice alignment. Mouth interior/teeth/tongue, final likeness/groom/materials and actual Lewis synchronization remain unfinished.
+
+Approved portrait/live Lewis at +5%, original animation modes, playable mystery, interfaces and saved-room schema remain unchanged. No paid provider calls or purchases. Next: mouth-interior/deformation quality and real speech alignment; do not activate the unfinished study in the game. Final animated-character quality remains the main November 10 risk; the approved playable fallback is retained. No new user decision is needed.
+
+Follow-up: obtain and validate real audio-derived phoneme/viseme timing for the approved local Lewis WAVs; the current worker manifest contains audio duration, not phoneme timestamps. Preserve approved synthesis/playback speeds. Do not substitute invented text-proportional timing for an alignment claim.
+
+## Lab performance correction and real Lewis timing proof — October 29, 2026
+
+Investigated failed CI40829947023: fourteen browser scenarios passed; the expanding rig-control scenario exhausted its 90-second budget on the slower software-GPU runner. Replaced continuous static-lab GPU rendering/geometry diagnostics with change-driven draws. Orbit damping, resize, model loading and manual controls still render correctly; no timeouts or assertions were relaxed. Added actual render-count checks for idle settling, mouse orbit and pose-triggered redraw. Rig scenario dropped from52s locally to5.7s. Existing animated TV modes are untouched.
+
+Direct inspection confirmed the approved pinned ONNX model exposes duration output. Added a separate optional local timing probe:73 model-predicted phoneme spans over5.502s, captured from the same inference inside existing create(), with the exact same audio object and identical PCM output. This corrects the earlier inference that another alignment service was necessarily required. The game worker currently discards these available timings and remains unchanged. Separate neural renders vary; always retain cues from their own waveform. These are model-supplied sample-clock timings, not text-proportional estimates, external forced alignment or manually annotated ground truth. At1.05 playback use audio.currentTime rather than speeding cue timestamps twice.
+
+Verification:264 backend tests pass (two Windows permission skips),15 client checks, production build and all15 browser scenarios pass. No paid calls/downloads or presentation/schema changes. New CI follows push; prior failed run is explicitly recorded rather than reported green. Next: bounded worker/sidecar timing integration and lab-only speech deformation, plus mouth interior/likeness/groom polish. Final animated-character quality remains the main November10 risk; portrait/live Lewis stays playable. No user decision needed.
+
+## First opt-in timed Scholar speech study — October 29, 2026
+
+The weighted rig can now perform a fixed real Lewis line in the separate character lab. Choose Rig study and Play Lewis timing study. No autoplay. The clip is the verified5.502-second same-inference proof, at approved1.05 playback; its73 model-predicted cues follow audio.currentTime. A restrained, explicitly approximate phoneme-to-existing-mouth mapping drives real morph influences. Unknown symbols/gaps stay neutral. This is a speaking deformation study, not a complete viseme rig or finished natural lip-sync/likeness.
+
+Client streams are bounded (512KiB metadata/8MiB WAV); PCM format/duration and SHA256 pairing are checked before Blob playback. Stop, pending-fetch cancellation, model change, graphics loss, hidden page and unmount cancel/reset/revoke resources. Idle GPU optimization remains. Reviewed an actual speaking-model screenshot: mouth motion remains small; sparse groom, wardrobe blockout, mouth interior and overall likeness still need substantial work. Approved game portrait/live Lewis remains the TV default.
+
+The existing local worker now retains model timing from the same synthesis call in a separate optional sidecar. Backend validates exact source-clock/schema, finite sorted/nonoverlapping spans,4000-cue/512KiB bounds and safe file reads; missing sidecars retain legacy compatibility, malformed ones fail safely. Endpoint revalidates optional metadata and retains current-public-text auth/revision/pause protections. No default avatar activation, room schema change, paid call or download. Actual worker smoke:Lewis/5.502s/73cues/approved1.05 rate. Next: mouth interior and perceptual deformation/likeness polish, long-line timing review and lab-to-live integration only after quality gates. November10 animated-character quality risk remains; no new user decision required.
+
+## Anatomical oral lining and longer narration evidence — October 29, 2026
+
+Refined the weighted Scholar study's existing mouth cavity using the pinned anatomical inside-mouth UV mask. Assigned a dark rough oral-lining material to398 existing faces/418 vertices, with source hash and bounds recorded. No new geometry, fake black plane, teeth or tongue were added. Actual vertex/triangle counts, neutral shape and original jaw/blink displacement counts/magnitudes remain unchanged; only the head's material primitives split. Reviewed the actual open-jaw render. Detailed teeth/tongue, groom, wardrobe, likeness and natural speech shapes remain unfinished; the approved game portrait/live Lewis remains the default.
+
+Ran the actual local worker on59 words/378 characters concatenated from canonical public welcome/start/advance narration. It produced25.0606s/391 model cues with zero overlap/out-of-bounds results, preserving Lewis0.92 synthesis and1.05 playback. The same-waveform sidecar passed backend validation. Generation took21.096s on this machine within the unchanged40s bound. This is one observed sample, not a max-length, internal-batch, perception or performance guarantee. Longer clips can have noticeable preparation latency; caching/prefetch/performance evaluation is now a tracked integration task. No paid calls/downloads or live-room changes.
+
+Next: detailed mouth/face quality and perceived speech review, plus measured latency improvement before live3D integration. November10 risk remains final character quality and long-dialogue responsiveness. No new casting/voice decision is needed; preserve the working fallback.
+
+Next performance task: evaluate bounded public-dialogue voice caching/prefetch without changing voice/pace, privacy, stale-state guards or the40s worker policy. Record cold/warm observations rather than assuming every1500-character input meets interactive latency.
+
+## Bounded public speech replay cache and art quality review — October 29, 2026
+
+Added a process-local memory cache for successful validated Lewis clips and their matching model timing. Default bounds: four entries,32MiB of immutable serialized payloads,15-minute non-sliding reuse lifetime. Expired entries are pruned on cache activity, not a background deletion timer. Hits decode a fresh result copy; oversized results, failures, timeouts and cancellations are not retained. Cache faults fall back to normal valid rendering. No extra audio files persist after the existing temporary-worker cleanup.
+
+Authorization, current-public-text selection, pause/revision/stale checks and HTTP no-store remain on every endpoint request; room credentials/revisions are not cached. Approved voice,0.92 synthesis/1.05 playback and40s worker bound remain unchanged. A warm clip may be served while a different cold clip is preparing, without another worker.
+
+Real isolated59-word renderer probe: one25.06s/391-cue clip took12.107s on the first cache miss and0.005724s on immediate replay, with one worker total and identical waveform/timing data. Retained payload was1,630,999bytes; generation directory was empty afterward. These are local observations for an empty renderer cache followed by one hit, not cold-machine or cross-device guarantees. New, expired or evicted lines remain cold; no prefetch is implemented. The new backend cache takes effect when the server is started with this source.
+
+A separate actual-asset review confirms the model is not yet premium-ready: hair/beard silhouette, matched-camera likeness, materials and tailoring remain substantial gaps. Procedural Blender skin detail is absent from the actual GLB; supported baked PBR maps need explicit export/browser verification. See SCHOLAR_QUALITY_REVIEW.md. No new model, voice, casting request, purchase or game presentation change was made. Next visual priority: groom/likeness and browser-delivered skin detail, while preserving the playable portrait/Lewis fallback. November10 risk remains final art/perceived speech quality and first-generation latency; no input is required now.
+
+Next P0visual task: use matched camera/lighting, refine silver hair/beard silhouette and deliver baked supported skin maps in the actual GLB/browser. Require visual comparison, deformation regressions and measured runtime texture inventory; source-only procedural detail is not completion. Cache miss/first-generation latency remains a separate performance task.
+
+## Browser-delivered baked skin materials — October 29, 2026
+
+Closed the missing-runtime-detail gap on the weighted Scholar study. A reproducible Blender helper now bakes existing skin base color (COLOR-only, no lighting), roughness and tangent normal maps at1024px, binds supported image nodes and packs them into editable source/GLB. The normal bake is compared with a real bump-disabled baseline over an emission coverage mask: measuredRMSXY0.009305, proving the source's shallow procedural grain is captured. This is not authored wrinkles, a skin scan, final skin artistry or subsurface reconstruction.
+
+Actual GLB inventory has four embedded images (coat plus three skin maps); skin has baseColorTexture, normalTexture and metallicRoughnessTexture. Normal and base-color embedded image hashes exactly match source PNGs; roughness is packed into the glTF channel layout. Inspector now records actual material references/image dimensions/hashes. The browser confirms three decoded1K textures on the actual loaded skin material, not a model-mode label. Reviewed actual browser close-up and Blender open-jaw render: subtle grain survives export; the model is still visibly a blockout.
+
+Original101,835 exported vertices/165,239 triangles,64 joints/11 morph names, normalized weights, oral lining, neutral/rest deformation and restrained Lewis timing study remain. Canonical static/face-only studies, game portrait/liveLewis(+5%), interfaces and saved rooms are unchanged. No paid calls/downloads/new casting decisions. Next P0: coherent silver hair/beard groom and matched-view likeness; more art and perceptual speech work remains before November4 readiness gate/November10 integration. First-generation speech latency also remains; replay cache is preserved.
+
+## Fitted facial groom development refinement — October 29, 2026
+
+Added denser fitted silver beard/moustache clumps to the weighted Scholar study. The selected facial-only helper creates2200beard/800moustache clumps (18,000vertices/12,000triangles) with stored head-triangle barycentric correspondence for normalized bone weights and four genuinely nonzero mouth targets. No dummy brow/viseme keys were added. Original head rest positions, head geometry/deformation ranges, skin maps, oral lining,64-joint skeleton and11global control names are preserved. Canonical static/face-only studies and approved game portrait/liveLewis remain unchanged.
+
+Matched front/profile previews caught inverted-card shading and an overly angular crown experiment. Those were rejected before public export. The accepted development increment is facial hair only; original scalp/crown remain unchanged, including known cap/hairline gaps. Outward-face guard records zero inversions; normalized-weight and morph-correspondence errors are below one micrometre. Five restrained pose checks keep groom points outward from their source triangles; the rest lip-proxy gap is about2mm. These geometric checks do not certify every combined pose or natural-looking hair.
+
+Actual browser playback on8018 loaded19renderprimitives/64joints/11controls/three skin maps, used approved1.05Lewis pace with pitch preserved, showed real mouth motion, and Stop returned to neutral. Reviewed the live screenshot and actual front/profile renders: moustache/beard are denser but still coarse ribbons/stubble with uneven coverage. No obvious new floating/black-face/lip-bridge issue appeared in those frames; this is not perceptual phoneme-level lip-sync certification. GLB16meshes/119,835vertices/177,239triangles, about13.27MB, no external resources.
+
+Inspector now exposes component-level geometry/morph inventory so deliberate groom growth cannot hide changes to the original head. Tests check original head positions across material splits plus real new weighted geometry and fit guards. Next P0: crown/hairline shape and matched-view facial likeness, then finer groom/material/oral quality. November10 final-art and first-generation speech-latency risks remain; no new user decision or casting approval is needed. No paid calls/downloads or default-game activation.
+
+## Crown fit and matched framing — October 29, 2026
+
+Completed: cap-only surface projection and anatomical weight transfer; front/profile before/after review removes visible scalp holes. Added explicit face/full-bust framing for desktop/phone inspection. Existing 64 joints, eleven controls, skin maps, facial groom and original head are preserved.
+
+Next: replace the helmet-like hairline/coarse guide appearance with coherent silver grooming, then refine portrait-matched facial proportions, eyes and tailoring. Sharp ear-edge cap coverage remains unresolved (raw triangle sign disagreements retained), as do full visemes and perceptual speech approval. November4 readiness gate and November10 portrait/Lewis fallback remain. No new casting selection or spending decision needed.
+
+## Listener review — October 29
+
+Completed deeper code/offline review of unmerged1f8bab0. **Blocked from merge**: pending permission/Stop/reset cancellation, broken Resume, invalid later WebM fragments,16KiB transport mismatch, Lewis interruption, dropped error states and false cross-clause claims. P2: theory retention and duration accounting. See LISTENER_REVIEW.md for evidence/reusable probes and ordered acceptance work. Branch baseline252pass/2skips; additional probes4fail/1migration pass. No provider calls or product activation. Avatar visual work resumes next; no avatar changes in this run.

@@ -1,0 +1,329 @@
+.character-lab-page {
+  min-height: 100svh;
+  background:
+    radial-gradient(ellipse at 40% 20%, #30473d66, transparent 65%), #0d1817;
+  color: #e8e4d7;
+}
+.character-lab-header {
+  height: 90px;
+  padding: 0 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.character-lab-header > a:last-child {
+  color: var(--gold);
+  font-size: 12px;
+  text-decoration: none;
+}
+.character-lab-main {
+  max-width: 1540px;
+  padding: 38px 5% 60px;
+  margin: auto;
+}
+.character-lab-main > h1 {
+  font-size: 60px;
+  margin: 16px 0;
+}
+.character-lab-intro {
+  font-size: 14px;
+  line-height: 1.9;
+  color: #adbfaf;
+  max-width: 900px;
+  margin-bottom: 28px;
+}
+.character-lab-comparison {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 26px;
+}
+.character-lab-panel-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 14px;
+}
+.character-lab-panel-title h2 {
+  font-size: 29px;
+  margin: 0;
+}
+.character-lab-panel-title > span {
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: #b69f70;
+}
+.character-lab-reference > img,
+.character-lab-viewer {
+  width: 100%;
+  height: 580px;
+  display: block;
+  border: 1px solid #6c704e;
+  border-radius: 3px;
+  background: #243a32;
+}
+.character-lab-reference > img {
+  object-fit: cover;
+  object-position: center top;
+}
+.character-lab-reference > p,
+.character-lab-note {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #9eb49e;
+  margin-top: 13px;
+}
+.character-lab-viewer {
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+}
+.character-lab-canvas {
+  position: absolute;
+  inset: 0;
+}
+.character-lab-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.character-lab-overlay {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 42%;
+  text-align: center;
+  background: #102019dd;
+  color: #dfd0ac;
+  font-size: 13px;
+  line-height: 1.8;
+  padding: 20px;
+}
+.character-lab-watermark {
+  position: absolute;
+  left: 18px;
+  bottom: 16px;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #c4b997;
+  text-shadow: 0 1px 6px #000;
+  pointer-events: none;
+}
+.character-lab-controls {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+.character-lab-controls button {
+  font-size: 11px;
+  padding: 11px 13px;
+}
+.character-lab-controls button[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: #3c4f33;
+  color: #e5cf9b;
+}
+.character-lab-inventory {
+  padding: 27px;
+  margin-top: 25px;
+}
+.character-lab-inventory h2 {
+  margin: 12px 0 20px;
+}
+.character-lab-counts {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+.character-lab-counts > div {
+  border-left: 1px solid #586d4d;
+  padding: 8px 16px;
+  background: #203426;
+}
+.character-lab-counts strong {
+  display: block;
+  font-family: Georgia, serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: #dfd0aa;
+}
+.character-lab-counts span {
+  display: block;
+  font-size: 10px;
+  color: #a4b69e;
+  margin-top: 8px;
+}
+.character-lab-inventory > p,
+.character-lab-inventory details {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #bdcbb7;
+  overflow-wrap: anywhere;
+  margin-top: 20px;
+}
+.character-lab-inventory summary {
+  cursor: pointer;
+  color: var(--gold);
+}
+@media (max-width: 1000px) {
+  .character-lab-reference > img,
+  .character-lab-viewer {
+    height: 500px;
+  }
+  .character-lab-counts {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .character-lab-panel-title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .character-lab-main > h1 {
+    font-size: 50px;
+  }
+}
+@media (max-width: 760px) {
+  .character-lab-header {
+    height: 78px;
+  }
+  .character-lab-header > a:last-child {
+    font-size: 10px;
+    max-width: 110px;
+    text-align: right;
+  }
+  .character-lab-main {
+    padding-top: 27px;
+  }
+  .character-lab-comparison {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .character-lab-main > h1 {
+    font-size: 43px;
+  }
+  .character-lab-intro {
+    font-size: 12px;
+  }
+  .character-lab-reference > img {
+    height: 520px;
+  }
+  .character-lab-viewer {
+    height: 500px;
+  }
+  .character-lab-panel-title {
+    flex-direction: row;
+    align-items: center;
+  }
+  .character-lab-counts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .character-lab-inventory {
+    padding: 22px;
+  }
+  .character-lab-counts strong {
+    font-size: 27px;
+  }
+}
+@media (max-width: 500px) {
+  .character-lab-header .brand {
+    font-size: 8px;
+    letter-spacing: 1.2px;
+  }
+  .character-lab-header .brand-sub {
+    font-size: 6px;
+    letter-spacing: 1.3px;
+  }
+  .character-lab-reference > img,
+  .character-lab-viewer {
+    height: 430px;
+  }
+  .character-lab-panel-title h2 {
+    font-size: 26px;
+  }
+  .character-lab-panel-title > span {
+    font-size: 7px;
+  }
+  .character-lab-counts > div {
+    padding: 10px 12px;
+  }
+}
+
+.character-lab-model-choice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 28px;
+}
+.character-lab-model-choice label {
+  margin: 0;
+  font-size: 11px;
+  color: #ccb88c;
+}
+.character-lab-model-choice select {
+  padding: 11px 13px;
+  background: #10231b;
+  color: #e0e6d3;
+  border: 1px solid #596c4d;
+  font: inherit;
+  font-size: 12px;
+  max-width: 100%;
+}
+.character-lab-model-choice > p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #a5b99f;
+  flex-basis: 100%;
+  margin: 0;
+}
+.character-lab-face-controls {
+  background: #182c20;
+  border: 1px solid #64704d;
+  padding: 18px;
+  margin-top: 16px;
+}
+.character-lab-face-controls h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+.character-lab-face-controls p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #b2c2a8;
+}
+.character-lab-face-slider {
+  margin: 16px 0;
+}
+.character-lab-face-slider label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #ddd2b2;
+  margin: 0 0 7px;
+}
+.character-lab-face-slider output {
+  font-variant-numeric: tabular-nums;
+  color: #b4c3aa;
+}
+.character-lab-face-slider input[type="range"] {
+  width: 100%;
+  padding: 0;
+  accent-color: #c8a56b;
+  background: transparent;
+  cursor: pointer;
+}
+.character-lab-face-controls button {
+  font-size: 11px;
+}
+.character-lab-model-choice select:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.character-lab-study-buttons {display:flex;gap:8px;flex-wrap:wrap;}
+.character-lab-study-line {color:#ddd2b2;font-style:italic;}
+.character-lab-face-slider input:disabled {opacity:.5;cursor:default;}

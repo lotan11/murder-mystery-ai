@@ -31,3 +31,7 @@ M3 adds an explicitly enabled Responses planner that returns evidence IDs and an
 ## Approved live Lewis renderer
 
 `scholar_speech.py` and its fixed local Python worker provide a separate authenticated current-public-dialogue endpoint using the optional isolated Kokoro runtime and verified cached assets. It reuses the existing host/read-only TV capability, accepts an empty request, and returns validated inline WAV with the approved 1.05 playback rate after a state recheck. No word timing is invented. `ScholarPerformance.tsx` owns selected portrait audio lifecycle; `Stage.tsx` still owns shared evidence/captions. Existing SAPI/TalkingHead and original procedural modes are preserved under explicit TV presentation selection.
+
+## Reproducible Scholar asset workbench
+
+Optional portable Blender and pinned MPFB generate the anatomical development asset from assets/character-production settings. The canonical editable blend, local GLB and inspection report are versioned. CharacterLab is a lazy, separate route with ordinary GLTFLoader/OrbitControls, real scene inventory and no game-state or audio integration. StaticFiles serves only its dedicated exported asset folder. Standard-library GLB inspection distinguishes missing bones/expressions from actual geometry loading; neither inventory nor rendering is treated as likeness or acting approval.

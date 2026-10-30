@@ -1,6 +1,10 @@
 # AI Murder Mystery Dinner platform specification
 
-Status: authoritative working specification, updated October 27, 2026.
+Status: authoritative working specification, updated October 29, 2026.
+
+## Integration deadline
+
+The user set **November 10, 2026 (America/Denver)** as the integration deadline. Prioritize stable end-to-end play and the approved Scholar/Lewis presentation; flag custom-rig readiness risk early. See INTEGRATION_PLAN.md for engineering checkpoints and fallback boundaries.
 
 ## Product
 
@@ -64,3 +68,31 @@ Offer three premium stylized-realistic mature detective concept portraits and th
 ## Approved TV presentation
 
 The selected default TV presentation is The Scholar concept portrait with optional live Lewis narration at the user-approved +5% playback pace. Explicit enable/mute/stop/replay and captions remain. Original and animated-sample stages stay selectable. The concept portrait is not a finished 3D rig; production likeness/animation work is tracked separately. See SCHOLAR_PERFORMANCE.md.
+
+## Character asset development
+
+A separate `?view=character-lab` loads the actual anatomical development GLB beside the approved portrait with camera presets, measured geometry/rig inventory and failure recovery. It has no speech or activation path. The editable source/configuration/build script are versioned; portable authoring tools stay optional and ignored. Likeness, production materials and facial rig quality gates remain mandatory before replacing the approved portrait presentation.
+
+## Character authoring checkpoint — October 28, 2026
+
+The separate lab supports the original static bust, a three-morph face study and an actual 64-joint weighted bust study with eleven facial controls and restrained manual head turn. These are development inspection modes, not final character approval or speech integration. The approved portrait/live Lewis remains the TV presentation. Full visemes, expressive face quality, production likeness/groom and actual voice alignment remain required for the animated Scholar.
+
+The static character lab renders on model/camera/manual-control changes and settles idle. A separate local probe demonstrates model-supplied Lewis phoneme timings from the same synthesis waveform; live game speech and avatar activation are unchanged. Predicted timing is not manual alignment certification.
+
+Character lab now offers an explicit Play Lewis timing study action on the weighted rig: fixed local verifiedaudio, approvedpace, model-time cues and approximate restrained real morph motion. It must never autoplay or change the game default, and must reset on Stop, navigation, hidden page or graphics failure. Optional worker timing is additive and validated before public speech response delivery; absence supports older renders. This is not finished viseme or likeness approval.
+
+Character quality checkpoint: existing oral cavity lining is now anatomically masked in the weighted study; teeth/tongue and final facial appearance are unfinished. Timing validation must report observed preparation latency as well as cue bounds. A successful short or59-word clip is not a maximum-length or interactive-latency guarantee.
+
+Approved local speech may reuse validated exact-public-text audio and its matching cues from a bounded process-memory cache. Every request still passes room authorization, current text, pause and revision checks; no client-side HTTP cache or persistent audio store is added. Hits return fresh result copies, expire for reuse after15minutes and remain under four entries/32MiB serialized payload. Misses use the unchanged local generation path.
+
+Character material acceptance now checks actual exported image bindings and browser decoding, with independently measured baked normal detail rather than source-node presence. The weighted study has three supported1K skin maps; no final likeness/subsurface/skin-scan quality claim follows from this technical delivery.
+
+The weighted study now includes fitted facial hair with head-triangle weight/morph correspondence. Added hair geometry must not change the original head or invent empty controls; acceptance includes component-level export checks and actual playback review. This is a development groom, with no change to the approved portrait/live voice default.
+
+## October 29 crown fit and inspection increment
+
+The isolated weighted Scholar study now repairs visible scalp-cap gaps without changing the anatomical face, materials, topology or approved game presentation. Face close-up/Full bust framing supports consistent inspection using actual loaded eye, crown and facial-groom bounds; camera angle survives framing changes and Reset/model changes restore the full bust. This is development tooling, not final avatar activation.
+
+## Listener review boundary — October 29
+
+The separately developed listener is not an integrated product feature. Review now reproduces cancellation, audio-framing, claim-correctness and narration-continuity defects; see LISTENER_REVIEW.md. Consent, truthful capture state, bounded validated audio and no stale speech/transcripts across Stop/pause/reset are required before adoption. Existing scripted mystery and approved portrait/liveLewis remain the demonstration baseline.
