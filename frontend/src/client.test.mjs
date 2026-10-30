@@ -45,6 +45,10 @@ test("complete authoritative snapshots replace room state", () => {
     { state: snapshot },
   );
 });
+test("ephemeral detective speaking state is validated on room snapshots", () => {
+  assert.equal(decodeState(JSON.stringify({ type: "state", data: { ...snapshot, scholar_speaking: true } })).state.scholar_speaking, true);
+  assert.ok(decodeState(JSON.stringify({ type: "state", data: { ...snapshot, scholar_speaking: "yes" } })).error);
+});
 test("incomplete snapshots cannot reach rendering", () => {
   for (const data of [
     { evidence: [] },

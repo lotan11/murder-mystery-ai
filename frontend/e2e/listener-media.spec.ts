@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 
-async function interceptedMicrophoneGuest(page: Page, roomId?: string) {
-  const created = roomId ? { room_id: roomId } : await page.request.post("/api/rooms", { data: {} }).then(response => response.json());
+async function interceptedMicrophoneGuest(page: Page, room?: { room_id: string; organizer_token?: string }) {
+  const created = room ?? await page.request.post("/api/rooms", { data: {} }).then(response => response.json());
   let socket: { send: (message: string) => void } | null = null;
   await page.routeWebSocket(/\/ws\//, routed => {
     socket = routed;
@@ -37,7 +37,7 @@ async function interceptedMicrophoneGuest(page: Page, roomId?: string) {
   await page.getByRole("button", { name: "Join the investigation" }).click();
   await expect(page.getByRole("heading", { name: "Detective at the table" })).toBeVisible();
   page.on("dialog", dialog => dialog.accept());
-  return { roomId: created.room_id as string, socket: () => socket };
+  return { roomId: created.room_id as string, organizerToken: created.organizer_token as string | undefined, socket: () => socket };
 }
 
 async function micTracksEnded(page: Page) {
@@ -45,6 +45,37 @@ async function micTracksEnded(page: Page) {
     const streams = (window as any).__listenerTestStreams as MediaStream[];
     return streams.length > 0 && streams.every(stream => stream.getTracks().every(track => track.readyState === "ended"));
   });
+}
+
+async function micTracksEnabled(page: Page) {
+  return page.evaluate(() => {
+    const streams = (window as any).__listenerTestStreams as MediaStream[];
+    return streams.length > 0 && streams.every(stream => stream.getAudioTracks().every(track => track.enabled));
+  });
+}
+
+async function publishScholarSpeaking(page: Page, room: string, token: string, speaking: boolean) {
+  return page.evaluate(({ roomId, capability, active }) => new Promise<void>((resolve, reject) => {
+    const win = window as any;
+    let ws = win.__scholarSignalSocket as WebSocket | undefined;
+    const url = new URL(`/ws/${encodeURIComponent(roomId)}`, location.origin);
+    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+    url.searchParams.set("role", "tv"); url.searchParams.set("token", capability);
+    if (!ws || ws.readyState > WebSocket.OPEN) {
+      ws = new WebSocket(url); win.__scholarSignalSocket = ws;
+    }
+    const timeout = setTimeout(() => reject(new Error("TV speaking state was not acknowledged.")), 8000);
+    const onMessage = (event: MessageEvent) => {
+      const packet = JSON.parse(event.data);
+      if (packet.type === "error") { clearTimeout(timeout); reject(new Error(packet.message)); }
+      if (packet.type === "state" && packet.data?.scholar_speaking === active) {
+        clearTimeout(timeout); ws?.removeEventListener("message", onMessage); resolve();
+      }
+    };
+    ws.addEventListener("message", onMessage);
+    if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: "scholar.speaking", speaking: active }));
+    else ws.addEventListener("open", () => ws?.send(JSON.stringify({ type: "scholar.speaking", speaking: active })), { once: true });
+  }), { roomId: room, capability: token, active: speaking });
 }
 
 test("consecutive finalized microphone clips independently decode", async ({ page }) => {
@@ -140,7 +171,7 @@ test("lobby reset stops live capture and Resume clears a stale confirmation", as
     { room: created.room_id, organizerToken: token });
   organizer.on("dialog", dialog => dialog.accept());
   await organizer.goto(`/?view=organizer&room=${created.room_id}`);
-  const guest = await interceptedMicrophoneGuest(page, created.room_id);
+  const guest = await interceptedMicrophoneGuest(page, { room_id: created.room_id, organizer_token: token });
   expect(guest.roomId).toBe(created.room_id);
 
   await page.getByRole("button", { name: "Enable microphone" }).click();
@@ -177,4 +208,20 @@ test("terminal microphone errors stop capture and keep their explanation visible
   await expect(page.getByText("Microphone transcription is disabled. Use typed observation or configure paid transcription.")).toBeVisible({ timeout: 8000 });
   await expect.poll(() => micTracksEnded(page)).toBe(true);
   await expect(page.getByRole("button", { name: "Enable microphone" })).toBeVisible();
+});
+
+test("authorized Lewis speaking state suppresses and resumes guest microphone capture", async ({ page }) => {
+  const guest = await interceptedMicrophoneGuest(page);
+  await page.getByRole("button", { name: "Enable microphone" }).click();
+  await expect(page.getByText(/Microphone live/)).toBeVisible();
+  await expect.poll(() => micTracksEnabled(page)).toBe(true);
+  await publishScholarSpeaking(page, guest.roomId, guest.organizerToken!, true);
+  await expect.poll(() => micTracksEnabled(page)).toBe(false);
+  await expect(page.getByText("Microphone paused while the detective speaks.")).toBeVisible();
+  await publishScholarSpeaking(page, guest.roomId, guest.organizerToken!, false);
+  await expect.poll(() => micTracksEnabled(page)).toBe(true);
+  await expect(page.getByText(/Microphone live/)).toBeVisible();
+  await page.evaluate(() => (window as any).__scholarSignalSocket?.close());
+  await page.getByRole("button", { name: "Stop", exact: true }).click();
+  await expect.poll(() => micTracksEnded(page)).toBe(true);
 });

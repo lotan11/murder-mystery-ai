@@ -20,7 +20,7 @@ test('approved Scholar and Lewis speak public game dialogue at approved pace',as
   const state=await(await tv.request.get(`/api/rooms/${room}/state`)).json();
   await route.fulfill({json:{provider:'kokoro-onnx',voice:'bm_lewis',text:state.dialogue,revision:state.revision,duration_ms:8000,content_type:'audio/wav',audio_base64:clip(),playback_rate:1.05}});
  });
- await tv.goto(`/?view=tv&room=${room}#speech=test-capability`);
+ await tv.goto(`/?view=tv&room=${room}`);
  await expect(tv.getByLabel('TV presentation')).toHaveValue('scholar');
  await expect(tv.getByRole('button',{name:'Enable Lewis voice',exact:true})).toBeEnabled();
  expect(calls).toBe(0);

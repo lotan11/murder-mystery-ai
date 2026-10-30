@@ -24,10 +24,8 @@ function createCaptureRuntime({ permission, current = () => true } = {}) {
       this.onstop?.();
     }
   }
-  const stream = {
-    getTracks: () => [{ stop() { tracksStopped++; } }],
-    getAudioTracks: () => [{ getSettings: () => ({ echoCancellation: true }) }],
-  };
+  const audioTrack = { enabled: true, stop() { tracksStopped++; }, getSettings: () => ({ echoCancellation: true }) };
+  const stream = { getTracks: () => [audioTrack], getAudioTracks: () => [audioTrack] };
   const context = {
     exports: {},
     require() { return {}; },
@@ -48,6 +46,7 @@ function createCaptureRuntime({ permission, current = () => true } = {}) {
       if (timer) { timers.delete(id); timer.callback(); }
     },
     isCurrent: current,
+    get audioTrackEnabled() { return audioTrack.enabled; },
     get tracksStopped() { return tracksStopped; },
     timerCount: () => timers.size,
   };
@@ -97,4 +96,22 @@ test("a segment finalized after Stop is discarded", async () => {
   current = false;
   stop();
   assert.equal(clips.length, 0);
+});
+
+test("detective speech gates microphone capture and resumes with a fresh clip", async () => {
+  const runtime = createCaptureRuntime();
+  const clips = [];
+  const stop = await runtime.open({ isCurrent: runtime.isCurrent, onChunk: chunk => clips.push(chunk), onError: assert.fail, onStatus() {} });
+  stop.setSuppressed(true);
+  assert.equal(runtime.audioTrackEnabled, false);
+  assert.equal(runtime.timerCount(), 0);
+  assert.equal(clips.length, 0);
+  stop.setSuppressed(false);
+  assert.equal(runtime.audioTrackEnabled, true);
+  assert.equal(runtime.recorders.length, 2);
+  runtime.advance(3000);
+  runtime.advance(0);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(clips.length, 1);
+  stop();
 });

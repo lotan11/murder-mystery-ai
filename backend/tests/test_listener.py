@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from backend.listener import (TranscriptionConfig, OpenAITranscriber, accept_utterance, empty_memory,
                               estimated_cost_usd, load_transcription_config)
 from backend.main import Room, app, rooms
+from backend.local_speech import tv_speech_token
 from backend.storage import RoomStore
 
 
@@ -154,6 +155,37 @@ def test_disabled_transcription_reports_listener_error_without_calling_provider(
         assert event["code"] == "disabled"
         assert "Microphone transcription is disabled" in event["message"]
         assert room.listener["transcription_calls"] == 0
+
+
+def test_authorized_tv_speaking_state_suppresses_capture_and_clears_on_disconnect(client):
+    created = client.post("/api/rooms").json()
+    room_id = created["room_id"]
+    room = rooms[room_id]
+    with client.websocket_connect(f"/ws/{room_id}?role=guest") as guest:
+        join(guest, "Echo Test Guest")
+        revision = room.revision
+        with client.websocket_connect(f"/ws/{room_id}?role=tv&token={tv_speech_token(room)}") as tv:
+            assert tv.receive_json()["type"] == "state"
+            tv.send_json({"type": "scholar.speaking", "speaking": True})
+            while True:
+                event = guest.receive_json()
+                if event.get("type") == "state" and event["data"].get("scholar_speaking") is True:
+                    break
+            assert len(room.speech_clients) == 1
+            assert room.revision == revision
+            assert "speech_clients" not in room.record()
+            with client.websocket_connect(f"/ws/{room_id}?role=tv") as untrusted_tv:
+                reconnect_snapshot = untrusted_tv.receive_json()
+                assert reconnect_snapshot["data"]["scholar_speaking"] is True
+                untrusted_tv.send_json({"type": "scholar.speaking", "speaking": False})
+                assert untrusted_tv.receive_json()["type"] == "error"
+                assert room.speech_clients
+            assert room.snapshot()["scholar_speaking"] is True
+        while True:
+            event = guest.receive_json()
+            if event.get("type") == "state" and event["data"].get("scholar_speaking") is False:
+                break
+        assert not room.speech_clients
 
 
 @pytest.mark.parametrize("interruption", ["stop", "reset"])

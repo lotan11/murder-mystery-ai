@@ -1,4 +1,5 @@
 export type AudioChunk = { blob: Blob; mimeType: string; durationSeconds: number };
+export type ListenerCaptureStop = (() => void) & { setSuppressed: (suppressed: boolean) => void };
 
 /**
  * Captures standalone, independently decodable WebM/Ogg/MP4 clips. A MediaRecorder
@@ -11,7 +12,7 @@ export async function openListenerCapture(options: {
   onError: (message: string) => void;
   onStatus: (echoCancellation: boolean) => void;
   segmentMilliseconds?: number;
-}): Promise<() => void> {
+}): Promise<ListenerCaptureStop> {
   const stream = await navigator.mediaDevices.getUserMedia({
     audio: {
       echoCancellation: { ideal: true },
@@ -20,10 +21,11 @@ export async function openListenerCapture(options: {
     },
   });
   let stopped = false;
+  let suppressed = false;
   let recorder: MediaRecorder | null = null;
   let timer: ReturnType<typeof setTimeout> | null = null;
   let delivery: Promise<void> = Promise.resolve();
-  const stop = () => {
+  const stop = (() => {
     if (stopped) return;
     stopped = true;
     if (timer) clearTimeout(timer);
@@ -32,6 +34,18 @@ export async function openListenerCapture(options: {
     recorder = null;
     if (active?.state === "recording") active.stop();
     stream.getTracks().forEach((track) => track.stop());
+  }) as ListenerCaptureStop;
+  stop.setSuppressed = (value) => {
+    if (stopped || suppressed === value) return;
+    suppressed = value;
+    stream.getAudioTracks().forEach((track) => { track.enabled = !value; });
+    if (value) {
+      if (timer) clearTimeout(timer);
+      timer = null;
+      if (recorder?.state === "recording") recorder.stop();
+    } else if (!recorder && options.isCurrent()) {
+      recordSegment();
+    }
   };
   if (!options.isCurrent()) {
     stop();
@@ -63,7 +77,7 @@ export async function openListenerCapture(options: {
       recorder = active;
       const segmentStarted = performance.now();
       active.ondataavailable = (event) => {
-        if (stopped || !options.isCurrent() || !event.data.size) return;
+        if (stopped || suppressed || !options.isCurrent() || !event.data.size) return;
         const seconds = Math.round(((performance.now() - segmentStarted) / 1000) * 10) / 10;
         const chunk = {
           blob: event.data,
@@ -71,7 +85,7 @@ export async function openListenerCapture(options: {
           durationSeconds: Math.max(0.5, Math.min(5, seconds)),
         };
         delivery = delivery.then(async () => {
-          if (!stopped && options.isCurrent()) await options.onChunk(chunk);
+          if (!stopped && !suppressed && options.isCurrent()) await options.onChunk(chunk);
         }).catch(() => {
           if (!stopped && options.isCurrent()) options.onError("An audio clip could not be prepared for delivery.");
         });
@@ -82,8 +96,9 @@ export async function openListenerCapture(options: {
       };
       active.onstop = () => {
         if (recorder === active) recorder = null;
-        if (!stopped && options.isCurrent()) timer = setTimeout(recordSegment, 0);
-        else stop();
+        if (stopped) return;
+        if (!options.isCurrent()) { stop(); return; }
+        if (!suppressed) timer = setTimeout(recordSegment, 0);
       };
       active.start();
       timer = setTimeout(() => {

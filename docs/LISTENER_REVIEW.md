@@ -73,3 +73,9 @@ The main Work follow-up review found three additional integration defects: a roo
 Local verification after these repairs: 365 backend passed/3 skipped, 5 main-review probes passed, 25 client passed, build passed and all24 browser scenarios passed. No paid transcription was called. A physical microphone test has not occurred. The branch remains unmerged until remote CI and main-team combined integration checks pass; any device-specific or live-provider acceptance should use explicitly configured credentials and a deliberate test session.
 
 This review does not change the November4 custom-avatar gate or November10 integration deadline. Scholar visual work remains the critical path; listener integration must not destabilize the playable portrait/Lewis baseline.
+
+## October 30 follow-up — detective speech echo gate
+
+The pinned review's Lewis continuity test proved listener state changes do not restart narration, but it did not prove that nearby detective audio could not be transcribed. The guest microphone is now gated by an authenticated TV `scholar.speaking` signal. While Lewis, animated local speech, or browser speech plays, the guest MediaStream audio tracks are disabled and the in-flight segment is discarded; capture resumes with a fresh recorder once playback ends. The projected `scholar_speaking` flag is transient, omitted from durable records and does not increment narration revision.
+
+Regression checks: TV capability authorization and disconnect cleanup; capture mute/drop/resume unit test; browser run with a live synthetic mic and local WebSocket TV signal; approved Lewis playback browser scenario. Current local suites:366backend passed/3 skipped; five offline review probes;27client passed; production build; all25browser scenarios passed. This remains synthetic-device/local-speech verification only. Remote CI and main Work review for this follow-up are pending.

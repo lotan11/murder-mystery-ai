@@ -35,6 +35,7 @@ export type RoomState = {
   act: number;
   paused: boolean;
   revision: number;
+  scholar_speaking?: boolean;
   guests: {
     id: string;
     name: string;
@@ -123,6 +124,7 @@ export function decodeState(raw: string): {
         Number.isInteger(data.revision) &&
         Number(data.revision) >= 0 &&
         typeof data.paused === "boolean" &&
+        (data.scholar_speaking === undefined || typeof data.scholar_speaking === "boolean") &&
         Array.isArray(data.guests) &&
         data.guests.every(
           (guest) =>

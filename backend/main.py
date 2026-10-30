@@ -19,7 +19,7 @@ from .characters import CHARACTERS
 from .ai_dialogue import load_config, OpenAIPlanner, PlannerError
 from .audition import router as audition_router
 from .casting import router as casting_router
-from .local_speech import LocalSpeechRenderer, create_router as local_speech_router
+from .local_speech import LocalSpeechRenderer, create_router as local_speech_router, tv_speech_token
 from .scholar_speech import ScholarSpeechRenderer, create_router as scholar_speech_router
 from .listener import (OpenAITranscriber, TranscriptionError, empty_memory,
                        load_transcription_config, public_usage, accept_utterance,
@@ -86,6 +86,7 @@ class Room:
     # Connection-scoped worker state is deliberately excluded from durable records.
     listener_sessions: dict = field(default_factory=dict, repr=False)
     listener_generation: int = field(default=0, repr=False)
+    speech_clients: set = field(default_factory=set, repr=False)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
     def record(self):
@@ -196,6 +197,7 @@ class Room:
         return {"room_id": self.room_id, "title": TITLE, "act": self.act,
                 "phase": ["Lobby", "The discovery", "The contradictions", "The accusation", "Case closed"][self.act],
                 "paused": self.paused, "revision": self.revision,
+                "scholar_speaking": bool(self.speech_clients),
                 "guests": [{"id": k, "name": v["name"], "character_id": self.assignments[k],
                             "character_name": CHARACTERS[self.assignments[k]]["name"], "introduced": k in self.introductions}
                            for k, v in self.guests.items()],
@@ -654,6 +656,20 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                     msg = json.loads(packet["text"])
                 if not isinstance(msg, dict):
                     raise ValueError("Expected an object command.")
+                if msg.get("type") == "scholar.speaking":
+                    if role != "tv" or not (token_matches(token, room.organizer_token) or token_matches(token, tv_speech_token(room))):
+                        raise ValueError("An authorized TV speech credential is required to report detective playback.")
+                    speaking = msg.get("speaking")
+                    if type(speaking) is not bool:
+                        raise ValueError("Detective speaking state must be a boolean.")
+                    was_speaking = bool(room.speech_clients)
+                    if speaking:
+                        room.speech_clients.add(ws)
+                    else:
+                        room.speech_clients.discard(ws)
+                    if was_speaking != bool(room.speech_clients):
+                        await broadcast(room)
+                    continue
                 if session["pending_audio"] is not None and msg.get("type") != "listener.audio":
                     session["pending_audio"] = None
                 if msg.get("type") in ("listener.start", "listener.resume", "listener.mute", "listener.stop", "listener.audio", "listener.transcript", "listener.confirm_transcript"):
@@ -833,6 +849,10 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
     except WebSocketDisconnect:
         pass
     finally:
+        was_speaking = bool(room.speech_clients)
+        room.speech_clients.discard(ws)
+        if was_speaking != bool(room.speech_clients):
+            await broadcast(room)
         _invalidate_listener_session(session, stop=True)
         room.listener_sessions.pop(ws, None)
         room.clients.discard(ws)

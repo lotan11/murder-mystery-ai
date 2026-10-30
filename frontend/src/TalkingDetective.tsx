@@ -295,7 +295,7 @@ function isLocalSpeech(value: unknown): value is LocalSpeech {
 /** Takes public narration scalars only: private guest cards cannot enter speech requests. */
 export function useLocalDetectivePerformance(
   options: LocalPerformanceOptions,
-): { avatar: ReactNode; controls: ReactNode; stop: () => void } {
+): { avatar: ReactNode; controls: ReactNode; speaking: boolean; stop: () => void } {
   const viewer = useRef<TalkingDetectiveHandle>(null),
     request = useRef<AbortController | null>(null);
   const generation = useRef(0),
@@ -304,6 +304,7 @@ export function useLocalDetectivePerformance(
     enabledRef = useRef(false);
   latest.current = options;
   const [enabled, setEnabled] = useState(false),
+    [speaking, setSpeaking] = useState(false),
     [voice, setVoice] = useState<"david" | "zira">("zira"),
     [loading, setLoading] = useState(false);
   const [available, setAvailable] = useState<boolean | null>(null),
@@ -522,6 +523,7 @@ export function useLocalDetectivePerformance(
     available === true;
   return {
     stop,
+    speaking,
     avatar: options.animated ? (
       <>
         <TalkingDetective
@@ -529,6 +531,7 @@ export function useLocalDetectivePerformance(
           label="TalkingHead detective"
           onModelState={setModelState}
           onProgress={setProgress}
+          onSpeakingChange={setSpeaking}
           onComplete={() =>
             setMessage("Line finished. Listening for the next public dialogue.")
           }

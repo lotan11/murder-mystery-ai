@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Stage from "./Stage";
 import { useScholarPerformance } from "./ScholarPerformance";
 import { useLocalDetectivePerformance } from "./TalkingDetective";
-import { openListenerCapture } from "./listenerAudio";
+import { openListenerCapture, type ListenerCaptureStop } from "./listenerAudio";
 import {
   decodePrivate,
   decodeState,
@@ -61,11 +61,13 @@ export default function App() {
   const [listening, setListening] = useState(false),
     [muted, setMuted] = useState(false),
     [listenerStatus, setListenerStatus] = useState("Microphone is off.");
+  const [browserSpeechActive, setBrowserSpeechActive] = useState(false);
   const [observation, setObservation] = useState("");
   const [listenerConfirmation, setListenerConfirmation] = useState<{ id: string; text: string } | null>(null);
   const [confirmedSpeaker, setConfirmedSpeaker] = useState("");
-  const listenerError = useRef<string | null>(null);
-  const recorderStop = useRef<(() => void) | null>(null), listenerGeneration = useRef(0),
+  const listenerError = useRef<string | null>(null), detectiveSpeaking = useRef(false), scholarSpeaking = useRef(false),
+    microphoneEchoCancellation = useRef(false);
+  const recorderStop = useRef<ListenerCaptureStop | null>(null), listenerGeneration = useRef(0),
     listenerSource = useRef<"microphone" | "typed" | null>(null);
   const animated = presentation === "animated";
   const privateRole = useRef(""),
@@ -79,7 +81,7 @@ export default function App() {
   animatedRef.current = view === "tv" && presentation !== "original";
   useEffect(() => {
     voiceRef.current = voice;
-    if (!voice) window.speechSynthesis?.cancel();
+    if (!voice) { window.speechSynthesis?.cancel(); setBrowserSpeechActive(false); }
   }, [voice]);
   useEffect(() => {
     if (!room || (view !== "organizer" && view !== "tv")) return;
@@ -103,9 +105,10 @@ export default function App() {
     let closed = false,
       timer: ReturnType<typeof setTimeout>,
       attempt = 0;
-    const token =
-      view === "organizer"
-        ? localStorage.getItem(`organizer:${room}`) || ""
+    const token = view === "organizer"
+      ? localStorage.getItem(`organizer:${room}`) || ""
+      : view === "tv"
+        ? tvSpeechToken || localStorage.getItem(`organizer:${room}`) || ""
         : "";
     const connect = () => {
       if (closed) return;
@@ -124,6 +127,8 @@ export default function App() {
       ws.onopen = () => {
         attempt = 0;
         setStatus("Live");
+        if (view === "tv" && token)
+          ws.send(JSON.stringify({ type: "scholar.speaking", speaking: scholarSpeaking.current }));
       };
       ws.onmessage = (e) => {
         let message;
@@ -199,13 +204,21 @@ export default function App() {
           setRequestNotice("");
         }
         if (result.state) {
+          detectiveSpeaking.current = result.state.scholar_speaking === true;
+          recorderStop.current?.setSuppressed(detectiveSpeaking.current);
+          if (recorderStop.current && listenerSource.current === "microphone")
+            setListenerStatus(detectiveSpeaking.current
+              ? "Microphone paused while the detective speaks."
+              : microphoneEchoCancellation.current
+                ? "Microphone live · device echo cancellation enabled."
+                : "Microphone live · use headphones or mute the TV to prevent echo.");
           if (
             lastSpeechRevision.current !== result.state.revision ||
             result.state.paused
           )
             localSpeechStop.current();
           lastSpeechRevision.current = result.state.revision;
-          if (result.state.paused) window.speechSynthesis?.cancel();
+          if (result.state.paused) { window.speechSynthesis?.cancel(); setBrowserSpeechActive(false); }
           if (
             previousAct.current !== null &&
             previousAct.current !== 0 &&
@@ -229,6 +242,9 @@ export default function App() {
             speechSynthesis.cancel();
             const speech = new SpeechSynthesisUtterance(result.state.dialogue);
             speech.rate = 0.93;
+            speech.onstart = () => setBrowserSpeechActive(true);
+            speech.onend = () => setBrowserSpeechActive(false);
+            speech.onerror = () => setBrowserSpeechActive(false);
             speechSynthesis.speak(speech);
           }
           lastSpoken.current = result.state.dialogue;
@@ -247,7 +263,7 @@ export default function App() {
         setListening(false); setMuted(false);
         setListenerStatus("Connection closed. Reconnect and opt in to listen again.");
         localSpeechStop.current();
-        window.speechSynthesis?.cancel();
+        window.speechSynthesis?.cancel(); setBrowserSpeechActive(false);
         setJoined(false);
         setPrivateState(null);
         setPrivateVisible(false);
@@ -273,9 +289,9 @@ export default function App() {
       localSpeechStop.current();
       setPrivateState(null);
       setPrivateVisible(false);
-      window.speechSynthesis?.cancel();
+      window.speechSynthesis?.cancel(); setBrowserSpeechActive(false);
     };
-  }, [room, view]);
+  }, [room, view, tvSpeechToken]);
   function send(message: object) {
     if (socket.current?.readyState !== WebSocket.OPEN) {
       setError("You are offline. Reconnect before sending.");
@@ -301,13 +317,20 @@ export default function App() {
     try {
       const stop = await openListenerCapture({
         isCurrent: () => generation === listenerGeneration.current && socket.current?.readyState === WebSocket.OPEN,
-        onStatus: (echoCancellation) => setListenerStatus(echoCancellation ? "Microphone live · device echo cancellation enabled." : "Microphone live · use headphones or mute the TV to prevent echo."),
+        onStatus: (echoCancellation) => {
+          microphoneEchoCancellation.current = echoCancellation;
+          setListenerStatus(detectiveSpeaking.current
+            ? "Microphone paused while the detective speaks."
+            : echoCancellation
+              ? "Microphone live · device echo cancellation enabled."
+              : "Microphone live · use headphones or mute the TV to prevent echo.");
+        },
         onError: (reason) => { if (generation === listenerGeneration.current) stopListener(false, reason); },
         onChunk: async ({ blob, mimeType, durationSeconds }) => {
-          if (generation !== listenerGeneration.current || !blob.size || socket.current?.readyState !== WebSocket.OPEN) return;
+          if (generation !== listenerGeneration.current || detectiveSpeaking.current || !blob.size || socket.current?.readyState !== WebSocket.OPEN) return;
           try {
             const payload = await blob.arrayBuffer();
-            if (generation !== listenerGeneration.current || socket.current?.readyState !== WebSocket.OPEN) return;
+            if (generation !== listenerGeneration.current || detectiveSpeaking.current || socket.current?.readyState !== WebSocket.OPEN) return;
             socket.current.send(JSON.stringify({ type: "listener.audio", duration_seconds: durationSeconds, mime_type: mimeType }));
             socket.current.send(payload);
           } catch {
@@ -317,6 +340,9 @@ export default function App() {
       });
       if (generation !== listenerGeneration.current || socket.current?.readyState !== WebSocket.OPEN) { stop(); return; }
       recorderStop.current = stop;
+      stop.setSuppressed(detectiveSpeaking.current);
+      if (detectiveSpeaking.current)
+        setListenerStatus("Microphone paused while the detective speaks.");
     } catch {
       if (generation === listenerGeneration.current) {
         stopListener(false, "Microphone permission was unavailable. You can continue with typed observations.");
@@ -405,6 +431,12 @@ export default function App() {
         : "",
     active: view === "tv" && presentation === "scholar",
   });
+  scholarSpeaking.current = localPerformance.speaking || scholarPerformance.speaking || browserSpeechActive;
+  useEffect(() => {
+    const signalToken = tvSpeechToken || localStorage.getItem(`organizer:${room}`) || "";
+    if (view === "tv" && signalToken && socket.current?.readyState === WebSocket.OPEN)
+      socket.current.send(JSON.stringify({ type: "scholar.speaking", speaking: scholarSpeaking.current }));
+  }, [room, view, tvSpeechToken, localPerformance.speaking, scholarPerformance.speaking, browserSpeechActive]);
   localSpeechStop.current = () => {
     localPerformance.stop();
     scholarPerformance.stop();
@@ -415,7 +447,7 @@ export default function App() {
     animatedRef.current = value !== "original";
     voiceRef.current = false;
     setVoice(false);
-    window.speechSynthesis?.cancel();
+    window.speechSynthesis?.cancel(); setBrowserSpeechActive(false);
   }
   const control = (action: string) => send({ type: "control", action });
   function link(role: View) {
