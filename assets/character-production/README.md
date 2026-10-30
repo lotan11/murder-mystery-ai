@@ -84,3 +84,7 @@ Fitted facial groom: scripts/refine-scholar-groom.py is a bound-study helper, no
 ## Cap coverage development repair
 
 The bound-study builder calls `scripts/refine-scholar-crown.py` for a conservative cap-only projection/weight transfer. Same topology/material, no new hair geometry; actual head and facial targets remain unchanged. `crown-validation.json` retains positive smooth-normal fit and unresolved sharp ear-edge raw triangle disagreements. This repairs visible crown holes, not the unfinished helmet hairline or final silver hair design. Review tracked `docs/assets/crown-before/after-front/profile.png` and the lab Face close-up at multiple angles.
+
+## Restrained iris material study
+
+The bound builder calls `scripts/refine-scholar-eyes.py`: project-authored512px slate-grey iris albedo on newUV1, preservingUV0 and actual eye/pupil/sclera anatomy. SourcePNG is under eye-materials/; exact hash, bounds and limitations are in eye-material-validation.json. Five images now embed in the GLB (coat,three skin,one iris). This is supported material detail, not finished eyes, gaze/cornea or portrait likeness.

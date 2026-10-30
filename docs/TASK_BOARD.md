@@ -231,3 +231,7 @@ PR2 0b2e809: scoped review clears previously reported reset/Resume/error defects
 PR2 reviewed0b2e809: all previously reported findings cleared; independent370backend/review,25client,build,24browser checks pass (3Windows skips). Remote CI pending; no merge/activation. Actual device/provider acceptance stays separate from offline integration.
 
 PR2 0b2e809 remote verification: both CI40996214412/40996209236 pass. Combined integration review cleared; PR remains unmerged.
+
+## Iris material refinement — October29
+
+Completed restrained512px radial iris albedo and supportedUV1 binding on the separate weighted Scholar. Actual front/profile before/after reviewed; eye geometry/pupils/sclera and all head/skin/rig/groom remain unchanged. Browser decoding and geometry/material guards accompany delivery. This reduces flat cyan appearance; heavy eyelids, anatomical likeness and premium eye finish remain open. Next P0 remains silver-hair silhouette/groom and portrait-matched face; tailoring/oral/perceived speech quality also remain. November4 gate/November10 fallback unchanged.

@@ -96,3 +96,7 @@ The isolated weighted Scholar study now repairs visible scalp-cap gaps without c
 ## Listener review boundary — October 29
 
 The separately developed listener is not an integrated product feature. Review now reproduces cancellation, audio-framing, claim-correctness and narration-continuity defects; see LISTENER_REVIEW.md. Consent, truthful capture state, bounded validated audio and no stale speech/transcripts across Stop/pause/reset are required before adoption. Existing scripted mystery and approved portrait/liveLewis remain the demonstration baseline.
+
+## Scholar iris material increment — October29
+
+The separate weighted development rig now uses project-authored slate-grey radial iris color on existing eye geometry. Actual iris/pupil/white positions and sizes remain unchanged; no gaze rig, corneal volume or final-eye approval is implied. The approved game portrait/liveLewis(+5%) remains the active presentation.

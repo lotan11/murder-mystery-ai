@@ -1,6 +1,6 @@
 {
   "file": "scholar-rig-study.glb",
-  "bytes": 13266176,
+  "bytes": 13424544,
   "mesh_count": 16,
   "vertices": 119835,
   "triangles": 177239,
@@ -213,7 +213,11 @@
       {
         "index": 17,
         "name": "Slate blue grey iris",
-        "base_color_texture": null,
+        "base_color_texture": {
+          "texture_index": 4,
+          "image_index": 4,
+          "tex_coord": 1
+        },
         "normal_texture": null,
         "metallic_roughness_texture": null
       },
@@ -273,9 +277,21 @@
         "height": 1024,
         "bit_depth": 8,
         "color_type": 2
+      },
+      {
+        "index": 4,
+        "name": "iris-base-color",
+        "mime_type": "image/png",
+        "embedded": true,
+        "bytes": 146982,
+        "sha256": "0b1e32f595655fc84a85703ef44f34ac1eb2d93e8f1aa6099919f50f07f9cf5c",
+        "width": 512,
+        "height": 512,
+        "bit_depth": 8,
+        "color_type": 2
       }
     ],
-    "texture_count": 4
+    "texture_count": 5
   },
   "mesh_inventory": [
     {

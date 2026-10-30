@@ -49,6 +49,7 @@ type Inventory = {
   joints: number;
   skinnedMeshes: number;
   skinMaps: number;
+  irisMapInfo: string;
   morphs: string[];
   meshNames: string[];
   bytes: number;
@@ -380,7 +381,8 @@ export default function CharacterLab() {
         let meshes = 0,
           joints = 0,
           skinnedMeshes = 0,
-          skinMaps = 0;
+          skinMaps = 0,
+          irisMapInfo = "";
         const morphs = new Set<string>(),
           meshNames: string[] = [];
         gltf.scene.traverse((object) => {
@@ -393,6 +395,13 @@ export default function CharacterLab() {
                   return texture instanceof THREE.Texture && image?.width === 1024 && image?.height === 1024;
                 }).length;
                 skinMaps = Math.max(skinMaps, decodedMaps);
+              }
+              if (material instanceof THREE.MeshStandardMaterial && material.name === "Slate blue grey iris") {
+                const texture = material.map;
+                const image = texture?.image as {width?: number; height?: number} | undefined;
+                if (texture && image?.width && image?.height && texture.colorSpace === THREE.SRGBColorSpace) {
+                  irisMapInfo = `${image.width}x${image.height}/uv${texture.channel}/srgb`;
+                }
               }
             }
             meshNames.push(object.name || `Mesh ${meshes}`);
@@ -506,6 +515,7 @@ export default function CharacterLab() {
           joints,
           skinnedMeshes,
           skinMaps,
+          irisMapInfo,
           morphs: [...morphs].sort(),
           meshNames,
           bytes: bytes.byteLength,
@@ -679,6 +689,7 @@ export default function CharacterLab() {
               data-morph-active="0"
               data-morph-max="0"
               data-skin-map-count={inventory?.skinMaps || 0}
+              data-iris-map-info={inventory?.irisMapInfo || ""}
               data-mesh-count={inventory?.meshes || 0}
               data-joint-count={inventory?.joints || 0}
               data-morph-count={inventory?.morphs.length || 0}

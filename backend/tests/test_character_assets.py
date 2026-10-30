@@ -177,7 +177,7 @@ def test_baked_skin_maps_are_really_embedded_and_bound_to_the_runtime_material()
     report=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')
     inventory=report['material_inventory']
     skin=next(material for material in inventory['materials'] if material['name']=='Neutral aged skin blockout')
-    assert inventory['texture_count']==4 and len(inventory['images'])==4
+    assert inventory['texture_count']==5 and len(inventory['images'])==5
     for slot in ['base_color_texture','normal_texture','metallic_roughness_texture']:
         reference=skin[slot]
         assert reference is not None and reference['tex_coord']==0
@@ -271,3 +271,72 @@ def test_crown_repair_preserves_topology_and_reports_sharp_edge_limits():
     assert cap['vertices']==baseline['vertices']==evidence['referenced_vertices']
     assert cap['triangles']==baseline['triangles'] and cap['materials']==baseline['materials']
     assert not cap['morph_deformations']
+
+
+def test_iris_detail_is_embedded_on_actual_second_uv_without_changing_eyes():
+    import hashlib,json
+    evidence=json.loads((ROOT/'assets/character-production/eye-material-validation.json').read_text(encoding='utf-8'))
+    assert evidence['geometry_unchanged'] and evidence['eye_geometry_unchanged']
+    assert evidence['pupil_and_sclera_materials_unchanged'] and not evidence['pupil_diameter_changed']
+    assert not evidence['new_geometry'] and not evidence['new_bones_or_morphs']
+    assert evidence['original_uv0_preserved'] and evidence['uv_index']==1
+    assert len(evidence['islands'])==2
+    for island in evidence['islands']:
+        assert island['vertices']==610
+        assert all(.0048<radius<.005 for radius in island['radii_xz_m'])
+    texture=evidence['texture'];data=(ROOT/texture['path']).read_bytes()
+    assert hashlib.sha256(data).hexdigest()==texture['sha256']
+    assert texture['width']==texture['height']==512 and texture['lighting_painted'] is False
+    report=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')
+    inventory=report['material_inventory']
+    iris=next(item for item in inventory['materials'] if item['name']==evidence['material_name'])
+    binding=iris['base_color_texture'];assert binding['tex_coord']==1
+    image=inventory['images'][binding['image_index']]
+    assert image['embedded'] and image['width']==image['height']==512 and image['sha256']==texture['sha256']
+    def eye_components(path):
+        raw=path.read_bytes();offset=12;document=binary=None
+        while offset<len(raw):
+            size,kind=struct.unpack_from('<II',raw,offset);offset+=8
+            if kind==0x4e4f534a:document=json.loads(raw[offset:offset+size])
+            elif kind==0x004e4942:binary=raw[offset:offset+size]
+            offset+=size
+        result={}
+        for name in ['Slate blue grey iris','Pupils','Natural eye whites']:
+            index=next(i for i,item in enumerate(document['materials']) if item.get('name')==name)
+            points=[]
+            for mesh_index,mesh in enumerate(document['meshes']):
+                node_index=next(i for i,node in enumerate(document['nodes']) if node.get('mesh')==mesh_index)
+                translation=[0.,0.,0.]
+                while True:
+                    node=document['nodes'][node_index]
+                    assert 'matrix' not in node and 'rotation' not in node and 'scale' not in node
+                    translation=[a+b for a,b in zip(translation,node.get('translation',[0,0,0]))]
+                    parents=[i for i,parent in enumerate(document['nodes']) if node_index in parent.get('children',[])]
+                    if not parents:break
+                    node_index=parents[0]
+                for primitive in mesh['primitives']:
+                    if primitive.get('material')!=index:continue
+                    if name=='Slate blue grey iris' and path.name=='scholar-rig-study.glb':
+                        assert 'TEXCOORD_1' in primitive['attributes'] and 'TEXCOORD_0' in primitive['attributes']
+                    accessor=document['accessors'][primitive['attributes']['POSITION']]
+                    view=document['bufferViews'][accessor['bufferView']]
+                    start=view.get('byteOffset',0)+accessor.get('byteOffset',0);stride=view.get('byteStride',12)
+                    points.extend(tuple(x+t for x,t in zip(struct.unpack_from('<3f',binary,start+i*stride),translation)) for i in range(accessor['count']))
+            result[name]=points
+        return result
+    # Static eyes retain node translations; skinning bakes those into positions.
+    # Compare world-space geometry with a two-micrometre float-export tolerance.
+    import itertools,math
+    from collections import defaultdict
+    current=eye_components(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')
+    original=eye_components(ROOT/'frontend/public/character-lab/scholar-face-study.glb')
+    tolerance=.000002
+    for name,points in current.items():
+        expected=original[name];assert len(points)==len(expected)>0
+        bins=defaultdict(list)
+        key=lambda point:tuple(math.floor(x/tolerance) for x in point)
+        for point in expected:bins[key(point)].append(point)
+        for point in points:
+            cell=key(point)
+            candidates=(old for offset in itertools.product((-1,0,1),repeat=3) for old in bins[tuple(a+b for a,b in zip(cell,offset))])
+            assert any(sum((a-b)**2 for a,b in zip(point,old))<tolerance**2 for old in candidates)

@@ -40,3 +40,7 @@ A subsequent facial-only pass adds denser fitted beard/moustache ribbons, with a
 ## Follow-up: visible scalp holes repaired, hairstyle still open
 
 A cap-only anatomical surface fit closes the visible crown holes in matched front/profile comparisons. Existing cap topology/material and head anatomy are retained. This does not solve the helmet contour, coarse wire-like strands or ear coverage. Smooth-normal checks are positive at rest/head turn, but raw closest-triangle measurements still disagree at27/28 ear-edge vertices; all positions are retained in the evidence. Avoid claiming a watertight intersection-free hairstyle. Use the new Face close-up with Front/Profile/Three-quarter to review real exported geometry; its eye/crown/chin bounds fit desktop and phone viewports.
+
+## Follow-up: restrained iris material
+
+A project-authored512px slate-grey radial albedo replaces the weighted study's uniform cyan iris material. Actual before/after renders were accepted as a bounded, subtler material change; source eye geometry, pupils and sclera are preserved. SupportedUV1 texture delivery is verified, with originalUV0 retained. This does not resolve heavy lid contours, mannequin-like facial proportions, corneal volume/refraction, eye tracking or final likeness. Hair silhouette, face and tailoring remain the larger quality gaps.
