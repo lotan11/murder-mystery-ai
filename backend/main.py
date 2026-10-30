@@ -80,6 +80,9 @@ class Room:
     clients: set = field(default_factory=set)
     guest_clients: dict = field(default_factory=dict)
     listener: dict = field(default_factory=empty_memory)
+    # Connection-scoped worker state is deliberately excluded from durable records.
+    listener_sessions: dict = field(default_factory=dict, repr=False)
+    listener_generation: int = field(default=0, repr=False)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
     def record(self):
@@ -304,15 +307,46 @@ async def broadcast(room):
             room.clients.discard(client)
             room.guest_clients.pop(client, None)
 
+
+def _drain_listener_queue(queue):
+    while True:
+        try:
+            queue.get_nowait()
+            queue.task_done()
+        except asyncio.QueueEmpty:
+            return
+
+
+def _invalidate_listener_session(session, *, stop=False):
+    session["generation"] += 1
+    if stop:
+        session["listening"] = False
+    session["muted"] = True
+    session["pending_audio"] = None
+    _drain_listener_queue(session["queue"])
+    worker = session.get("worker")
+    if worker and not worker.done():
+        worker.cancel()
+    session["worker"] = None
+
+
+def _invalidate_room_listeners(room, *, stop=False):
+    room.listener_generation += 1
+    for session in list(room.listener_sessions.values()):
+        _invalidate_listener_session(session, stop=stop)
+
 def control(room, msg):
     action = msg.get("action")
     if action == "pause":
+        _invalidate_room_listeners(room)
         room.paused = True
         return
     if action == "resume":
+        _invalidate_room_listeners(room)
         room.paused = False
         return
     if action == "reset":
+        _invalidate_room_listeners(room, stop=True)
         room.act = 0
         room.paused = False
         room.revealed.clear()
@@ -496,9 +530,87 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
     room.clients.add(ws)
     if identity:
         room.guest_clients[ws] = identity
-    listening = False
-    muted = False
-    pending_audio = None
+    session = {"listening": False, "muted": False, "generation": 0,
+               "pending_audio": None, "queue": asyncio.Queue(maxsize=4), "worker": None}
+    if identity:
+        room.listener_sessions[ws] = session
+
+    def session_is_current(session_generation, room_generation):
+        return (session["generation"] == session_generation
+                and room.listener_generation == room_generation
+                and session["listening"] and not session["muted"]
+                and not room.paused and ws in room.clients)
+
+    async def transcribe_queued_audio():
+        current_task = asyncio.current_task()
+        try:
+            while True:
+                audio, metadata, session_generation, room_generation = await session["queue"].get()
+                try:
+                    if not session_is_current(session_generation, room_generation):
+                        continue
+                    duration = metadata["duration_seconds"]
+                    async with room.lock:
+                        if not session_is_current(session_generation, room_generation):
+                            continue
+                        memory = room.listener
+                        max_chunks = max(1, app.state.transcription_config.max_audio_seconds // 5)
+                        if (memory["audio_seconds"] + duration > app.state.transcription_config.max_audio_seconds
+                                or memory["transcription_calls"] >= max_chunks):
+                            await ws.send_json({"type": "listener.error", "code": "allowance_exhausted",
+                                                "message": "This room has reached its transcription time limit."})
+                            continue
+                        before = room.record()
+                        memory["audio_seconds"] += duration
+                        memory["transcription_calls"] += 1
+                        try:
+                            app.state.room_store.save(room.record())
+                        except StorageError:
+                            room.restore(before)
+                            await ws.send_json({"type": "listener.error", "code": "storage_unavailable",
+                                                "message": "Usage could not be reserved. No audio was sent for transcription."})
+                            continue
+                    await broadcast(room)
+                    try:
+                        transcript = await app.state.transcriber.transcribe(audio, metadata["mime_type"])
+                    except TranscriptionError as exc:
+                        if session_is_current(session_generation, room_generation):
+                            await ws.send_json({"type": "listener.error", "code": exc.reason,
+                                                "message": f"Transcription unavailable ({exc.reason}); no audio was retained."})
+                        continue
+                    if not transcript or not session_is_current(session_generation, room_generation):
+                        continue
+                    async with room.lock:
+                        if not session_is_current(session_generation, room_generation):
+                            continue
+                        before = room.record()
+                        try:
+                            result = accept_utterance(room.listener, guest_id=identity,
+                                guest_name=room.guests[identity]["name"], text=transcript,
+                                evidence=[item for item in EVIDENCE if item["id"] in room.revealed])
+                            app.state.room_store.save(room.record())
+                        except (StorageError, ValueError):
+                            room.restore(before)
+                            await ws.send_json({"type": "listener.error", "code": "storage_unavailable",
+                                                "message": "The transcript could not be saved; the room memory was unchanged."})
+                            continue
+                        await broadcast(room)
+                        for event in result["events"]:
+                            if not session_is_current(session_generation, room_generation):
+                                break
+                            for client in list(room.clients):
+                                try:
+                                    await client.send_json(event)
+                                except Exception:
+                                    room.clients.discard(client)
+                finally:
+                    session["queue"].task_done()
+        except asyncio.CancelledError:
+            raise
+        finally:
+            if session.get("worker") is current_task:
+                session["worker"] = None
+                room.listener_sessions.pop(ws, None) if ws not in room.clients else None
     try:
         await ws.send_json({"type": "state", "data": room.snapshot()})
         if identity:
@@ -510,41 +622,26 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                 if packet["type"] == "websocket.disconnect":
                     raise WebSocketDisconnect(packet.get("code", 1000))
                 if packet.get("text") is None:
-                    if role != "guest" or not identity or not listening or muted or room.paused:
+                    if role != "guest" or not identity or not session["listening"] or session["muted"] or room.paused:
                         raise ValueError("Start listening as a joined guest and unpause the investigation before sending audio.")
                     if not app.state.transcription_config.enabled:
                         raise ValueError("Microphone transcription is disabled. Use typed observation or configure paid transcription.")
-                    if pending_audio is None:
+                    if session["pending_audio"] is None:
                         raise ValueError("Audio chunks require listener.audio metadata first.")
-                    audio, metadata = packet.get("bytes"), pending_audio
-                    pending_audio = None
+                    audio, metadata = packet.get("bytes"), session["pending_audio"]
+                    session["pending_audio"] = None
                     if audio is None or len(audio) > MAX_AUDIO_BYTES:
                         raise ValueError("Audio chunk exceeds the 512 KB limit.")
-                    duration = metadata["duration_seconds"]
-                    async with room.lock:
-                        memory = room.listener
-                        max_chunks = max(1, app.state.transcription_config.max_audio_seconds // 5)
-                        if (memory["audio_seconds"] + duration > app.state.transcription_config.max_audio_seconds
-                                or memory["transcription_calls"] >= max_chunks):
-                            raise ValueError("This room has reached its transcription time limit.")
-                        before = room.record()
-                        memory["audio_seconds"] += duration
-                        memory["transcription_calls"] += 1
-                        try:
-                            app.state.room_store.save(room.record())
-                        except StorageError:
-                            room.restore(before)
-                            raise ValueError("Usage could not be reserved. No audio was sent for transcription.")
-                    await broadcast(room)
                     try:
-                        transcript = await app.state.transcriber.transcribe(audio, metadata["mime_type"])
-                    except TranscriptionError as exc:
-                        await ws.send_json({"type": "listener.error", "message": f"Transcription unavailable ({exc.reason}); no audio was retained."})
+                        session["queue"].put_nowait((audio, metadata, session["generation"], room.listener_generation))
+                    except asyncio.QueueFull:
+                        await ws.send_json({"type": "listener.error", "code": "backpressure",
+                                            "message": "The detective is still transcribing. This audio clip was dropped; pause briefly and continue."})
                         continue
-                    # Do not accept a delayed transcription after pause or opt-out.
-                    if not listening or muted or room.paused:
-                        continue
-                    msg = {"type": "listener.transcript", "text": transcript}
+                    if session["worker"] is None or session["worker"].done():
+                        room.listener_sessions[ws] = session
+                        session["worker"] = asyncio.create_task(transcribe_queued_audio())
+                    continue
                 else:
                     msg = json.loads(packet["text"])
                 if not isinstance(msg, dict):
@@ -556,26 +653,34 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                     if kind == "listener.start":
                         if msg.get("consent") is not True:
                             raise ValueError("Explicit consent is required before listening.")
-                        listening, muted = True, False
+                        if room.paused:
+                            raise ValueError("The investigation is paused.")
+                        _invalidate_listener_session(session, stop=True)
+                        session["listening"], session["muted"] = True, False
+                        room.listener_sessions[ws] = session
                     elif kind == "listener.resume":
                         if msg.get("consent") is not True:
                             raise ValueError("Explicit consent is required to resume listening.")
-                        listening, muted = True, False
+                        if room.paused:
+                            raise ValueError("Resume listening after the host resumes the investigation.")
+                        _invalidate_listener_session(session, stop=True)
+                        session["listening"], session["muted"] = True, False
+                        room.listener_sessions[ws] = session
                     elif kind == "listener.mute":
-                        muted = True
+                        _invalidate_listener_session(session)
                     elif kind == "listener.stop":
-                        listening, muted, pending_audio = False, True, None
+                        _invalidate_listener_session(session, stop=True)
                     elif kind == "listener.audio":
-                        if not listening or muted or room.paused:
+                        if not session["listening"] or session["muted"] or room.paused:
                             raise ValueError("Listening is not active.")
                         duration = msg.get("duration_seconds")
                         mime_type = msg.get("mime_type")
                         if (type(duration) not in (int, float) or not 0.5 <= duration <= 5
                                 or not isinstance(mime_type, str) or mime_type.lower() not in {"audio/webm", "audio/webm;codecs=opus", "audio/ogg;codecs=opus", "audio/mp4", "audio/mpeg"}):
                             raise ValueError("Audio metadata must specify a 0.5–5 second supported clip.")
-                        pending_audio = {"duration_seconds": int(duration + .5), "mime_type": mime_type.lower()}
+                        session["pending_audio"] = {"duration_seconds": int(duration + .5), "mime_type": mime_type.lower()}
                     elif kind == "listener.transcript":
-                        if not listening or muted or room.paused:
+                        if not session["listening"] or session["muted"] or room.paused:
                             raise ValueError("Start listening before submitting a transcript.")
                         observation = msg.get("text")
                         if not isinstance(observation, str) or not 2 <= len(observation.strip()) <= 1200:
@@ -586,7 +691,6 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                                 result = accept_utterance(room.listener, guest_id=identity,
                                     guest_name=room.guests[identity]["name"], text=observation,
                                     evidence=[item for item in EVIDENCE if item["id"] in room.revealed])
-                                room.revision += 1
                                 app.state.room_store.save(room.record())
                             except (StorageError, ValueError):
                                 room.restore(before)
@@ -602,7 +706,7 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
                                     except Exception:
                                         room.clients.discard(client)
                         continue
-                    await ws.send_json({"type": "listener.status", "listening": listening, "muted": muted,
+                    await ws.send_json({"type": "listener.status", "listening": session["listening"], "muted": session["muted"],
                                         "transcription": app.state.transcription_config.reason})
                     continue
                 if msg.get("type") == "dialogue":
@@ -676,6 +780,8 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
     except WebSocketDisconnect:
         pass
     finally:
+        _invalidate_listener_session(session, stop=True)
+        room.listener_sessions.pop(ws, None)
         room.clients.discard(ws)
         room.guest_clients.pop(ws, None)
 

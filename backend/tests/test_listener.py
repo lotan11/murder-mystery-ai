@@ -1,5 +1,8 @@
 """Consent, bounded transcript memory and the three-guest contradiction demonstration."""
+import asyncio
+import threading
 from contextlib import ExitStack
+from dataclasses import replace
 
 import pytest
 from fastapi.testclient import TestClient
@@ -94,6 +97,54 @@ def test_listener_consent_pause_and_binary_audio_requirements(client):
         ws.send_json({"type": "listener.transcript", "text": "A clue."})
         assert ws.receive_json()["type"] == "error"
         assert guest_id in rooms[room_id].guests
+
+
+@pytest.mark.parametrize("interruption", ["stop", "reset"])
+def test_delayed_transcription_is_cancelled_and_discarded_after_stop_or_reset(client, interruption):
+    created = client.post("/api/rooms").json()
+    room = rooms[created["room_id"]]
+    room.act = 1
+    app.state.room_store.save(room.record())
+    started, release, finished = threading.Event(), threading.Event(), threading.Event()
+
+    class DelayedTranscriber:
+        async def transcribe(self, *_args):
+            started.set()
+            try:
+                while not release.is_set():
+                    await asyncio.sleep(0.01)
+                return "Stale audio from the previous listening session."
+            finally:
+                finished.set()
+
+    app.state.transcriber = DelayedTranscriber()
+    app.state.transcription_config = replace(app.state.transcription_config, enabled=True, reason="ready")
+    with client.websocket_connect(f"/ws/{room.room_id}?role=organizer&token={created['organizer_token']}") as host:
+        assert host.receive_json()["type"] == "state"
+        with client.websocket_connect(f"/ws/{room.room_id}?role=guest") as guest:
+            join(guest, "Delayed Guest")
+            guest.send_json({"type": "listener.start", "consent": True, "source": "microphone"})
+            assert guest.receive_json()["type"] == "listener.status"
+            guest.send_json({"type": "listener.audio", "duration_seconds": 3, "mime_type": "audio/webm"})
+            guest.send_bytes(b"small injected clip")
+            assert started.wait(3), "transcription worker did not start"
+            if interruption == "stop":
+                guest.send_json({"type": "listener.stop"})
+            else:
+                host.send_json({"type": "control", "action": "reset"})
+                while True:
+                    packet = host.receive_json()
+                    if packet.get("type") == "state" and packet["data"]["act"] == 0:
+                        break
+                guest.send_json({"type": "listener.stop"})
+            while True:
+                packet = guest.receive_json()
+                if packet.get("type") == "listener.status" and packet["listening"] is False:
+                    break
+            release.set()
+            assert finished.wait(3), "cancelled transcription did not settle"
+            assert room.listener["utterances"] == []
+            assert all(item["text"] != "Stale audio from the previous listening session." for item in room.listener["utterances"])
 
 
 def test_transcription_stays_off_without_both_explicit_flags():
