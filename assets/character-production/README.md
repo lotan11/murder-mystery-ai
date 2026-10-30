@@ -92,3 +92,7 @@ The bound builder calls `scripts/refine-scholar-eyes.py`: project-authored512px 
 ## Core source asset reuse
 
 Included verifiedCC0 core source files:source-assets/makehuman-system/SOURCE.json. Fit hair with fit-scholar-hair-asset.py; refine skin color with refine-scholar-skin-color.py. Both are builder stages after iris/before pose checks. Canonical static/face-only models remain unchanged. Derivedhair RGBA/normal and refinedskincolor export as real images (seven total). Original cap is retained only in editable source; source overlap is measured and not certified intersection-free. Fullreview/recipe:docs/reviews/SCHOLAR_CORE_ASSETS_REVIEW.md.
+
+## Derived eyelid neutral refinement
+
+refine-scholar-eyelids.py runs after binding identity and before skin bake/crown/groom. It is an explicit419-vertex eye-local neutral correction, not a change to canonicalstatic/face-only source. eyelid-validation.json and eyelid-neutral-offsets.json bind exact reviewed input/target hashes, unchanged11morphdeltas/UV/weights/rig and declared before/after positions. Manifest hash normalizes UTF-8 line endings toLF. Tests preserve the original head multiset outside that support. Do not doubleapply; rebuild from face-study.blend. Existing original fullsource remains editable. Rebuilt skin normal/refinedcolor maps follow the modified surface; all modes/voice remain intact.

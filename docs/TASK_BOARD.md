@@ -258,3 +258,13 @@ Finalvalidation: main6de53db CI41061277059 green;317backend/3Windows skips,21cli
 Completed: reviewed/published local narration capture fix4646c5c to the existing listenerPR2;28client/build and30fullbrowser scenarios pass, including two new real fake-microphone regressions. Backend rerun/remoteCI follow. PR is still unmerged; current-main reconciliation and device acceptance remain.
 
 Character: rejected wider alpha-card facial groom after actual browser review (patch-like appearance despite valid weights/deformations). Retained a modest localized eyelid preview for guarded future integration; not in publicsource/GLB. See reviews/SCHOLAR_EYELID_GROOM_REVIEW.md. Next: integrate declared eyelid offsets before groom with strict original-head guards, then natural facial-groom/tailoring/oral work and perceived speech review. Existing approved portrait/liveLewis1.05 remains the game default. November4/10 risk persists; no new casting decision or spending needed.
+
+## October30 eyelid integration and disconnect reliability
+
+Completed: integrated reviewed localized eyelid correction before skin bake/groom, explicit419-vertex offset manifest and strict exported-head preservation test. Rebuilt weighted source/GLB/maps; actual8018neutral/closedblink andLewis1.05pitch/Stop verified.317backend/3Windows skips,16assetchecks,21client/build pass;20mainbrowser run finishing.
+
+ListenerPR2: deterministic disconnect cancellation race reproduced and repaired on existingbranch2c6ecde. Cleanup now precedes awaiting and recovery notification is shielded/bounded2s; new regression fails before and passes after.368branchbackend/3skips and18listener checks pass. Old4-hourCI canceled; newCI runs with60s diagnosticstack dumps and15minjob bound. AwaitCI/current-main integration; no merge/liveDBmigration.
+
+Next: natural facial-groom/likeness/tailoring/oral and perceived speech review. November4animatedreadiness andNovember10fallback baseline remain. No user input needed; no paidcalls/purchases.
+
+Final local main validation: all20browser scenarios pass in2.3minutes;317backend/3Windows skips,21client/build and16assetchecks pass. NewincrementCI follows push.

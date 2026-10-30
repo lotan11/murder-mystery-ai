@@ -204,7 +204,7 @@ def test_baked_skin_maps_are_really_embedded_and_bound_to_the_runtime_material()
     assert report['external_resources']==[] and report['joint_count']==64 and report['morph_target_count']==11
 
 
-def test_weighted_study_preserves_original_head_rest_positions_across_material_splits():
+def test_weighted_study_preserves_head_except_declared_local_eyelid_offsets():
     import json
     def head_points(path):
         data=path.read_bytes();offset=12;document=None;binary=None
@@ -223,7 +223,37 @@ def test_weighted_study_preserves_original_head_rest_positions_across_material_s
             start=view.get('byteOffset',0)+accessor.get('byteOffset',0);stride=view.get('byteStride',12)
             points.extend(tuple(round(value,6) for value in struct.unpack_from('<3f',binary,start+i*stride)) for i in range(accessor['count']))
         return sorted(points)
-    assert head_points(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')==head_points(ROOT/'frontend/public/character-lab/scholar-face-study.glb')
+    import hashlib, math
+    evidence_path=ROOT/'assets/character-production/eyelid-neutral-offsets.json'
+    evidence=json.loads(evidence_path.read_text())
+    original_path=ROOT/'frontend/public/character-lab/scholar-face-study.glb'
+    assert hashlib.sha256(original_path.read_bytes()).hexdigest()=='ef250f6058f241032327bd77105de35f313ca494e4e0b7ad82c5895ef7e6013b'
+    validation=json.loads((ROOT/'assets/character-production/eyelid-validation.json').read_text())
+    # JSON may be checked out with CRLF on Windows; the authoring manifest uses LF.
+    assert hashlib.sha256(evidence_path.read_bytes().replace(b'\r\n',b'\n')).hexdigest()==validation['neutral_offset_manifest']['sha256']
+    assert validation['changed_vertices']==419 and validation['morph_count']==11
+    assert validation['protected_data_before']==validation['protected_data_after']
+    assert validation['protected_lower_nose_lips_delta_m']==0
+    assert validation['other_mesh_geometry_unchanged']
+    assert validation['triangle_min_normal_dot']>.99
+    assert validation['neutral_offset_manifest']['six_decimal_mapping_ambiguities']==0
+    offsets=evidence['offsets']
+    assert len(offsets)==419
+    declared={}
+    for item in offsets:
+        before=tuple(round(value,6) for value in item['gltf_world_before'])
+        after=tuple(round(value,6) for value in item['gltf_world_after'])
+        assert before not in declared, 'Ambiguous neutral-offset coordinate mapping'
+        declared[before]=after
+        x,y,z=item['world_before']
+        assert .018<abs(x)<.046 and 1.602<z<1.642
+        delta=item['local_delta_float32']
+        assert 0<math.sqrt(sum(value*value for value in delta))<.000561
+    original=head_points(original_path)
+    # Preserve duplicates at UV seams/material splits, and every undeclared point.
+    assert set(declared)<=set(original)
+    expected=sorted(declared.get(point,point) for point in original)
+    assert head_points(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')==expected
 
 
 def test_fitted_facial_groom_has_actual_weighted_geometry_and_nonzero_mouth_targets():

@@ -322,3 +322,15 @@ Character work: selected community beard candidates excluded for conflicting ind
 Next: finish listenerCI/currentmain integration review, then integrate eyelid correction with explicit neutral-offset preservation guards and improve natural groom/tailoring/oral/perceived speech. No paidcalls, actualmicrophone, assetpurchase, publicdeployment or liveDBmigration. No claim of work between scheduled turns. Finished3D likeness remains the mainNovember10risk; November4readiness gate and playableportrait/realLewis1.05fallback remain protected.
 
 Backend follow-up: initial quiet local run stalled without a failing assertion and was terminated; diagnostic verbose rerun with30s stack timeout completed **367passed/3Windows skips in15.95s**. No backend code changed. This is branch-only scope; earlier374combined count included newer main assets and five review probes. RemoteCI41093819389 is still on backend tests, so readiness remains pending and the stall is not claimed fixed.
+
+## October30 scheduled run — guarded eyelid integration and listener disconnect repair
+
+During this run, integrated the reviewed419-vertex/max0.560045mm eyelid correction into the separate weighted Scholar before skinbake/groom. Added reproducible helper/sourcehash/protecteddata evidence and explicit per-vertex neutral offsets. The originalhead point-multiset guard now applies only that declared mapping, preserving all other points and seam/material multiplicities.11relative morphdeltas,UV/weights/eyes/rig/canonicalstudies preserved. Rebuilt maps/source/GLB retain64joints/11controls and7images; skin normal/refinedcolor rebaked for changed surface. No rejectedgroomcards included.
+
+Mainchecks:317backend pass/3Windows skips,16assetchecks,21clientchecks andproductionbuild pass;20browserrun finishing. Actual8018screenshots show neutral/fullyclosedblink; runtime3skinmaps/2hairmaps/512irisUV1, localLewis1.05pitchpreserved, Stopneutral/noaudio,0pageerrors/no roomcalls. All are developmentquality checks, not final likeness/fullviseme approval.
+
+Listener: canceled nearly4hour stalledCI41093819389. Independently reproduced a TVdisconnect cancellation race: final false-speaking broadcast and remaining cleanup could be interrupted. Published boundedshield/synchronouscleanup fix on existingPRbranch2c6ecde with fail-before/pass-after regression,368backendpass/3Windows skips and18listener checks. No exactoriginalCIstack, so do not claim proven solecause. Added60sdiagnosticstackdump/15minCIbound; newremoteCIpending. Prior30browserpass from4646c5c covers unchangedfrontend; fullremote rerun follows. PR remains unmerged and mainruntime/savedrooms are unchanged.
+
+Next: completeCI/combinedlistenerreview; improve naturalfacialgroom/likeness/tailoring/oral and perceivedspeech. November4character gate/November10finished-avatarrisk remain; playableapprovedportrait/liveLewis remains protected. No paidcalls/purchases/publicdeployment/liveDBmigration; no unattendedwork between scheduledruns is implied.
+
+Final local main validation: all20browser scenarios pass in2.3minutes;317backend/3Windows skips,21client/build and16assetchecks pass. NewincrementCI follows push.

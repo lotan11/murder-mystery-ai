@@ -22,8 +22,8 @@
   },
   "texture": {
     "path": "assets/character-production/skin-materials/skin-age-blend-color.png",
-    "sha256": "a1e8f76db269d7a1115b2198b962832531bfddf607014845da5e63fbb4fc2b11",
-    "bytes": 345370,
+    "sha256": "30e7354afb825bf16dd264ab2f6adeab63a9f9c347c55934e5c667dcd6825eaa",
+    "bytes": 345382,
     "width": 1024,
     "height": 1024,
     "colorspace": "sRGB"
@@ -57,8 +57,8 @@
     "resolution": 1024,
     "additional_lighting_baked": false
   },
-  "geometry_uv_weights_morph_sha256_before": "f6c2a210e6d5ef585d4e827175e392fbb7c8c3a9ebddad1fe003cc5c0a2fc7d8",
-  "geometry_uv_weights_morph_sha256_after": "f6c2a210e6d5ef585d4e827175e392fbb7c8c3a9ebddad1fe003cc5c0a2fc7d8",
+  "geometry_uv_weights_morph_sha256_before": "de01359eff1d6e2a9bc4c74e2666269d5f8cbbfb70f8e11ba47c320001eac326",
+  "geometry_uv_weights_morph_sha256_after": "de01359eff1d6e2a9bc4c74e2666269d5f8cbbfb70f8e11ba47c320001eac326",
   "geometry_unchanged": true,
   "uv_mapping_unchanged": true,
   "weights_morphs_material_assignments_unchanged": true,

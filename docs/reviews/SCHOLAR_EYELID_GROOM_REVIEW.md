@@ -21,3 +21,7 @@ Selected community beard candidates were also excluded: individual OBJ/MHCLO hea
 ## Schedule
 
 The existing game, real local Lewis voice at 1.05 playback pace and approved portrait remain the stable demonstration. Finished likeness, natural facial groom, tailoring, oral detail and perceived speech quality remain open. November 4 is the animated-character readiness gate; November 10 integration still depends on preserving the playable fallback.
+
+## Subsequent guarded integration
+
+The accepted eyelid preview is now integrated into the separate weighted study. Reproducible helper and explicit neutraloffset/protected-data evidence accompany the strict headmultiset guard; canonicalstatic/face-onlystudies stay unchanged. Actualbrowser [neutral](../assets/eyelid-runtime-neutral.png) and [closedblink](../assets/eyelid-runtime-blink.png) reviewed. LocalLewis1.05pitchpreserved/Stopneutral and all16assetchecks pass. Face/groom/wardrobe remain unfinished. The widercardgroom is still rejected.

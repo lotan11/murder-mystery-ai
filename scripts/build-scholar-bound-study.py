@@ -152,8 +152,13 @@ for obj in objects:
 neutral={obj.name:positions(obj) for obj in objects}
 report['binding_neutral_max_error_m']=max((a-b).length for name in rest for a,b in zip(rest[name],neutral[name]))
 if report['binding_neutral_max_error_m']>0.00001:raise RuntimeError('Binding changed neutral geometry')
-# Bake source skin detail into explicit maps supported by the browser's glTF material.
+# Explicitly declared localized neutral edit; preserve original binding proof above.
 import importlib.util
+eyelid_spec=importlib.util.spec_from_file_location('scholar_eyelid_refinement',ROOT/'scripts/refine-scholar-eyelids.py')
+eyelid_module=importlib.util.module_from_spec(eyelid_spec);eyelid_spec.loader.exec_module(eyelid_module)
+report['eyelids']=eyelid_module.refine_eyelids(head_mesh,source,ROOT,rig)
+rest[head_mesh.name]=positions(head_mesh)
+# Bake source skin detail into explicit maps supported by the browser's glTF material.
 skin_spec=importlib.util.spec_from_file_location('scholar_skin_bake',ROOT/'scripts/bake-scholar-skin.py')
 skin_module=importlib.util.module_from_spec(skin_spec);skin_spec.loader.exec_module(skin_module)
 report['skin_materials']=skin_module.bake_skin_materials(head_mesh,ROOT)

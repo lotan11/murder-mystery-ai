@@ -14,7 +14,7 @@
   "source_roughness": 0.6000000238418579,
   "baked_surface_pixels_including_margin": 259045,
   "coverage_method": "White emission surface coverage bake, including eight-pixel bake margin",
-  "normal_vs_bump_disabled_rms_xy": 0.009304990820355739,
+  "normal_vs_bump_disabled_rms_xy": 0.00929474190337262,
   "normal_channel_ranges": {
     "0": [
       0.4078431725502014,
@@ -39,8 +39,8 @@
   "maps": {
     "base_color": {
       "path": "assets/character-production/skin-materials/skin-age-blend-color.png",
-      "sha256": "a1e8f76db269d7a1115b2198b962832531bfddf607014845da5e63fbb4fc2b11",
-      "bytes": 345370,
+      "sha256": "30e7354afb825bf16dd264ab2f6adeab63a9f9c347c55934e5c667dcd6825eaa",
+      "bytes": 345382,
       "width": 1024,
       "height": 1024,
       "colorspace": "sRGB"
@@ -55,8 +55,8 @@
     },
     "normal": {
       "path": "assets/character-production/skin-materials/skin-normal.png",
-      "sha256": "37bc1a9166e9c89444d0df198d4ea599d0374f52bcf9709bfd546f99e1b494c2",
-      "bytes": 425370,
+      "sha256": "72a2ce76f44bd6a2d80def48add47773116fc99c77638b764ba609a6d9193353",
+      "bytes": 425384,
       "width": 1024,
       "height": 1024,
       "colorspace": "Non-Color"
