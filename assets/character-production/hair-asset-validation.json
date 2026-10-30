@@ -1,0 +1,139 @@
+{
+  "status": "Reviewed bounded development hair replacement; not finished loose Scholar waves",
+  "object": "Scholar short02 silver hair",
+  "material": "Scholar short02 silver hair",
+  "method": "HumanService.add_mhclo_asset and actual retained MPFB full-source MHCLO barycentric/scale mapping",
+  "source_hashes": {
+    "assets/character-production/source-assets/makehuman-system/hair/short02/short02.mhclo": "625736cdb73e6d094df6e5a2df18f371781f1d2cd37b0ae15795c5d7051c3ec2",
+    "assets/character-production/source-assets/makehuman-system/hair/short02/short02.mhmat": "2ed04c8aad9c1a35d858ca72091525d32b1da3b61b5a031634dd528fd8530f6d",
+    "assets/character-production/source-assets/makehuman-system/hair/short02/short02.obj": "48f979114adfa712165a69cc55c45a70831af1fb3cba8e2a89120f0c87407b64",
+    "assets/character-production/source-assets/makehuman-system/hair/short02/short02_diffuse.png": "47fe33831a3929567c733356dd66243116e05df2ace1f884ddca0080b728229f",
+    "assets/character-production/source-assets/makehuman-system/hair/short02/short02_normal.png": "2cfac7619f8eec77dd90df979d912415058f4f0fc16940cba40a8eb1ae6d74b5"
+  },
+  "vertices": 1755,
+  "polygons": 1672,
+  "weight_method": "All real imported vertices normalized 1.0 to existing mixamorig:Head",
+  "min_weight_sum": 1.0,
+  "max_weight_sum": 1.0,
+  "new_bones": 0,
+  "new_morphs": 0,
+  "retired_node_names": [
+    "Scholar Grey hair underlayer"
+  ],
+  "retained_editable_cap_vertices": 12843,
+  "retired_guide_polygons": {
+    "Scholar Grey strand 0": {
+      "retired_crown_polygons": 5805,
+      "original_polygons": 10764,
+      "retained_vertices": 11886,
+      "active_polygons": 4959
+    },
+    "Scholar Grey strand 1": {
+      "retired_crown_polygons": 9888,
+      "original_polygons": 15444,
+      "retained_vertices": 16878,
+      "active_polygons": 5556
+    },
+    "Scholar Grey strand 2": {
+      "retired_crown_polygons": 7173,
+      "original_polygons": 12672,
+      "retained_vertices": 13932,
+      "active_polygons": 5499
+    },
+    "Scholar Grey strand 3": {
+      "retired_crown_polygons": 7706,
+      "original_polygons": 12816,
+      "retained_vertices": 14076,
+      "active_polygons": 5110
+    },
+    "Scholar Grey strand 4": {
+      "retired_crown_polygons": 6676,
+      "original_polygons": 11052,
+      "retained_vertices": 12114,
+      "active_polygons": 4376
+    }
+  },
+  "protected_rest_position_sha256": {
+    "Scholar Brown tweed blocking": "9979f52a55e4b53e750a518ef968a0a86ec41133ee790bf7002b88013d2f9d60",
+    "Scholar Forest wool waistcoat": "b974bb323e56c7d1afff5a6426a62cf150e204aeabe41014e4edb28654ab392b",
+    "Scholar Grey hair underlayer": "7cef6323dcf1f00d9e9f46d428556a9304ac76f1e5843e8581f1976c836d5a18",
+    "Scholar Grey strand 0": "c850e0fd6c11463e822bbcfb070baa935ab2e16b9d7a4413d07ee247831baa3d",
+    "Scholar Grey strand 1": "8a4ea51aacf862625802e8f0ea6da10e32df83239bc248a6a80d0352c6590421",
+    "Scholar Grey strand 2": "01fc78fc46cda3921b18f0c37e800e1df34e223b51d2eaf5cc6430450077a5c4",
+    "Scholar Grey strand 3": "1964adb51e712e6ea43875c3ad276ade7363ce7951ef0adad7729f767fcdaba7",
+    "Scholar Grey strand 4": "af256117aeb181a73cc43b6b829869d9968be346493d26e5037574b0e3d9eda9",
+    "Scholar Ivory shirt": "c1458da9283ba8d313bc3ea3cb84bebd6f2e58dda5c82a07ce93432899756ba2",
+    "Scholar Muted patterned tie blocking": "6c5a5d05f27e50b39b93b6c4bcaeff486ee7c5c119d00be9d5602948ac1a7650",
+    "Scholar Natural eye whites": "ff43e012960d50ed23d656221f09a0a6747d6065a51b8a91360b1f6aefe587e4",
+    "Scholar Neutral aged skin blockout": "37267eb6ede4390571636ed4ef25f194cafee861883a1d207c72a8c7405962a1",
+    "Scholar Pupils": "65afe9f075d906a4383509daa98ba40bfee742c1aca3f4b0fd82e72906bafdf2",
+    "Scholar Slate blue grey iris": "b33aca8c570bbcc0ca4bf9dcef049a0621846e9e2b07d1c75e6cfe96c673efe6",
+    "Scholar Thin dark bronze spectacle rims": "9bdb61da9b0d7b8f9324cdd86e429c4fe071cf21fa2bd861dd2826e78b3e3f1e",
+    "Scholar Fitted silver facial groom": "cb7e940b401c39b8151c3e6e2482f6aa21ac8e7aecf7bb744b871bac9da293d4"
+  },
+  "protected_morph_weight_sha256": {
+    "Scholar Brown tweed blocking": "9e755d0bddae6cd7abf95f37e7b1316fab6803839f4fa31f60e2f25b1954e7eb",
+    "Scholar Forest wool waistcoat": "b18ac38962ec95825c278e77dfb8b5d5dc7ba09b31fa5f441b08af778e44d6f9",
+    "Scholar Grey hair underlayer": "742281de2adc23fbee62102530cc13b4374cff24c2ca4e1ba6552af42979af50",
+    "Scholar Grey strand 0": "63bbb35c1736012b412d22700d43691a9d32e2d4b6572673b344232818ba9757",
+    "Scholar Grey strand 1": "50754d64ff99f0bef2c3d7ac67d36c6773cd6a3c04e6f05571d5ed2fce7c74e8",
+    "Scholar Grey strand 2": "59f7608b30941e6e0409188df5dfa66d5f76737ed2305b3472f0a839544a37ee",
+    "Scholar Grey strand 3": "e9645c88e2dbfdc23884e5fdf9d6dea3d2891de610523528ecf4a78eb1192824",
+    "Scholar Grey strand 4": "bd5118fd83811807abd6910d14cb0e39674abe26696229cc64cd92bcbd75bdb9",
+    "Scholar Ivory shirt": "9443d22c74a749edaa2f3821cc21e650f1f0dc46ff81748ea0803fc0abb58f20",
+    "Scholar Muted patterned tie blocking": "a9010122c447feaff61edd180e0583a231e896e38d4fbd1e9f2551ae982f5705",
+    "Scholar Natural eye whites": "5f260e78e04ce7cb8ab50b16b08df463e16d42c6ed78694fd15988a24373fe84",
+    "Scholar Neutral aged skin blockout": "418d5f579dab110fb4fa081a3f8d384c8fa1aa9f672757bddc38cf869c1f43e1",
+    "Scholar Pupils": "f8ee8a20f6c01f269423a86a8cef856a8a062062d19a59a51d55d98f01952d3a",
+    "Scholar Slate blue grey iris": "5f260e78e04ce7cb8ab50b16b08df463e16d42c6ed78694fd15988a24373fe84",
+    "Scholar Thin dark bronze spectacle rims": "6d0e0575d835aef69ad25ea78e395fbd1396296230fcc33ed319b57fe2a420c9",
+    "Scholar Fitted silver facial groom": "8187d41a6144d6368bb5e4f6ee224fa5419a4a1269f67bc2d87a9b441a16848d"
+  },
+  "existing_rest_positions_unchanged": true,
+  "cap_geometry_retained_in_source": true,
+  "alpha_preserved_max_error": 0.0,
+  "albedo_path": "assets/character-production/hair-materials/short02-silver-albedo.png",
+  "albedo_sha256": "8141773bc04d9c5d1268d95548f9229027dcf9994dfc3e07eeb2cc48d5eb3813",
+  "silver_transform": "0.34+0.48*sqrt(source diffuse luminance), RGB multipliers0.96/0.98/1.0; source alpha retained",
+  "roughness": 0.8,
+  "blender_specular_ior_level": 0.15,
+  "gltf_specular_factor": 0.3,
+  "normal_strength": 0.4,
+  "normal_caveat": "Source MHMAT normal False; supplied purple map explicitly trialled as tangent-space with actual UVs and reviewed after GLB export; no claim of original source intent",
+  "proximal_contact_proxy_vertex_count": 600,
+  "proximal_contact_proxy_threshold_m": 0.004,
+  "contact_fit": {
+    "neutral": {
+      "minimum_nearest_head_distance_m": 9.98322207124147e-07,
+      "maximum_nearest_head_distance_m": 0.003984540700912476,
+      "minimum_triangle_signed_offset_m": -0.0022644602286163718,
+      "triangle_inward_sign_count": 26
+    },
+    "-10": {
+      "minimum_nearest_head_distance_m": 9.873355111267301e-07,
+      "maximum_nearest_head_distance_m": 0.004002155736088753,
+      "minimum_triangle_signed_offset_m": -0.0022644677774223965,
+      "triangle_inward_sign_count": 26
+    },
+    "10": {
+      "minimum_nearest_head_distance_m": 9.96402036435029e-07,
+      "maximum_nearest_head_distance_m": 0.004008163698017597,
+      "minimum_triangle_signed_offset_m": -0.0022644147684331983,
+      "triangle_inward_sign_count": 26
+    }
+  },
+  "head_attachment": {
+    "-10": {
+      "maximum_rigid_head_correspondence_error_m": 2.4027400458748785e-07
+    },
+    "10": {
+      "maximum_rigid_head_correspondence_error_m": 2.4027580952365167e-07
+    }
+  },
+  "limitations": [
+    "Dense swept quiff remains a development likeness, not final loose premium hair.",
+    "Contact proxy uses nearby geometry vertices, not artist-authored follicle roots; signed triangle values are recorded without claiming watertight coverage or zero intersections.",
+    "Only crown polygons of original grey guides retire; all original guide vertex positions, morph data and weights remain in editable source."
+  ],
+  "maximum_nearest_head_distance_m": 0.022787606343626976
+}

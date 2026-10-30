@@ -88,3 +88,7 @@ The bound-study builder calls `scripts/refine-scholar-crown.py` for a conservati
 ## Restrained iris material study
 
 The bound builder calls `scripts/refine-scholar-eyes.py`: project-authored512px slate-grey iris albedo on newUV1, preservingUV0 and actual eye/pupil/sclera anatomy. SourcePNG is under eye-materials/; exact hash, bounds and limitations are in eye-material-validation.json. Five images now embed in the GLB (coat,three skin,one iris). This is supported material detail, not finished eyes, gaze/cornea or portrait likeness.
+
+## Core source asset reuse
+
+Included verifiedCC0 core source files:source-assets/makehuman-system/SOURCE.json. Fit hair with fit-scholar-hair-asset.py; refine skin color with refine-scholar-skin-color.py. Both are builder stages after iris/before pose checks. Canonical static/face-only models remain unchanged. Derivedhair RGBA/normal and refinedskincolor export as real images (seven total). Original cap is retained only in editable source; source overlap is measured and not certified intersection-free. Fullreview/recipe:docs/reviews/SCHOLAR_CORE_ASSETS_REVIEW.md.

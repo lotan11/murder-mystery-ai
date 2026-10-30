@@ -79,3 +79,7 @@ Before/after front/profile views are under `docs/assets/crown-*`. Visible scalp 
 ## October30 hair quality gate
 
 The rounded crown-tube prototype is rejected and not called by the builder. Technical root/Head-weight checks passed, but helmet hairline and exposed loops failed the visual target. Evidence/next source leads:reviews/HAIR_REFINEMENT_REVIEW.md and its JSON/renders. The current weighted rig remains unchanged. In the lab, Faceclose-up now also crops the original portrait for closer comparison (display-onlySVG, complete hair/ears/chin); Reset/model changes restore the original full-bust reference.
+
+## Core hair and restrained skin color
+
+After iris refinement, the builder calls refine-scholar-skin-color.py, refreshes skin-material-validation.json, then fit-scholar-hair-asset.py before pose checks/export. Source files are under source-assets/makehuman-system with exact hashes; no network fetch is needed to rebuild these included assets. The original procedural color stays as input_color and skin-age-blend-color.png is the active1kmap; original normal/roughness and iris maps are unchanged. Hair uses supported2kRGBA/normal with actualUV0 and existingHead weights. Old cap remains editable but unexported; historical crown-fit JSON is no longer certification of an active cap. See reviews/SCHOLAR_CORE_ASSETS_REVIEW.md for recipe, exclusions and deformation/material limitations.

@@ -104,3 +104,7 @@ The separate weighted development rig now uses project-authored slate-grey radia
 ## October30 comparison and hair review
 
 Face close-up now displays a labeled crop of the same approved portrait, with complete hair/chin and responsive letterboxing. Reset/model changes restore full bust. No portrait identity or actual rig change. Two procedural crown experiments were visually rejected and remain inactive; reviews/HAIR_REFINEMENT_REVIEW.md records the evidence and next reuse approach.
+
+## October30 core-asset development refinement
+
+The isolated weighted Scholar now uses a reviewed core short02 hair mesh and restrained authored skin-color blend. Canonical original/face-only studies and game portrait/liveLewis remain. This improves hairline/ear clearance and skin variation; final portrait likeness, face/lids, tailoring, oral and perceived speech quality remain incomplete. Source/license/fit/runtime evidence:reviews/SCHOLAR_CORE_ASSETS_REVIEW.md.

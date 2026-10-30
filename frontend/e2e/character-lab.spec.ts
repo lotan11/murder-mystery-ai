@@ -83,6 +83,8 @@ test('rig study turns the actual head bone, resets and retains facial controls',
  await expect(viewer).toHaveAttribute('data-morph-count','11');
  await expect(viewer).toHaveAttribute('data-skin-map-count','3');
  await expect(viewer).toHaveAttribute('data-iris-map-info','512x512/uv1/srgb');
+ await expect(viewer).toHaveAttribute('data-hair-map-count','2');
+ await expect(viewer).toHaveAttribute('data-hair-alpha-mode','blend');
  // The manual lab should draw its loaded pose, then leave the GPU idle.
  await expect.poll(async()=>{
    const before=await viewer.getAttribute('data-render-count');
@@ -127,6 +129,7 @@ test('rig study turns the actual head bone, resets and retains facial controls',
  await expect(viewer).toHaveAttribute('data-model-state','ready');
  await expect(viewer).toHaveAttribute('data-joint-count','0');
  await expect(viewer).toHaveAttribute('data-iris-map-info','');
+ await expect(viewer).toHaveAttribute('data-hair-map-count','0');
  await expect(head).toHaveCount(0);
  expect(speech).toEqual([]);expect(errors).toEqual([]);
 });

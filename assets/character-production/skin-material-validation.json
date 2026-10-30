@@ -32,14 +32,15 @@
   "geometry_modified": false,
   "light_baked_into_color": false,
   "limitations": [
-    "Existing shallow procedural grain only; no authored wrinkles, pores, photographic skin scan or final likeness approval.",
-    "Subsurface response is not baked into PBR maps; final browser appearance still needs review."
+    "Procedural grain/normal proof retained; restrained CC0 diffuse blend adds color variation only, not sculpted age anatomy or final skin/likeness approval.",
+    "Existing diffuse is not established as a clean/de-lit scan; no additional light was baked by the COLOR-only pass.",
+    "Subsurface response is not baked into PBR maps; final browser appearance still requires review."
   ],
   "maps": {
     "base_color": {
-      "path": "assets/character-production/skin-materials/skin-base-color.png",
-      "sha256": "a35c286218bbf8a6eed2296833e511371b49c76055f0c9697f56662a3b724ff4",
-      "bytes": 40676,
+      "path": "assets/character-production/skin-materials/skin-age-blend-color.png",
+      "sha256": "a1e8f76db269d7a1115b2198b962832531bfddf607014845da5e63fbb4fc2b11",
+      "bytes": 345370,
       "width": 1024,
       "height": 1024,
       "colorspace": "sRGB"
@@ -61,5 +62,19 @@
       "colorspace": "Non-Color"
     }
   },
-  "restored_render_samples": 20
+  "restored_render_samples": 20,
+  "input_color": {
+    "path": "assets/character-production/skin-materials/skin-base-color.png",
+    "sha256": "a35c286218bbf8a6eed2296833e511371b49c76055f0c9697f56662a3b724ff4",
+    "bytes": 40676,
+    "width": 1024,
+    "height": 1024,
+    "colorspace": "sRGB"
+  },
+  "color_refinement": {
+    "validation_path": "assets/character-production/skin-color-validation.json",
+    "source_sha256": "dfb2310ed3e0ad024ea7a3ad321215e2e9e2994cca64043d9f3d07c6543ec847",
+    "additional_lighting_baked": false,
+    "source_is_clean_scan_claimed": false
+  }
 }
