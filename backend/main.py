@@ -1,5 +1,6 @@
 from __future__ import annotations
 import asyncio
+import anyio
 import copy
 import math
 import os
@@ -851,12 +852,16 @@ async def socket(ws: WebSocket, room_id: str, role: str = "tv", token: str = "",
     finally:
         was_speaking = bool(room.speech_clients)
         room.speech_clients.discard(ws)
-        if was_speaking != bool(room.speech_clients):
-            await broadcast(room)
+        # Clear connection state before any cancellable notification checkpoint.
         _invalidate_listener_session(session, stop=True)
         room.listener_sessions.pop(ws, None)
         room.clients.discard(ws)
         room.guest_clients.pop(ws, None)
+        if was_speaking != bool(room.speech_clients):
+            # ASGI disconnect may cancel the enclosing scope immediately. Give
+            # remaining guests a bounded chance to release their microphone gate.
+            with anyio.move_on_after(2, shield=True):
+                await broadcast(room)
 
 DIST = ROOT / "frontend" / "dist"
 if DIST.exists():

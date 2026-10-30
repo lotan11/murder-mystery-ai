@@ -188,6 +188,46 @@ def test_authorized_tv_speaking_state_suppresses_capture_and_clears_on_disconnec
         assert not room.speech_clients
 
 
+def test_tv_disconnect_cleanup_survives_asgi_scope_cancellation(client, monkeypatch):
+    from backend import main
+    created = client.post("/api/rooms").json()
+    room = rooms[created["room_id"]]
+    original_broadcast = main.broadcast
+    armed = threading.Event()
+    delivered = threading.Event()
+
+    async def delayed_disconnect_broadcast(current):
+        cleanup = current is room and armed.is_set() and not room.speech_clients
+        if cleanup:
+            # TestClient cancels the ASGI scope immediately after sending disconnect.
+            # A real notification checkpoint must not skip cleanup or lose the flag.
+            await asyncio.sleep(0.03)
+        await original_broadcast(current)
+        if cleanup:
+            delivered.set()
+
+    monkeypatch.setattr(main, "broadcast", delayed_disconnect_broadcast)
+    with client.websocket_connect(f"/ws/{room.room_id}?role=guest") as guest:
+        join(guest, "Cancellation Guest")
+        revision = room.revision
+        with client.websocket_connect(f"/ws/{room.room_id}?role=tv&token={tv_speech_token(room)}") as tv:
+            tv.receive_json()
+            tv.send_json({"type": "scholar.speaking", "speaking": True})
+            while True:
+                packet = guest.receive_json()
+                if packet.get("type") == "state" and packet["data"]["scholar_speaking"]:
+                    break
+            armed.set()
+        # Bound the assertion before reading: a missed notification must fail, not hang.
+        assert delivered.wait(1), "TV cancellation lost the microphone recovery notification"
+        assert not room.speech_clients and len(room.clients) == 1
+        assert room.revision == revision
+        while True:
+            packet = guest.receive_json()
+            if packet.get("type") == "state" and packet["data"]["scholar_speaking"] is False:
+                break
+
+
 @pytest.mark.parametrize("interruption", ["stop", "reset"])
 def test_delayed_transcription_is_cancelled_and_discarded_after_stop_or_reset(client, interruption):
     created = client.post("/api/rooms").json()
