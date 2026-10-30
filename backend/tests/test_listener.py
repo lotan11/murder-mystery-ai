@@ -126,9 +126,11 @@ def test_delayed_transcription_is_cancelled_and_discarded_after_stop_or_reset(cl
     room.act = 1
     app.state.room_store.save(room.record())
     started, release, finished = threading.Event(), threading.Event(), threading.Event()
+    calls = []
 
     class DelayedTranscriber:
         async def transcribe(self, *_args):
+            calls.append("started")
             started.set()
             try:
                 while not release.is_set():
@@ -149,6 +151,12 @@ def test_delayed_transcription_is_cancelled_and_discarded_after_stop_or_reset(cl
             assert guest.receive_json()["type"] == "listener.status"
             guest.send_bytes(webm_clip())
             assert started.wait(3), "transcription worker did not start"
+            # These clips are accepted into the worker queue while the first is in flight.
+            for _ in range(2):
+                guest.send_json({"type": "listener.audio", "duration_seconds": 0.5, "mime_type": "audio/webm"})
+                while guest.receive_json()["type"] != "listener.status":
+                    pass
+                guest.send_bytes(webm_clip(0.5))
             if interruption == "stop":
                 guest.send_json({"type": "listener.stop"})
             else:
@@ -165,6 +173,7 @@ def test_delayed_transcription_is_cancelled_and_discarded_after_stop_or_reset(cl
             release.set()
             assert finished.wait(3), "cancelled transcription did not settle"
             assert room.listener["utterances"] == []
+            assert calls == ["started"], "queued stale chunks were transcribed after interruption"
             assert all(item["text"] != "Stale audio from the previous listening session." for item in room.listener["utterances"])
 
 
