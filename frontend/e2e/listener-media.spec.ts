@@ -246,6 +246,30 @@ test("Stop during a pending permission prompt releases the stream granted afterw
   expect(state.listener.usage.transcription_calls).toBe(0);
 });
 
+test("host pause invalidates an open guest permission prompt", async ({ browser, page }) => {
+  const created = await page.request.post("/api/rooms", { data: {} }).then(response => response.json());
+  const organizerContext = await browser.newContext();
+  const organizer = await organizerContext.newPage();
+  await organizer.addInitScript(({ room, token }) => localStorage.setItem(`organizer:${room}`, token),
+    { room: created.room_id, token: created.organizer_token });
+  organizer.on("dialog", dialog => dialog.accept());
+  await organizer.goto(`/?view=organizer&room=${created.room_id}`);
+  await expect(organizer.getByRole("button", { name: "Pause evening" })).toBeVisible();
+
+  const guest = await interceptedMicrophoneGuest(page, { room_id: created.room_id, organizer_token: created.organizer_token }, "pending");
+  await page.getByRole("button", { name: "Enable microphone" }).click();
+  await organizer.getByRole("button", { name: "Pause evening" }).click();
+  await expect(organizer.getByRole("button", { name: "Resume evening" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Resume listening" })).toBeVisible();
+  await page.evaluate(async () => await (window as any).__resolveListenerPermission());
+  await expect.poll(() => page.evaluate(() => ((window as any).__listenerTestStreams as MediaStream[]).length)).toBe(1);
+  await expect.poll(() => micTracksEnded(page)).toBe(true);
+  const state = await page.request.get(`/api/rooms/${guest.roomId}/state`).then(response => response.json());
+  expect(state.listener.usage.audio_seconds).toBe(0);
+  expect(state.listener.usage.transcription_calls).toBe(0);
+  await organizerContext.close();
+});
+
 test("authorized Lewis speaking state suppresses and resumes guest microphone capture", async ({ page }) => {
   const guest = await interceptedMicrophoneGuest(page);
   await page.getByRole("button", { name: "Enable microphone" }).click();
