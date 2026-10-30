@@ -1,6 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
 
-async function interceptedMicrophoneGuest(page: Page, room?: { room_id: string; organizer_token?: string }) {
+async function interceptedMicrophoneGuest(
+  page: Page,
+  room?: { room_id: string; organizer_token?: string },
+  permissionMode: "normal" | "denied" | "pending" = "normal",
+) {
   const created = room ?? await page.request.post("/api/rooms", { data: {} }).then(response => response.json());
   let socket: { send: (message: string) => void } | null = null;
   await page.routeWebSocket(/\/ws\//, routed => {
@@ -20,18 +24,26 @@ async function interceptedMicrophoneGuest(page: Page, room?: { room_id: string; 
     routed.onMessage(message => server.send(message));
   });
   await page.context().grantPermissions(["microphone"]);
-  await page.addInitScript(() => {
+  await page.addInitScript(({ mode }) => {
     const original = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
     Object.defineProperty(window, "__listenerTestStreams", { value: [], configurable: true });
     Object.defineProperty(navigator.mediaDevices, "getUserMedia", {
       configurable: true,
       value: async (constraints: MediaStreamConstraints) => {
+        if (mode === "denied") throw new DOMException("Permission denied", "NotAllowedError");
+        if (mode === "pending") return new Promise<MediaStream>((resolve) => {
+          (window as any).__resolveListenerPermission = async () => {
+            const stream = await original(constraints);
+            (window as any).__listenerTestStreams.push(stream);
+            resolve(stream);
+          };
+        });
         const stream = await original(constraints);
         (window as any).__listenerTestStreams.push(stream);
         return stream;
       },
     });
-  });
+  }, { mode: permissionMode });
   await page.goto(`/?view=guest&room=${created.room_id}`);
   await page.getByLabel("Your name", { exact: true }).fill("Listener Guest");
   await page.getByRole("button", { name: "Join the investigation" }).click();
@@ -208,6 +220,30 @@ test("terminal microphone errors stop capture and keep their explanation visible
   await expect(page.getByText("Microphone transcription is disabled. Use typed observation or configure paid transcription.")).toBeVisible({ timeout: 8000 });
   await expect.poll(() => micTracksEnded(page)).toBe(true);
   await expect(page.getByRole("button", { name: "Enable microphone" })).toBeVisible();
+});
+
+test("microphone permission denial leaves capture stopped and explains typed fallback", async ({ page }) => {
+  const guest = await interceptedMicrophoneGuest(page, undefined, "denied");
+  await page.getByRole("button", { name: "Enable microphone" }).click();
+  await expect(page.locator(".listener-panel [role=status]")).toContainText("Microphone permission was unavailable");
+  await expect(page.getByRole("button", { name: "Enable microphone" })).toBeVisible();
+  expect(await page.evaluate(() => ((window as any).__listenerTestStreams as MediaStream[]).length)).toBe(0);
+  const state = await page.request.get(`/api/rooms/${guest.roomId}/state`).then(response => response.json());
+  expect(state.listener.usage.audio_seconds).toBe(0);
+  expect(state.listener.usage.transcription_calls).toBe(0);
+});
+
+test("Stop during a pending permission prompt releases the stream granted afterward", async ({ page }) => {
+  const guest = await interceptedMicrophoneGuest(page, undefined, "pending");
+  await page.getByRole("button", { name: "Enable microphone" }).click();
+  await page.getByRole("button", { name: "Stop", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Enable microphone" })).toBeVisible();
+  await page.evaluate(async () => await (window as any).__resolveListenerPermission());
+  await expect.poll(() => page.evaluate(() => ((window as any).__listenerTestStreams as MediaStream[]).length)).toBe(1);
+  await expect.poll(() => micTracksEnded(page)).toBe(true);
+  const state = await page.request.get(`/api/rooms/${guest.roomId}/state`).then(response => response.json());
+  expect(state.listener.usage.audio_seconds).toBe(0);
+  expect(state.listener.usage.transcription_calls).toBe(0);
 });
 
 test("authorized Lewis speaking state suppresses and resumes guest microphone capture", async ({ page }) => {

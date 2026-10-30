@@ -65,6 +65,13 @@ test("late microphone permission resolution immediately releases tracks and neve
   assert.equal(runtime.tracksStopped, 1);
 });
 
+test("denied microphone permission does not create a recorder or leak a stream", async () => {
+  const runtime = createCaptureRuntime({ permission: Promise.reject(new DOMException("denied", "NotAllowedError")) });
+  await assert.rejects(runtime.open({ isCurrent: runtime.isCurrent, onChunk() {}, onError() {}, onStatus() {} }), /denied/);
+  assert.equal(runtime.recorders.length, 0);
+  assert.equal(runtime.tracksStopped, 0);
+});
+
 test("capture finalizes each interval with a fresh recorder and stops cleanly", async () => {
   const runtime = createCaptureRuntime();
   const clips = [];
