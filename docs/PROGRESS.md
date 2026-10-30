@@ -248,3 +248,11 @@ Validation:314backend tests pass,3Windows permission skips;21client checks pass;
 Previous code CI40916235913 passed; this increment's remote CI pending push. No paid calls, purchase, public deployment, new casting choice or saved-room change. No claim of development between scheduled runs. Next: coherent silver hair silhouette, portrait-matched facial proportions/eyes/tailoring and perceived speech review. Custom-avatar readiness remains the main November10 risk; preserve November4 gate and approved portrait/liveLewis game fallback.
 
 Remote verification: code commit `15f8f5f` passed CI run `40951937765`, including all20browser scenarios. This closes the crown/framing increment; the custom character remains a development study and the portrait/liveLewis fallback stays active.
+
+## October 29 evening — listener review after user question
+
+During this scheduled run, reviewed unmerged listener1f8bab0 and ran an isolated branch snapshot:252backend tests pass/2Windows skips, including5listener tests. Added explicit offline probes:4expected failures reproduce stale transcripts after Stop/reset, fabricated cross-clause claims and unbounded theory links;1schema3migration round-trip passes. Frontend original-function VM/fake-device Chromium reproduces late microphone activation, broken Resume and non-independent WebM fragments. Code inspection also finds16KiB transport mismatch, dropped error state and Lewis narration interruption. Recorded prioritized findings, acceptance order and reproducible scripts in LISTENER_REVIEW.md.
+
+No listener merge, paid calls, actual microphone capture, room migration, public deployment or avatar change. No development is claimed between scheduled runs. Last product CI40951937765 is green (314backend/3Windows skips,21client,20browser/build locally). Next: return to Scholar grooming/likeness, preserving portrait/liveLewis. Listener remains blocked pending repairs rather than silently importing unsafe code. Custom-avatar visual/perceived-speech quality remains the November10 risk; November4 gate unchanged.
+
+Main regression rerun after adding review tooling:314backend tests pass,3Windows permission skips. Frontend probe rerun succeeds using synthetic capture; the pinned branch acceptance probes intentionally remain4fail/1pass. New review increment CI follows push.

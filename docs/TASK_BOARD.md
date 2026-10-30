@@ -217,3 +217,7 @@ Inspector now exposes component-level geometry/morph inventory so deliberate gro
 Completed: cap-only surface projection and anatomical weight transfer; front/profile before/after review removes visible scalp holes. Added explicit face/full-bust framing for desktop/phone inspection. Existing 64 joints, eleven controls, skin maps, facial groom and original head are preserved.
 
 Next: replace the helmet-like hairline/coarse guide appearance with coherent silver grooming, then refine portrait-matched facial proportions, eyes and tailoring. Sharp ear-edge cap coverage remains unresolved (raw triangle sign disagreements retained), as do full visemes and perceptual speech approval. November4 readiness gate and November10 portrait/Lewis fallback remain. No new casting selection or spending decision needed.
+
+## Listener review — October 29
+
+Completed deeper code/offline review of unmerged1f8bab0. **Blocked from merge**: pending permission/Stop/reset cancellation, broken Resume, invalid later WebM fragments,16KiB transport mismatch, Lewis interruption, dropped error states and false cross-clause claims. P2: theory retention and duration accounting. See LISTENER_REVIEW.md for evidence/reusable probes and ordered acceptance work. Branch baseline252pass/2skips; additional probes4fail/1migration pass. No provider calls or product activation. Avatar visual work resumes next; no avatar changes in this run.

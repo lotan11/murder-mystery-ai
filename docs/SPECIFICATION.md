@@ -92,3 +92,7 @@ The weighted study now includes fitted facial hair with head-triangle weight/mor
 ## October 29 crown fit and inspection increment
 
 The isolated weighted Scholar study now repairs visible scalp-cap gaps without changing the anatomical face, materials, topology or approved game presentation. Face close-up/Full bust framing supports consistent inspection using actual loaded eye, crown and facial-groom bounds; camera angle survives framing changes and Reset/model changes restore the full bust. This is development tooling, not final avatar activation.
+
+## Listener review boundary — October 29
+
+The separately developed listener is not an integrated product feature. Review now reproduces cancellation, audio-framing, claim-correctness and narration-continuity defects; see LISTENER_REVIEW.md. Consent, truthful capture state, bounded validated audio and no stale speech/transcripts across Stop/pause/reset are required before adoption. Existing scripted mystery and approved portrait/liveLewis remain the demonstration baseline.

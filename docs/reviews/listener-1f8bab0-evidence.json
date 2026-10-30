@@ -1,0 +1,58 @@
+{
+  "observedAt": "2026-10-30T00:30:48.195Z",
+  "branchRevision": "1f8bab0bcf7092b360b213b8796af778d94654d7",
+  "scope": "Original frontend functions in mocked VM plus real Chromium fake-device MediaRecorder; no paid provider or real microphone",
+  "delayedPermission": {
+    "scenario": "Original startListener: Stop while permission is pending, then resolve permission",
+    "messages": [
+      "listener.start",
+      "listener.stop"
+    ],
+    "captureStarts": 1,
+    "tracksStopped": 0,
+    "listening": false,
+    "recorderState": "recording",
+    "status": "Microphone live · device echo cancellation enabled."
+  },
+  "resume": {
+    "scenario": "Original Mute followed by Resume button expression",
+    "messages": [
+      "listener.start",
+      "listener.stop",
+      "listener.mute",
+      "listener.stop"
+    ],
+    "listening": false,
+    "muted": false
+  },
+  "mediaRecorder": {
+    "mimeType": "audio/webm;codecs=opus",
+    "timesliceMs": 3000,
+    "chunks": [
+      {
+        "bytes": 40532,
+        "prefix": [
+          26,
+          69,
+          223,
+          163
+        ],
+        "independentDecode": {
+          "durationSeconds": 3
+        }
+      },
+      {
+        "bytes": 49298,
+        "prefix": [
+          67,
+          182,
+          117,
+          1
+        ],
+        "independentDecode": {
+          "error": "EncodingError"
+        }
+      }
+    ]
+  }
+}

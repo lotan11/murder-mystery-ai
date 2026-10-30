@@ -187,3 +187,9 @@ Validation:314backend tests pass,3Windows permission skips;21client checks pass;
 Previous code CI40916235913 passed; this increment's remote CI pending push. No paid calls, purchase, public deployment, new casting choice or saved-room change. No claim of development between scheduled runs. Next: coherent silver hair silhouette, portrait-matched facial proportions/eyes/tailoring and perceived speech review. Custom-avatar readiness remains the main November10 risk; preserve November4 gate and approved portrait/liveLewis game fallback.
 
 Remote verification: code commit `15f8f5f` passed CI run `40951937765`, including all20browser scenarios. This closes the crown/framing increment; the custom character remains a development study and the portrait/liveLewis fallback stays active.
+
+## Listener branch review, October 29 evening
+
+Pinned1f8bab0 isolated baseline:252backend pass/2Windows permission skips. Explicit review acceptance probes:4fail (Stop,reset,claim scoping,theory bound),1pass(schema3round-trip). These are recorded defects on the unmerged branch, not failures in main. Original-function VM and Chromium synthetic microphone evidence are recorded in docs/reviews/listener-1f8bab0-evidence.json; no real mic/provider. Formal findings and rerun commands:LISTENER_REVIEW.md. Product code/assets remain unchanged; preceding full main CI40951937765 green.
+
+Main regression rerun after adding review tooling:314backend tests pass,3Windows permission skips. Frontend probe rerun succeeds using synthetic capture; the pinned branch acceptance probes intentionally remain4fail/1pass. New review increment CI follows push.
