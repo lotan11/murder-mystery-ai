@@ -210,6 +210,28 @@ test("extended public participation records validate without accepting early rat
   );
 });
 
+test("unattributed listener transcripts remain valid public room updates", () => {
+  const utterance = {
+    id: "u1",
+    sequence: 1,
+    guest_id: null,
+    speaker: "Unattributed audio",
+    text: "I could not identify the speaker.",
+    claims: [],
+    follow_up_answer: false,
+  };
+  const listener = {
+    utterances: [utterance], theories: {}, follow_up: null, interventions: [],
+    usage: { enabled: false, reason: "disabled", audio_seconds: 0, audio_limit_seconds: 900,
+      transcription_calls: 0, estimated_cost_usd: 0, retained_audio: false },
+  };
+  const result = decodeState(JSON.stringify({ type: "state", data: { ...snapshot, listener } }));
+  assert.equal(result.state.listener.utterances[0].guest_id, null);
+  assert.ok(decodeState(JSON.stringify({ type: "state", data: {
+    ...snapshot, listener: { ...listener, utterances: [{ ...utterance, speaker: "Unknown guest" }] },
+  } })).error);
+});
+
 const dialogueMeta = {
   provider: "openai",
   source: "model",
