@@ -266,3 +266,9 @@ Character: rejected wider alpha-card facial groom after actual browser review (p
 - Listener PR2: reproduced disconnect cancellation race repaired on 2c6ecde. Cleanup precedes awaiting; recovery notification shielded for at most two seconds. Regression fails before repair and passes afterward. Branch backend: 368 pass/three skips. Combined current-main: 370 backend pass/three skips, 28 client checks/build; all 30 browser scenarios and branch CI 41125090564 pass. Sole conflict: progress document. PR unmerged.
 - Next: natural facial groom, portrait likeness, tailoring/oral detail, perceived speech review and controlled listener integration with verified local startup/database recovery.
 - Risk: November 4 character readiness and November 10 finished-avatar quality. Approved portrait/live Lewis at 1.05 remains the stable playable baseline. No new user input or purchase needed.
+
+## Agent network installation - separate feature/agent-network branch
+
+Implemented deterministic orchestration, QA records/repair tasks, integration gates, machine-readable GitHub assignments/dashboard and an approval-gated local Codex worker. Listener PR #2 is the first live tracked case; existing combined evidence is reused. Live issues: QA #3, integration #4, dashboard #5. Main and Listener content hashes remain unchanged. Main protection is enabled. Installation tests/CI and PR remain in progress. No merges, deployments, spending or actual Codex model calls. Independent reviewer configuration is intentionally empty until an eligible collaborator is selected.
+
+Final local installation checks:317 existing backend tests and67 network tests pass (three Windows skips);21 client checks, production build and all20 browser scenarios pass. No application/source asset paths changed. Branch CI and installation PR follow.

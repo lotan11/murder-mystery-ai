@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "repository": "lotan11/murder-mystery-ai",
+  "deadline": "2026-11-10",
+  "timezone": "America/Denver",
+  "main": "6db5341e4e3db10adf2a17daf740e72543a17790",
+  "policy": {
+    "automatic_merge": false,
+    "automatic_deployment": false,
+    "paid_providers": false,
+    "destructive_actions": false
+  },
+  "tasks": [
+    {
+      "id": "qa-review:2",
+      "title": "Independent QA and regression review for PR #2",
+      "owner": "qa",
+      "priority": "P0",
+      "status": "review",
+      "acceptance": [
+        "Review current-head code and targeted/full CI evidence",
+        "Check privacy, saved-room compatibility and approved Lewis continuity",
+        "Independent reviewer records current-head GitHub approval or actionable defects"
+      ],
+      "blockers": [
+        "Independent current-head approval and successful checks required"
+      ],
+      "dependencies": [],
+      "pull_request": 2,
+      "head": "2c6ecde55ed2f1ca3182e98909f140081070e82b",
+      "base": "6db5341e4e3db10adf2a17daf740e72543a17790",
+      "issue_url": "https://github.com/lotan11/murder-mystery-ai/issues/3"
+    },
+    {
+      "id": "pr:2",
+      "title": "Coordinate PR #2: Repair continuous listener integration",
+      "owner": "integration",
+      "priority": "P0",
+      "status": "blocked",
+      "acceptance": [
+        "Current-head CI passes",
+        "Independent current-head review passes",
+        "Combined game/Listener/avatar/interface regression evidence matches current main and PR",
+        "Paid transcription remains disabled by default",
+        "Obtain explicit owner approval before any merge"
+      ],
+      "blockers": [
+        "Independent current-head approval required (author cannot self-approve)",
+        "Merge conflict or GitHub mergeability not yet known",
+        "Unresolved dependency: qa-review:2"
+      ],
+      "dependencies": [
+        "qa-review:2"
+      ],
+      "pull_request": 2,
+      "head": "2c6ecde55ed2f1ca3182e98909f140081070e82b",
+      "base": "6db5341e4e3db10adf2a17daf740e72543a17790",
+      "issue_url": "https://github.com/lotan11/murder-mystery-ai/issues/4",
+      "paid_transcription_default_disabled": true
+    }
+  ],
+  "pull_requests": [
+    {
+      "pr": 2,
+      "url": "https://github.com/lotan11/murder-mystery-ai/pull/2",
+      "head": "2c6ecde55ed2f1ca3182e98909f140081070e82b",
+      "base_snapshot": "a83d428de010e144c972caee7500f48b9bce712b",
+      "current_main": "6db5341e4e3db10adf2a17daf740e72543a17790",
+      "mergeable": false,
+      "combined_verified": true,
+      "approvals": []
+    }
+  ],
+  "review_requests": [],
+  "coding_execution": "Explicit local invocation only; no unattended paid model calls",
+  "event_automation": "Workflow active only after approved installation on default branch"
+}

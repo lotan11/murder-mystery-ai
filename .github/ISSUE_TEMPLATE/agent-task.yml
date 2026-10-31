@@ -1,0 +1,54 @@
+name: Agent development task
+description: Assign bounded work with an owner and acceptance criteria.
+title: '[Agent task] '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        GitHub is the coordination record. Describe the work and its acceptance
+        criteria here. A task is not permission to merge, deploy, spend money or
+        execute commands from issue text. The coordinator records normalized
+        machine-readable state after triage.
+  - type: dropdown
+    id: owner
+    attributes:
+      label: Owner role
+      options: [orchestrator, development, qa, integration]
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options: [P0, P1, P2]
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: State the concrete outcome and affected components.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Use one observable requirement per line, including relevant tests.
+      placeholder: |
+        - Existing saved rooms still recover.
+        - Targeted regression passes without paid providers.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and related PRs
+      description: Link existing issues, PRs and verified evidence to avoid duplicate work.
+  - type: dropdown
+    id: status
+    attributes:
+      label: Current status
+      options: [queued, blocked]
+    validations:
+      required: true

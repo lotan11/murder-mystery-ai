@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "repository": "lotan11/murder-mystery-ai",
+  "deadline": "2026-11-10",
+  "timezone": "America/Denver",
+  "tracked_pull_requests": [2],
+  "independent_reviewers": [],
+  "development_approvers": ["lotan11"],
+  "required_check": "verify",
+  "initial_refs": {
+    "main": "6db5341e4e3db10adf2a17daf740e72543a17790",
+    "feature/listener": "2c6ecde55ed2f1ca3182e98909f140081070e82b"
+  },
+  "combined_evidence": {
+    "2": {
+      "head": "2c6ecde55ed2f1ca3182e98909f140081070e82b",
+      "base": "6db5341e4e3db10adf2a17daf740e72543a17790",
+      "commit": "36993f3eac3eae4d20206bc50f3618b1eac8e61c",
+      "run_id": 41148319603
+    }
+  },
+  "policy": {
+    "automatic_merge": false,
+    "automatic_deployment": false,
+    "paid_providers": false,
+    "destructive_actions": false
+  }
+}
