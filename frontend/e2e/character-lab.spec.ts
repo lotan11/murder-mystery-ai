@@ -137,6 +137,15 @@ test('rig study turns the actual head bone, resets and retains facial controls',
 
 test('fixed Lewis study uses user-initiated source-clock speech and stops on model change',async({page})=>{
  test.setTimeout(90000);const errors:string[]=[];const gameSpeech:string[]=[];
+ // This scenario verifies explicit Stop/model cancellation, not natural completion.
+ // Keep the real short clip playing if a slow runner takes longer than its duration.
+ await page.addInitScript(()=>{
+  const play=HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play=function(){
+   if(this.dataset.labSpeech==='true')this.loop=true;
+   return play.call(this);
+  };
+ });
  page.on('pageerror',e=>errors.push(e.message));
  page.on('request',r=>{if(r.url().includes('/scholar-speech'))gameSpeech.push(r.url());});
  await page.goto('/?view=character-lab');
@@ -145,6 +154,16 @@ test('fixed Lewis study uses user-initiated source-clock speech and stops on mod
  await expect(viewer).toHaveAttribute('data-model-state','ready',{timeout:60000});
  await expect(viewer).toHaveAttribute('data-speech-state','idle');
  await expect(page.locator('audio[data-lab-speech]')).toHaveCount(0);
+ // Capture genuine transient motion as it occurs; polling can miss every voiced
+ // frame and sample only neutral gaps. Never synthesize or modify a morph value.
+ await viewer.evaluate(element=>{
+  const observation={peak:0};(window as any).__labObservedMorph=observation;
+  new MutationObserver(()=>{
+   const audio=document.querySelector<HTMLAudioElement>('audio[data-lab-speech]');
+   if(element.getAttribute('data-speech-state')==='playing'&&audio&&!audio.paused&&!audio.ended)
+    observation.peak=Math.max(observation.peak,Number(element.getAttribute('data-morph-max')));
+  }).observe(element,{attributes:true,attributeFilter:['data-morph-max']});
+ });
  const head=page.getByRole('slider',{name:/Head turn/});await head.focus();await head.press('End');
  await page.getByRole('button',{name:'Play Lewis timing study',exact:true}).click();
  await expect(viewer).toHaveAttribute('data-speech-state','playing');
@@ -152,7 +171,7 @@ test('fixed Lewis study uses user-initiated source-clock speech and stops on mod
  expect(await audio.evaluate(element=>(element as HTMLAudioElement).playbackRate)).toBe(1.05);
  expect(await audio.evaluate(element=>(element as HTMLAudioElement).preservesPitch)).toBe(true);
  await expect.poll(async()=>Number(await viewer.getAttribute('data-speech-time'))).toBeGreaterThan(0);
- await expect.poll(async()=>Number(await viewer.getAttribute('data-morph-max'))).toBeGreaterThan(0);
+ await expect.poll(()=>page.evaluate(()=>(window as any).__labObservedMorph.peak)).toBeGreaterThan(0);
  await expect(page.getByRole('slider',{name:/Jaw opening/})).toBeDisabled();
  await page.getByRole('button',{name:'Stop timing study',exact:true}).click();
  await expect(viewer).toHaveAttribute('data-speech-state','idle');
