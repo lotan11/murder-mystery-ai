@@ -121,3 +121,5 @@ The separate `/?view=character-lab` workbench inspects the actual anatomical dev
 Start normally on Windows with `powershell -ExecutionPolicy Bypass -File .\start.ps1`. Open `http://localhost:8000/?view=character-lab` (use your selected port), choose **Rig study**, then scroll to **Play Lewis timing study**. The bundled real Lewis clip plays at the approved faster pace and drives restrained experimental mouth motion. No optional voice installation, API key, microphone or paid service is needed for this fixed preview. Use localhost or HTTPS for audio integrity checking.
 
 Stop cancels audio and resets the mouth; changing model, hiding the page or losing graphics also stops it. This is a development model with approximate speech shapes, unfinished mouth interior, groom and likeness. It does not replace the approved portrait/live Lewis in the game. See [character authoring and limitations](docs/CHARACTER_AUTHORING.md).
+
+Agent coordination: see [Agent network](docs/AGENT_NETWORK.md) for GitHub-backed tasks, readiness gates and explicit local Codex execution. No automatic merge or deployment is enabled.

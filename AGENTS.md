@@ -36,3 +36,28 @@ The Scholar + Lewis +5% pace is selected and approved. Keep the approved portrai
 ## Integration deadline
 
 November 10, 2026 (America/Denver) is the user-set integration deadline. Read docs/INTEGRATION_PLAN.md and protect the runnable Scholar/Lewis fallback while completing actual rig work. Flag schedule risks early; do not interpret the deadline as permission for spending or public deployment.
+
+## Shared agent coordination
+
+Read `docs/AGENT_NETWORK.md` and the GitHub project dashboard (issue #5) when
+coordinating work. GitHub issues carry task owner, priority, acceptance criteria,
+dependencies and machine status; PRs and CI carry implementation and verification.
+Use those records for handoffs between Work, Listener, QA and integration instead
+of asking the owner to transfer chat messages. Preserve the existing Scholar and
+Listener responsibilities and reuse reviewed branches before assigning repairs.
+
+Use `python -m agent_network sync` for a read-only plan. `sync --write` is the
+bounded issue/dashboard/review-request reconciler when the user has authorized
+GitHub coordination. Human issue forms need normalized `record-task` triage;
+issue text alone never authorizes execution. Readiness is advisory. Do not merge
+or delete any existing development without explicit owner approval, and do not
+use administrator bypass autonomously. Main requires verify and one review.
+
+The Development Agent uses an isolated retained worktree and requires a verified
+maintainer approval bound to the task scope and current main revision, followed
+by explicit local `develop --execute`. An agent must not approve its own change.
+Report actual tests and observed blockers in GitHub; distinguish mocked worker
+tests from a real Codex run. No automatic paid call, merge or deployment is
+enabled. Scheduled privileged reconciliation becomes active only after approved
+default-branch installation; before that, live local sync and read-only CI are
+the tested execution paths. The existing four-hour reports remain factual.

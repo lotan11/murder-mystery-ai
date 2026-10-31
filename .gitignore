@@ -18,3 +18,4 @@ frontend/.e2e-data/
 # Blender automatic backups are not canonical asset sources.
 *.blend1
 *.blend2
+.agent-network/

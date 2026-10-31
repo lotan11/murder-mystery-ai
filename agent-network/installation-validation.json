@@ -1,0 +1,43 @@
+{
+  "initial_refs": {
+    "main": "6db5341e4e3db10adf2a17daf740e72543a17790",
+    "feature/listener": "2c6ecde55ed2f1ca3182e98909f140081070e82b"
+  },
+  "application_paths_changed": false,
+  "network_tests": 69,
+  "backend_tests": 317,
+  "windows_skips": 3,
+  "client_tests": 21,
+  "build": "pass",
+  "browser_tests": 20,
+  "live_coordination": {
+    "listener_pr": 2,
+    "qa_issue": 3,
+    "integration_issue": 4,
+    "dashboard_issue": 5,
+    "idempotent_sync_runs": 2,
+    "combined_evidence_run": 41148319603,
+    "paid_transcription_default_disabled": true
+  },
+  "main_protection": {
+    "verify_required": true,
+    "up_to_date_required": true,
+    "reviews_required": 1,
+    "stale_reviews_dismissed": true,
+    "force_push": false,
+    "delete": false,
+    "enforce_admins": false
+  },
+  "execution_limits": {
+    "codex_real_execution_tested": false,
+    "codex_transport_tests": "mocked",
+    "scheduled_issue_writes_active": false,
+    "requires_default_branch_approval": true,
+    "auto_merge": false,
+    "auto_deploy": false
+  },
+  "live_failure_to_repair_issue": 9,
+  "focused_original_browser_repeats_passed": 3,
+  "worker_port_override_browser_check": "passed on 8031",
+  "intermittent_existing_browser_observation": "Preserved in issue9; not declared repaired by green retries"
+}
