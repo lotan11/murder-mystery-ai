@@ -13,6 +13,8 @@ def test_privileged_workflow_never_checks_out_pull_request_code():
     assert 'gh pr merge' not in workflow
     assert 'timeout-minutes: 5' in workflow
     assert 'agent-network-key:dashboard' in workflow
+    # Bot-created PR/check events still need coordination; suppress issue loops only.
+    assert workflow.index("github.event_name != 'issues'") < workflow.index("github.actor != 'github-actions[bot]'")
 
 
 def test_game_ci_exercises_network_with_read_only_permissions():

@@ -28,9 +28,9 @@ jobs:
     # made with GITHUB_TOKEN do not normally trigger workflows; this also guards
     # actor recursion and human edits to the generated dashboard issue.
     if: >-
-      github.actor != 'github-actions[bot]' &&
       (github.event_name != 'issues' ||
-       !contains(github.event.issue.body, '<!-- agent-network-key:dashboard -->'))
+       (github.actor != 'github-actions[bot]' &&
+        !contains(github.event.issue.body, '<!-- agent-network-key:dashboard -->')))
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

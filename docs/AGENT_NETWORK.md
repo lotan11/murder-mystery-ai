@@ -162,3 +162,18 @@ The workflow's trust boundary follows GitHub's
 [pull_request_target security guidance](https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target).
 Default-branch activation and event restrictions are described in GitHub's
 [workflow event reference](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows).
+
+## Live failure-path exercise
+
+PR CI at 273d8f3 observed one intermittent existing fixed-Lewis lab assertion.
+The coordinator created repair issue #9 from the real failed check. QA consumed
+that GitHub task directly, ran the unchanged scenario three times successfully,
+and inspected the trace: nonzero motion occurred between zero-valued assertion
+samples. This is not declared repaired. Open repair tasks remain dependencies of
+integration readiness even after a green retry. Evidence: agent-network/qa-triage.json.
+
+The optional worker's generated, ignored Playwright wrapper was also exercised
+against the original scenario on isolated port 8031. It overrides the old fixed
+8001 port without modifying the game's tracked test configuration. The worker
+protects that configuration from model edits. Bot PR/check events remain eligible
+for coordination; recursion suppression applies to issue/dashboard writes only.

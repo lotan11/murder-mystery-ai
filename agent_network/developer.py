@@ -17,7 +17,7 @@ import sys
 
 REPOSITORY = "lotan11/murder-mystery-ai"
 PROTECTED = (".git", ".github", ".env", "agent_network", "AGENTS.md")
-PROTECTED_FILES = {"requirements.txt", "frontend/package.json", "frontend/package-lock.json"}
+PROTECTED_FILES = {"requirements.txt", "frontend/package.json", "frontend/package-lock.json", "frontend/playwright.config.ts"}
 
 
 class DevelopmentBlocked(RuntimeError):
@@ -85,7 +85,7 @@ def _validation_commands(worktree):
         ([str(python), "-m", "pytest", "backend/tests", "-q"], worktree),
         ([npm, "test"], worktree / "frontend"),
         ([npm, "run", "build"], worktree / "frontend"),
-        ([npm, "run", "test:e2e"], worktree / "frontend"),
+        ([npm, "run", "test:e2e", "--", "--config", ".e2e-data/agent-runtime.config.ts"], worktree / "frontend"),
     ]
 
 
@@ -109,6 +109,23 @@ def _available_port():
     with socket.socket() as listener:
         listener.bind(("127.0.0.1", 0))
         return str(listener.getsockname()[1])
+
+
+def _browser_config(worktree, port):
+    """Override only test infrastructure; older game configs hardcode port 8001."""
+    path = worktree / "frontend/.e2e-data/agent-runtime.config.ts"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        "import original from '../playwright.config';\n"
+        "import {fileURLToPath} from 'node:url';\n"
+        f"const port='{int(port)}';\n"
+        "const server=original.webServer as any;\n"
+        "export default {...original, testDir:fileURLToPath(new URL('../e2e',import.meta.url)), "
+        "use:{...original.use,baseURL:`http://127.0.0.1:${port}`}, "
+        "webServer:{...server,reuseExistingServer:false,"
+        "command:server.command.replace(/--port \\d+/,`--port ${port}`),"
+        "url:`http://127.0.0.1:${port}/health`}};\n", encoding="utf-8")
+    return path
 
 
 def develop(root: Path, task: dict, execute: bool = False) -> dict:
@@ -205,10 +222,12 @@ def develop(root: Path, task: dict, execute: bool = False) -> dict:
         validation_env.update({"HOME": str(validation_home), "USERPROFILE": str(validation_home),
                                "GH_CONFIG_DIR": str(validation_home / "gh"),
                                "XDG_CONFIG_HOME": str(validation_home / "config")})
+        port = _available_port()
+        _browser_config(worktree, port)
         validation_env.update({"MYSTERY_ALLOW_PAID_AI": "false", "MYSTERY_DIALOGUE_PROVIDER": "scripted",
                                "MYSTERY_ALLOW_PAID_TRANSCRIPTION": "false", "OPENAI_API_KEY": "",
                                "MYSTERY_DB_PATH": str(worktree / "data/agent-validation.sqlite3"),
-                               "PLAYWRIGHT_PORT": _available_port()})
+                               "PLAYWRIGHT_PORT": port})
         checks = []
         for index, (command, directory) in enumerate(_validation_commands(worktree), 1):
             _run(command, directory, timeout=900, env=validation_env,

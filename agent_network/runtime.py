@@ -106,6 +106,13 @@ def reconcile(api, config, write=False):
             if issue["state"] == "closed":
                 task["status"] = "completed"
             tasks.append(task)
+    # A retry turning green does not prove a previously observed defect repaired.
+    # Keep its investigation attached until QA explicitly completes that issue.
+    for task in tasks:
+        if task["id"].startswith("pr:"):
+            repairs = [item["id"] for item in tasks if item["id"].startswith(("repair:", "qa:"))
+                       and item.get("pull_request") == task["pull_request"] and item["status"] != "completed"]
+            task["dependencies"] = sorted(set(task["dependencies"] + repairs))
     by_id = {task["id"]: task for task in tasks}
     for task in tasks:
         unresolved = [dep for dep in task.get("dependencies", []) if dep not in by_id or by_id[dep]["status"] != "completed"]
@@ -157,7 +164,7 @@ def record_review(api, number, result, write=False):
             task = {"id": f"qa:{number}:{pr['head']['sha']}", "title": f"Repair QA finding on PR #{number}",
                     "owner": "development", "priority": "P0", "status": "queued",
                     "acceptance": [result["summary"], "Reproduce defect, add regression and request independent verification"],
-                    "blockers": [], "dependencies": [], "evidence_url": result["evidence_url"]}
+                    "blockers": [], "dependencies": [], "pull_request": number, "evidence_url": result["evidence_url"]}
             record_task(api, task, write=True)
     # A recorded QA pass never substitutes for GitHub's independent APPROVED review.
     return result

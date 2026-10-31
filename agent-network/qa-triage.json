@@ -1,0 +1,51 @@
+{
+  "task_url": "https://github.com/lotan11/murder-mystery-ai/issues/9",
+  "task_source": "Read body and latest GitHub comment directly using gh issue view",
+  "source_head": "273d8f3c622c6d5bcc64225f2b7cd864f9ef2912",
+  "triage_scope": "QA only: no application/test fixes, no assertion changes, no provider calls, no live DB, no merge or push",
+  "original_failure": {
+    "run_id": 41154437411,
+    "attempt": 1,
+    "assertion": "frontend/e2e/character-lab.spec.ts:155 data-morph-max > 0",
+    "preserved": true,
+    "trace_sha256": "afd6d148406f0a4666de44478bdbb112fee2719362e65ca4ae33b1e0fbf1b547"
+  },
+  "local_repetition": {
+    "scenario": "fixed Lewis study uses user-initiated source-clock speech and stops on model change",
+    "passed": 3,
+    "failed": 0,
+    "repeat_each": 3,
+    "seconds": 18.7,
+    "port": 8030,
+    "config": "data/agent-network-ci-failure/triage.playwright.config.ts",
+    "infrastructure_override": "Original config imported; only testDir/outputDir and original hardcoded port8001 changed to8030 in ignored wrapper; original application/assertions unchanged"
+  },
+  "trace_observations": {
+    "all_morph_getAttribute_poll_results": "0.000",
+    "nonzero_viewer_snapshots": [
+      {
+        "trace_timestamp_ms": 102889.254,
+        "speech_time": 0.293,
+        "morph_max": 0.05
+      },
+      {
+        "trace_timestamp_ms": 104052.556,
+        "speech_time": 1.527,
+        "morph_max": 0.24
+      },
+      {
+        "trace_timestamp_ms": 105609.475,
+        "speech_time": 3.157,
+        "morph_max": 0.079
+      }
+    ],
+    "audio_ended_snapshot_ms": 108022.216,
+    "interpretation": "Nonzero motion occurred between observations, but the sampled poll missed it. Immediate assertion failure mechanism is evidenced; wider intermittent scheduling/timing cause not established."
+  },
+  "disposition": "Keep original failure and issue open. Three local passes are not a repair and do not prove absence of an intermittent defect.",
+  "tracked_file_sha256": {
+    "frontend/e2e/character-lab.spec.ts": "053c2c1d98beca83ed42be67ab71eb315f57779caad68ed8c1e9b7a6a5f8d05e",
+    "frontend/playwright.config.ts": "7ba1f71ae0b193030c944be91df1a005253e9a42a16c328cfd1c8535c48babcb",
+    "frontend/src/CharacterLab.tsx": "ed36bffeaf0f83b269d8593c8ef93d331d87af58e3f72bd9517011a690163a70"
+  }
+}

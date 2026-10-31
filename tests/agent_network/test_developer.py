@@ -135,3 +135,14 @@ def test_process_transport_preserves_git_status_leading_space(tmp_path, monkeypa
         stdout = " M backend/example.py\n"
     monkeypatch.setattr(developer.subprocess, "run", lambda *_args, **_kwargs: Result())
     assert developer._run(["git", "status", "--porcelain"], tmp_path).startswith(" M ")
+
+
+def test_browser_configuration_isolates_hardcoded_base_config_without_editing_it(tmp_path):
+    original = tmp_path / 'frontend/playwright.config.ts'
+    original.parent.mkdir()
+    original.write_text('original settings', encoding='utf-8')
+    path = developer._browser_config(tmp_path, '8031')
+    result = path.read_text(encoding='utf-8')
+    assert original.read_text(encoding='utf-8') == 'original settings'
+    assert "const port='8031'" in result and 'reuseExistingServer:false' in result
+    assert "../playwright.config" in result and '--port' in result

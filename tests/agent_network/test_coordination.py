@@ -301,3 +301,17 @@ def test_no_configured_trusted_reviewer_leaves_review_gate_blocked():
     assert integration_task(result)["status"] == "blocked"
     qa = next(item for item in result["tasks"] if item["owner"] == "qa")
     assert qa["status"] == "review"
+
+
+def test_green_retry_keeps_unresolved_failure_as_integration_dependency():
+    api = MemoryGitHub()
+    api.checks = [check(conclusion="failure")]
+    failed = reconcile(api, config(), write=True)
+    repair = next(item for item in failed["tasks"] if item["id"].startswith("repair:"))
+    api.checks = [check(identifier=2)]
+    retried = reconcile(api, config())
+    assert integration_task(retried)["status"] == "blocked"
+    assert repair["id"] in integration_task(retried)["dependencies"]
+    issue = next(issue for issue in api.issues if parse_task(issue["body"])["id"] == repair["id"])
+    issue["state"] = "closed"  # explicit QA classification, never automatic retry erasure
+    assert integration_task(reconcile(api, config()))["status"] == "integration_ready"
