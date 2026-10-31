@@ -185,6 +185,7 @@
       "max_nearest_source_distance_m": 0,
       "min_weight_sum": 1,
       "max_weight_sum": 1,
+      "active_polygons": 1442,
       "head_turn_max_delta_m": 0.0
     },
     "Scholar Forest wool waistcoat": {
@@ -194,16 +195,8 @@
       "max_nearest_source_distance_m": 0,
       "min_weight_sum": 1,
       "max_weight_sum": 1,
+      "active_polygons": 1,
       "head_turn_max_delta_m": 0.0
-    },
-    "Scholar Grey hair underlayer": {
-      "vertices": 12843,
-      "weighted_vertices": 12843,
-      "method": "head-triangle correspondence crown cap",
-      "max_nearest_source_distance_m": 0,
-      "min_weight_sum": 1.0,
-      "max_weight_sum": 1.0,
-      "head_turn_max_delta_m": 0.023408446279193005
     },
     "Scholar Grey strand 0": {
       "vertices": 11886,
@@ -212,7 +205,8 @@
       "max_nearest_source_distance_m": 0.07319991290569305,
       "min_weight_sum": 0.9999999999999998,
       "max_weight_sum": 1.0000000000000002,
-      "head_turn_max_delta_m": 0.022816227532155363
+      "active_polygons": 4959,
+      "head_turn_max_delta_m": 0.022816227838903965
     },
     "Scholar Grey strand 1": {
       "vertices": 16878,
@@ -221,7 +215,8 @@
       "max_nearest_source_distance_m": 0.07283063977956772,
       "min_weight_sum": 0.9999999999999998,
       "max_weight_sum": 1.0000000000000002,
-      "head_turn_max_delta_m": 0.023372474692982537
+      "active_polygons": 5556,
+      "head_turn_max_delta_m": 0.023372474909740485
     },
     "Scholar Grey strand 2": {
       "vertices": 13932,
@@ -230,7 +225,8 @@
       "max_nearest_source_distance_m": 0.07343469560146332,
       "min_weight_sum": 0.9999999999999998,
       "max_weight_sum": 1.0000000000000002,
-      "head_turn_max_delta_m": 0.02360255613986606
+      "active_polygons": 5499,
+      "head_turn_max_delta_m": 0.02360255648456238
     },
     "Scholar Grey strand 3": {
       "vertices": 14076,
@@ -239,7 +235,8 @@
       "max_nearest_source_distance_m": 0.07208970189094543,
       "min_weight_sum": 0.9999999999999998,
       "max_weight_sum": 1.0000000000000002,
-      "head_turn_max_delta_m": 0.02344580783245075
+      "active_polygons": 5110,
+      "head_turn_max_delta_m": 0.023445807993980387
     },
     "Scholar Grey strand 4": {
       "vertices": 12114,
@@ -248,7 +245,8 @@
       "max_nearest_source_distance_m": 0.07517003268003464,
       "min_weight_sum": 0.9999999999999998,
       "max_weight_sum": 1.0000000000000002,
-      "head_turn_max_delta_m": 0.02013518554696583
+      "active_polygons": 4376,
+      "head_turn_max_delta_m": 0.020135184645341794
     },
     "Scholar Ivory shirt": {
       "vertices": 13,
@@ -257,6 +255,7 @@
       "max_nearest_source_distance_m": 0,
       "min_weight_sum": 1,
       "max_weight_sum": 1,
+      "active_polygons": 3,
       "head_turn_max_delta_m": 0.0
     },
     "Scholar Muted patterned tie blocking": {
@@ -266,6 +265,7 @@
       "max_nearest_source_distance_m": 0,
       "min_weight_sum": 1,
       "max_weight_sum": 1,
+      "active_polygons": 2,
       "head_turn_max_delta_m": 0.0
     },
     "Scholar Natural eye whites": {
@@ -275,7 +275,8 @@
       "max_nearest_source_distance_m": 0,
       "min_weight_sum": 1,
       "max_weight_sum": 1,
-      "head_turn_max_delta_m": 0.01747983857151268
+      "active_polygons": 1280,
+      "head_turn_max_delta_m": 0.017479837744299946
     },
     "Scholar Neutral aged skin blockout": {
       "vertices": 4353,
@@ -284,7 +285,8 @@
       "max_nearest_source_distance_m": 0.06751283258199692,
       "min_weight_sum": 0.9999999999999998,
       "max_weight_sum": 1.0000000000000002,
-      "head_turn_max_delta_m": 0.023097721167616454
+      "active_polygons": 4324,
+      "head_turn_max_delta_m": 0.02309772145216921
     },
     "Scholar Pupils": {
       "vertices": 532,
@@ -293,7 +295,8 @@
       "max_nearest_source_distance_m": 0,
       "min_weight_sum": 1,
       "max_weight_sum": 1,
-      "head_turn_max_delta_m": 0.017542785349730902
+      "active_polygons": 576,
+      "head_turn_max_delta_m": 0.017542784602442858
     },
     "Scholar Slate blue grey iris": {
       "vertices": 1220,
@@ -302,7 +305,8 @@
       "max_nearest_source_distance_m": 0,
       "min_weight_sum": 1,
       "max_weight_sum": 1,
-      "head_turn_max_delta_m": 0.017596865131063753
+      "active_polygons": 1280,
+      "head_turn_max_delta_m": 0.017596864308544756
     },
     "Scholar Thin dark bronze spectacle rims": {
       "vertices": 2340,
@@ -311,7 +315,8 @@
       "max_nearest_source_distance_m": 0,
       "min_weight_sum": 1,
       "max_weight_sum": 1,
-      "head_turn_max_delta_m": 0.021516687016581437
+      "active_polygons": 2352,
+      "head_turn_max_delta_m": 0.021516687300908336
     },
     "Scholar Fitted silver facial groom": {
       "vertices": 18000,
@@ -320,13 +325,111 @@
       "min_weight_sum": 0.9999999590218067,
       "max_weight_sum": 1.0000000447034836,
       "max_nearest_source_distance_m": 0.0005001776153221726,
+      "active_polygons": 12000,
       "head_turn_max_delta_m": 0.023163077946682296
+    },
+    "Scholar short02 silver hair": {
+      "vertices": 1755,
+      "weighted_vertices": 1755,
+      "method": "rigid head",
+      "min_weight_sum": 1.0,
+      "max_weight_sum": 1.0,
+      "max_nearest_source_distance_m": 0.022787608206272125,
+      "active_polygons": 1672,
+      "head_turn_max_delta_m": 0.021644036911700932
     }
   },
   "speech_connected": false,
   "status": "Experimental weighted bust; not finished likeness, full facial rig or production speech avatar",
   "method": "Exact-nearest source weights for skin; inverse-distance four-neighbour transfer for groom; rigid Head accessories and Spine2 wardrobe. Normalized strongest four influences.",
   "binding_neutral_max_error_m": 1.2737006692050962e-07,
+  "eyelids": {
+    "version": 1,
+    "status": "Accepted modest alertness correction; unfinished development avatar",
+    "invocation": "After original binding-neutral verification, before skin bake/crown/facial groom. Refresh head rest only after recording correction.",
+    "source_face_study_sha256": "9824ffa51275815d3d7fe252e76dbd31d0fd992e40e02ecb2ec21f9110ee5153",
+    "config_sha256": "5e08dc40308865d5d6dc3f794cbba19cc20e6a25fefb35cf398575d852fc8c67",
+    "mpfb_commit": "6ff1eb358f6c1959ced77e79e6dd2406d9a71f49",
+    "source_targets_sha256": {
+      "data/character-tools/mpfb/src/mpfb/data/targets/eyes/l-eye-height2-incr.target.gz": "2ad24113bdd67f07870cb0298d0b0732ab5185b11f890946212c4cbb19845e34",
+      "data/character-tools/mpfb/src/mpfb/data/targets/eyes/r-eye-height2-incr.target.gz": "22fce2f25e349ab9f2beff8e3a4b54bda757535169afcfa0b4d022548f14494e"
+    },
+    "source_key_coordinate_scale_max_errors_m": {
+      "l-eye-height2-incr": 5.8906152844429016e-08,
+      "r-eye-height2-incr": 5.8906152844429016e-08
+    },
+    "source_head_mapping_max_error_m": 1.2737007182295201e-07,
+    "method": "Actual left/right eye-height2-incr anatomical deltas; raw(X,-Z,Y)*0.1*0.20; smooth world eye-local mask; equal offset to every key and mesh neutral",
+    "localization": "smoothstep(absX0.018..0.022m)*smoothstep(Z1.602..1.607m)",
+    "target_contribution_delta": 0.2,
+    "peak_effective_original_weight": 0.85,
+    "head_vertex_count": 4353,
+    "changed_vertices": 419,
+    "significantly_changed_vertices": 419,
+    "max_neutral_delta_m": 0.0005600452423095703,
+    "protected_lower_nose_lips_delta_m": 0.0,
+    "basis_local_before_sha256": "37267eb6ede4390571636ed4ef25f194cafee861883a1d207c72a8c7405962a1",
+    "basis_local_after_sha256": "bd8a821a61f8c7ff6118f0aed7912872233dcc34d84ca834a41f736e47173843",
+    "morph_count": 11,
+    "protected_data_before": {
+      "uv_sha256": "d1a59a41153c46b6b5f271c6c19424b7f49505249126153f1adaae3c81c92a3f",
+      "weights_sha256": "9fe799387c9472db41517736888e14cf6bc56469252e1a28d88a262c0d4ac329",
+      "rig_rest_sha256": "8782733f3d242bb8e3d02e91203d2dc7a9885070f95a834e074f131b0e65e08c",
+      "morph_deltas_sha256": {
+        "jawOpen": "6948b7165cb216674894817461aa384c8d96170142baa67fafd100d4dd25e691",
+        "eyeBlinkLeft": "bcb0dc12554d1b4f7e8a16ad38d77dfe6df1f15d1a2fde043cf5f04189f416d8",
+        "eyeBlinkRight": "785d597709e46296bd24c9d2d11291c48780cedb062387bd2e4a9a96a6cd9ff9",
+        "browInnerUp": "972256dfa1bce9205ff6f73e4ad6ce1ec9d6c8e36fef9433b2c5e20db692490d",
+        "browOuterUpLeft": "cd9737b9437d1d88f39d971bc5e9cb7106ecb82c80422bad72d758b1af97de03",
+        "browOuterUpRight": "d8e2119c73d0486a86c50f4b1663919165e4cbab79ad7fca191949b72ae2f6f1",
+        "browDownLeft": "18475788acf09f018b91649f96f2a97ef0257efaf4f729ae5a7cbcace9429768",
+        "browDownRight": "c1e42337df9eb946d74bcfb25cba9be663272ce74d69b7702a17beb00b1f877c",
+        "mouthPucker": "82b6f6de02045771f1274ba83a06abd3867fa34b8b49138e148c99ccee5606da",
+        "lipPress": "cba51890d7e5e11659637aef4a0538dfcaf9f3b1682dface0154c6e79b10875d",
+        "mouthSmile": "8b9d02b3b7edd03bdceaeef5db70243778cdec551a273919fed8399a54d8c7b0"
+      }
+    },
+    "protected_data_after": {
+      "uv_sha256": "d1a59a41153c46b6b5f271c6c19424b7f49505249126153f1adaae3c81c92a3f",
+      "weights_sha256": "9fe799387c9472db41517736888e14cf6bc56469252e1a28d88a262c0d4ac329",
+      "rig_rest_sha256": "8782733f3d242bb8e3d02e91203d2dc7a9885070f95a834e074f131b0e65e08c",
+      "morph_deltas_sha256": {
+        "jawOpen": "6948b7165cb216674894817461aa384c8d96170142baa67fafd100d4dd25e691",
+        "eyeBlinkLeft": "bcb0dc12554d1b4f7e8a16ad38d77dfe6df1f15d1a2fde043cf5f04189f416d8",
+        "eyeBlinkRight": "785d597709e46296bd24c9d2d11291c48780cedb062387bd2e4a9a96a6cd9ff9",
+        "browInnerUp": "972256dfa1bce9205ff6f73e4ad6ce1ec9d6c8e36fef9433b2c5e20db692490d",
+        "browOuterUpLeft": "cd9737b9437d1d88f39d971bc5e9cb7106ecb82c80422bad72d758b1af97de03",
+        "browOuterUpRight": "d8e2119c73d0486a86c50f4b1663919165e4cbab79ad7fca191949b72ae2f6f1",
+        "browDownLeft": "18475788acf09f018b91649f96f2a97ef0257efaf4f729ae5a7cbcace9429768",
+        "browDownRight": "c1e42337df9eb946d74bcfb25cba9be663272ce74d69b7702a17beb00b1f877c",
+        "mouthPucker": "82b6f6de02045771f1274ba83a06abd3867fa34b8b49138e148c99ccee5606da",
+        "lipPress": "cba51890d7e5e11659637aef4a0538dfcaf9f3b1682dface0154c6e79b10875d",
+        "mouthSmile": "8b9d02b3b7edd03bdceaeef5db70243778cdec551a273919fed8399a54d8c7b0"
+      }
+    },
+    "morph_deltas_unchanged": true,
+    "uv_unchanged": true,
+    "weights_unchanged": true,
+    "rig_unchanged": true,
+    "other_mesh_geometry_unchanged": true,
+    "triangle_min_normal_dot": 0.9943111445754766,
+    "triangle_area_ratio_range": [
+      0.8554839148528177,
+      1.0713218759491896
+    ],
+    "neutral_offset_manifest": {
+      "path": "assets/character-production/eyelid-neutral-offsets.json",
+      "sha256": "279f45e13a1313d7486933d830be4a72dd9541d078be38bc37078912fe77194c",
+      "rows": 419,
+      "six_decimal_mapping_ambiguities": 0,
+      "hash_encoding": "UTF-8 LF"
+    },
+    "limitations": [
+      "Neutral aperture correction only; existing expression deltas are unchanged, not reauthored.",
+      "Closed blink was visually reviewed in preview; integration must recheck blink/head/combined poses and fitted groom.",
+      "No physical eye collision, corneal volume, gaze control, final likeness or production rig approval."
+    ]
+  },
   "skin_materials": {
     "resolution": 1024,
     "engine": "Cycles CPU",
@@ -343,7 +446,7 @@
     "source_roughness": 0.6000000238418579,
     "baked_surface_pixels_including_margin": 259045,
     "coverage_method": "White emission surface coverage bake, including eight-pixel bake margin",
-    "normal_vs_bump_disabled_rms_xy": 0.009304990820355739,
+    "normal_vs_bump_disabled_rms_xy": 0.00929474190337262,
     "normal_channel_ranges": {
       "0": [
         0.4078431725502014,
@@ -361,14 +464,15 @@
     "geometry_modified": false,
     "light_baked_into_color": false,
     "limitations": [
-      "Existing shallow procedural grain only; no authored wrinkles, pores, photographic skin scan or final likeness approval.",
-      "Subsurface response is not baked into PBR maps; final browser appearance still needs review."
+      "Procedural grain/normal proof retained; restrained CC0 diffuse blend adds color variation only, not sculpted age anatomy or final skin/likeness approval.",
+      "Existing diffuse is not established as a clean/de-lit scan; no additional light was baked by the COLOR-only pass.",
+      "Subsurface response is not baked into PBR maps; final browser appearance still requires review."
     ],
     "maps": {
       "base_color": {
-        "path": "assets/character-production/skin-materials/skin-base-color.png",
-        "sha256": "a35c286218bbf8a6eed2296833e511371b49c76055f0c9697f56662a3b724ff4",
-        "bytes": 40676,
+        "path": "assets/character-production/skin-materials/skin-age-blend-color.png",
+        "sha256": "30e7354afb825bf16dd264ab2f6adeab63a9f9c347c55934e5c667dcd6825eaa",
+        "bytes": 345382,
         "width": 1024,
         "height": 1024,
         "colorspace": "sRGB"
@@ -383,14 +487,28 @@
       },
       "normal": {
         "path": "assets/character-production/skin-materials/skin-normal.png",
-        "sha256": "37bc1a9166e9c89444d0df198d4ea599d0374f52bcf9709bfd546f99e1b494c2",
-        "bytes": 425370,
+        "sha256": "72a2ce76f44bd6a2d80def48add47773116fc99c77638b764ba609a6d9193353",
+        "bytes": 425384,
         "width": 1024,
         "height": 1024,
         "colorspace": "Non-Color"
       }
     },
-    "restored_render_samples": 20
+    "restored_render_samples": 20,
+    "input_color": {
+      "path": "assets/character-production/skin-materials/skin-base-color.png",
+      "sha256": "a35c286218bbf8a6eed2296833e511371b49c76055f0c9697f56662a3b724ff4",
+      "bytes": 40676,
+      "width": 1024,
+      "height": 1024,
+      "colorspace": "sRGB"
+    },
+    "color_refinement": {
+      "validation_path": "assets/character-production/skin-color-validation.json",
+      "source_sha256": "dfb2310ed3e0ad024ea7a3ad321215e2e9e2994cca64043d9f3d07c6543ec847",
+      "additional_lighting_baked": false,
+      "source_is_clean_scan_claimed": false
+    }
   },
   "crown": {
     "status": "Same-topology crown surface fit development repair; not finished hair silhouette or likeness",
@@ -408,7 +526,7 @@
       "inward_vertex_count": 80,
       "closest_triangle_minimum_signed_offset_m": -0.0010052590514533222,
       "closest_triangle_inward_vertex_count": 79,
-      "triangle_vs_interpolated_normal_ambiguity_count": 6,
+      "triangle_vs_interpolated_normal_ambiguity_count": 7,
       "triangle_vs_interpolated_normal_ambiguous_world_positions": [
         [
           -0.08599106222391129,
@@ -416,9 +534,9 @@
           1.618186116218567
         ],
         [
-          0.08518148958683014,
-          -0.03836991265416145,
-          1.6216882467269897
+          0.08599106967449188,
+          -0.034208375960588455,
+          1.618186116218567
         ],
         [
           -0.08460725843906403,
@@ -431,24 +549,29 @@
           1.6070433855056763
         ],
         [
-          0.0849611833691597,
-          -0.028805967420339584,
-          1.605222225189209
+          0.08461122214794159,
+          -0.028296086937189102,
+          1.6036934852600098
         ],
         [
-          0.08529357612133026,
-          -0.029311245307326317,
-          1.6067142486572266
+          0.08460725843906403,
+          -0.028050363063812256,
+          1.6055198907852173
+        ],
+        [
+          0.08501329272985458,
+          -0.02855926752090454,
+          1.6070433855056763
         ]
       ]
     },
     "after_fit": {
       "minimum_signed_outward_offset_m": 0.002001664488489041,
-      "maximum_nearest_distance_m": 0.004448266234248877,
+      "maximum_nearest_distance_m": 0.004448262043297291,
       "inward_vertex_count": 0,
       "closest_triangle_minimum_signed_offset_m": -0.0017896259960252792,
-      "closest_triangle_inward_vertex_count": 27,
-      "triangle_vs_interpolated_normal_ambiguity_count": 27,
+      "closest_triangle_inward_vertex_count": 40,
+      "triangle_vs_interpolated_normal_ambiguity_count": 40,
       "triangle_vs_interpolated_normal_ambiguous_world_positions": [
         [
           -0.08836482465267181,
@@ -466,9 +589,14 @@
           1.6096543073654175
         ],
         [
-          -0.08824212849140167,
-          -0.02983960695564747,
-          1.6134393215179443
+          -0.08805634081363678,
+          -0.02925661765038967,
+          1.6122429370880127
+        ],
+        [
+          -0.08780688047409058,
+          -0.028630178421735764,
+          1.6109898090362549
         ],
         [
           -0.08772620558738708,
@@ -501,9 +629,34 @@
           1.6038963794708252
         ],
         [
-          -0.08772476762533188,
-          -0.02893376164138317,
-          1.6142151355743408
+          0.0879160612821579,
+          -0.032916080206632614,
+          1.6196333169937134
+        ],
+        [
+          0.0876137986779213,
+          -0.02840518206357956,
+          1.609428882598877
+        ],
+        [
+          0.08727972954511642,
+          -0.027708977460861206,
+          1.6029424667358398
+        ],
+        [
+          0.08604095131158829,
+          -0.02668282948434353,
+          1.6050511598587036
+        ],
+        [
+          0.08712229877710342,
+          -0.02769133448600769,
+          1.6081956624984741
+        ],
+        [
+          -0.08738859742879868,
+          -0.028318630531430244,
+          1.6128859519958496
         ],
         [
           -0.08793026208877563,
@@ -519,6 +672,11 @@
           -0.08801870048046112,
           -0.032159194350242615,
           1.6185822486877441
+        ],
+        [
+          -0.08787211030721664,
+          -0.028994480147957802,
+          1.6106470823287964
         ],
         [
           -0.08897033333778381,
@@ -571,39 +729,64 @@
           1.6053273677825928
         ],
         [
-          0.08772476762533188,
-          -0.028933748602867126,
-          1.6142151355743408
-        ],
-        [
           0.08800385147333145,
           -0.031201567500829697,
           1.6174410581588745
         ],
         [
-          0.08897034078836441,
-          -0.03716527670621872,
-          1.6176393032073975
+          0.08663690835237503,
+          -0.02720928192138672,
+          1.6066290140151978
+        ],
+        [
+          0.08718475699424744,
+          -0.02770524099469185,
+          1.6080973148345947
+        ],
+        [
+          0.08603490144014359,
+          -0.026766013354063034,
+          1.6050888299942017
+        ],
+        [
+          0.0865129753947258,
+          -0.027527760714292526,
+          1.606522560119629
+        ],
+        [
+          0.08738745748996735,
+          -0.02794928103685379,
+          1.6078296899795532
+        ],
+        [
+          0.08636942505836487,
+          -0.02672574669122696,
+          1.6085995435714722
+        ],
+        [
+          0.08580219745635986,
+          -0.026275116950273514,
+          1.606993317604065
+        ],
+        [
+          0.08520172536373138,
+          -0.02578573301434517,
+          1.6053273677825928
         ]
       ]
     },
     "head_turn_10_degrees_fit": {
       "minimum_signed_outward_offset_m": 0.0020017511124024168,
-      "maximum_nearest_distance_m": 0.00444827601313591,
+      "maximum_nearest_distance_m": 0.0044482736848294735,
       "inward_vertex_count": 0,
       "closest_triangle_minimum_signed_offset_m": -0.0017896381905302405,
-      "closest_triangle_inward_vertex_count": 28,
-      "triangle_vs_interpolated_normal_ambiguity_count": 28,
+      "closest_triangle_inward_vertex_count": 23,
+      "triangle_vs_interpolated_normal_ambiguity_count": 23,
       "triangle_vs_interpolated_normal_ambiguous_world_positions": [
         [
           -0.08839306235313416,
           -0.043496571481227875,
           1.6092332601547241
-        ],
-        [
-          0.08395826816558838,
-          -0.013117738999426365,
-          1.6100647449493408
         ],
         [
           -0.08844839781522751,
@@ -631,19 +814,29 @@
           1.607776165008545
         ],
         [
-          0.084117092192173,
-          -0.013386299833655357,
-          1.609839916229248
+          0.08496580272912979,
+          -0.014691567979753017,
+          1.6138540506362915
         ],
         [
-          0.08228997886180878,
-          -0.011961303651332855,
-          1.6054542064666748
+          0.08468734472990036,
+          -0.014149160124361515,
+          1.6126564741134644
         ],
         [
-          0.08351501077413559,
-          -0.012768092565238476,
-          1.608604073524475
+          0.08433886617422104,
+          -0.013575011864304543,
+          1.611401915550232
+        ],
+        [
+          0.08674478530883789,
+          -0.015496306121349335,
+          1.6092644929885864
+        ],
+        [
+          0.08369807153940201,
+          -0.012755957432091236,
+          1.6033518314361572
         ],
         [
           -0.08718864619731903,
@@ -691,54 +884,24 @@
           1.6049162149429321
         ],
         [
-          0.0823046937584877,
-          -0.01197027787566185,
-          1.605488657951355
+          0.08386390656232834,
+          -0.013341526500880718,
+          1.6132956743240356
         ],
         [
-          0.08296076953411102,
-          -0.012376963160932064,
-          1.6070349216461182
+          0.08429539203643799,
+          -0.013889568857848644,
+          1.6146270036697388
         ],
         [
-          0.083579421043396,
-          -0.012770920060575008,
-          1.6085060834884644
-        ],
-        [
-          0.08229827880859375,
-          -0.012044280767440796,
-          1.6054918766021729
-        ],
-        [
-          0.08289450407028198,
-          -0.012712075375020504,
-          1.6069281101226807
-        ],
-        [
-          0.08382266014814377,
-          -0.012975943274796009,
-          1.6082395315170288
-        ],
-        [
-          0.08260404318571091,
-          -0.01194801926612854,
-          1.609004020690918
-        ],
-        [
-          0.08197484910488129,
-          -0.011602019891142845,
-          1.6073949337005615
-        ],
-        [
-          0.08130647242069244,
-          -0.01122360210865736,
-          1.605725884437561
+          0.08446802943944931,
+          -0.01392238587141037,
+          1.6110599040985107
         ]
       ]
     },
-    "maximum_vertex_adjustment_m": 0.006001784657730539,
-    "head_position_sha256": "37267eb6ede4390571636ed4ef25f194cafee861883a1d207c72a8c7405962a1",
+    "maximum_vertex_adjustment_m": 0.006001786533005281,
+    "head_position_sha256": "bd8a821a61f8c7ff6118f0aed7912872233dcc34d84ca834a41f736e47173843",
     "existing_head_unchanged": true,
     "new_vertices": 0,
     "new_polygons": 0,
@@ -748,7 +911,9 @@
       "Helmet-like hairline, coarse strands, and cap coverage over the ear remain unfinished.",
       "Existing cap topology, scalp tone, guide strands and hairline contour retained; no final strand grooming or premium hair claim.",
       "Nearest-surface fit is a vertex-level check, not certification of all triangle coverage, camera angles or complex deformation."
-    ]
+    ],
+    "active_in_export": false,
+    "replacement_object": "Scholar short02 silver hair"
   },
   "groom": {
     "status": "Fitted ribbon-clump groom development study; not final hair or likeness approval",
@@ -832,7 +997,7 @@
     ],
     "minimum_rest_lip_proxy_clearance_m": 0.002014740943908633,
     "existing_head_unchanged": true,
-    "existing_head_position_sha256": "37267eb6ede4390571636ed4ef25f194cafee861883a1d207c72a8c7405962a1",
+    "existing_head_position_sha256": "bd8a821a61f8c7ff6118f0aed7912872233dcc34d84ca834a41f736e47173843",
     "scalp_or_crown_modified": false,
     "limitations": [
       "Development facial ribbon clumps and guide accents, not production hair cards/anisotropic shading; crown remains unchanged.",
@@ -908,7 +1073,7 @@
       "color_space": "sRGB",
       "lighting_painted": false
     },
-    "all_object_geometry_sha256": "ea5f8b4c8a48a0bd499dfdf5964070d2ece409e6b032a1e0209d4aba68e30bb9",
+    "all_object_geometry_sha256": "a02fac6ac54851848ed6a52dad0f8438541fdcfa87a59eae28b1b0ea291b7827",
     "eye_component_geometry_sha256": "cee51d71df13dd979b22dc7da3463ceab0cd1243e6288cf9d4c78bb3b1fefbed",
     "all_geometry_unchanged": true,
     "geometry_unchanged": true,
@@ -925,14 +1090,226 @@
       "Radial color detail does not constitute finished portrait likeness or premium eye approval."
     ]
   },
-  "negative_head_turn_max_delta_m": 0.023602554179462085,
-  "combined_pose_max_delta_m": 0.023602554179462085,
+  "skin_color": {
+    "status": "Restrained CC0 diffuse color blend for development Scholar; not clean/de-lit scan or finished likeness",
+    "source": {
+      "path": "assets/character-production/source-assets/makehuman-system/skins/old_caucasian_male/old_lightskinned_male_diffuse.png",
+      "sha256": "dfb2310ed3e0ad024ea7a3ad321215e2e9e2994cca64043d9f3d07c6543ec847",
+      "width": 2048,
+      "height": 2048,
+      "license": "CC0-1.0",
+      "material_path": "assets/character-production/source-assets/makehuman-system/skins/old_caucasian_male/old_caucasian_male.mhmat",
+      "material_sha256": "001eccec34180d4eb7369933360116a7ea1022c72674c1b012b988af65002600",
+      "license_evidence": "MHMat explicitly released as CC0 in September2020"
+    },
+    "material_name": "Neutral aged skin blockout",
+    "head_object": "Scholar Neutral aged skin blockout",
+    "input_color": {
+      "path": "assets/character-production/skin-materials/skin-base-color.png",
+      "sha256": "a35c286218bbf8a6eed2296833e511371b49c76055f0c9697f56662a3b724ff4",
+      "bytes": 40676,
+      "width": 1024,
+      "height": 1024,
+      "colorspace": "sRGB"
+    },
+    "texture": {
+      "path": "assets/character-production/skin-materials/skin-age-blend-color.png",
+      "sha256": "30e7354afb825bf16dd264ab2f6adeab63a9f9c347c55934e5c667dcd6825eaa",
+      "bytes": 345382,
+      "width": 1024,
+      "height": 1024,
+      "colorspace": "sRGB"
+    },
+    "uv_layer": "UVMap",
+    "uv_index": 0,
+    "recipe": {
+      "source_mix_weight": 0.45,
+      "source_tint_linear": [
+        0.78,
+        0.82,
+        0.9
+      ],
+      "mask_coordinate_space": "Geometry Position world meters at rest; baked into UV0",
+      "rear_y_transition_m": [
+        -0.075,
+        -0.045
+      ],
+      "below_z_transition_m": [
+        1.63,
+        1.67
+      ],
+      "mask_interpolation": "SMOOTHSTEP",
+      "weight_formula": ".45*(1-rearY*belowZ)"
+    },
+    "bake": {
+      "type": "DIFFUSE COLOR only",
+      "engine": "Cycles CPU",
+      "samples": 8,
+      "margin_pixels": 8,
+      "resolution": 1024,
+      "additional_lighting_baked": false
+    },
+    "geometry_uv_weights_morph_sha256_before": "de01359eff1d6e2a9bc4c74e2666269d5f8cbbfb70f8e11ba47c320001eac326",
+    "geometry_uv_weights_morph_sha256_after": "de01359eff1d6e2a9bc4c74e2666269d5f8cbbfb70f8e11ba47c320001eac326",
+    "geometry_unchanged": true,
+    "uv_mapping_unchanged": true,
+    "weights_morphs_material_assignments_unchanged": true,
+    "source_image_unchanged": true,
+    "procedural_input_preserved": true,
+    "normal_roughness_preserved": true,
+    "limitations": [
+      "Existing diffuse appearance retained; no clean/de-lit scan claim and original MHMat litsphere/emission/subsurface behavior not recreated.",
+      "Adds color variation only; does not sculpt age anatomy or finish portrait likeness, eyelids, groom or skin artistry.",
+      "Normal/roughness and oral material assignments unchanged; only the active supported base-color image is replaced."
+    ]
+  },
+  "hair_asset": {
+    "status": "Reviewed bounded development hair replacement; not finished loose Scholar waves",
+    "object": "Scholar short02 silver hair",
+    "material": "Scholar short02 silver hair",
+    "method": "HumanService.add_mhclo_asset and actual retained MPFB full-source MHCLO barycentric/scale mapping",
+    "source_hashes": {
+      "assets/character-production/source-assets/makehuman-system/hair/short02/short02.mhclo": "625736cdb73e6d094df6e5a2df18f371781f1d2cd37b0ae15795c5d7051c3ec2",
+      "assets/character-production/source-assets/makehuman-system/hair/short02/short02.mhmat": "2ed04c8aad9c1a35d858ca72091525d32b1da3b61b5a031634dd528fd8530f6d",
+      "assets/character-production/source-assets/makehuman-system/hair/short02/short02.obj": "48f979114adfa712165a69cc55c45a70831af1fb3cba8e2a89120f0c87407b64",
+      "assets/character-production/source-assets/makehuman-system/hair/short02/short02_diffuse.png": "47fe33831a3929567c733356dd66243116e05df2ace1f884ddca0080b728229f",
+      "assets/character-production/source-assets/makehuman-system/hair/short02/short02_normal.png": "2cfac7619f8eec77dd90df979d912415058f4f0fc16940cba40a8eb1ae6d74b5"
+    },
+    "vertices": 1755,
+    "polygons": 1672,
+    "weight_method": "All real imported vertices normalized 1.0 to existing mixamorig:Head",
+    "min_weight_sum": 1.0,
+    "max_weight_sum": 1.0,
+    "new_bones": 0,
+    "new_morphs": 0,
+    "retired_node_names": [
+      "Scholar Grey hair underlayer"
+    ],
+    "retained_editable_cap_vertices": 12843,
+    "retired_guide_polygons": {
+      "Scholar Grey strand 0": {
+        "retired_crown_polygons": 5805,
+        "original_polygons": 10764,
+        "retained_vertices": 11886,
+        "active_polygons": 4959
+      },
+      "Scholar Grey strand 1": {
+        "retired_crown_polygons": 9888,
+        "original_polygons": 15444,
+        "retained_vertices": 16878,
+        "active_polygons": 5556
+      },
+      "Scholar Grey strand 2": {
+        "retired_crown_polygons": 7173,
+        "original_polygons": 12672,
+        "retained_vertices": 13932,
+        "active_polygons": 5499
+      },
+      "Scholar Grey strand 3": {
+        "retired_crown_polygons": 7706,
+        "original_polygons": 12816,
+        "retained_vertices": 14076,
+        "active_polygons": 5110
+      },
+      "Scholar Grey strand 4": {
+        "retired_crown_polygons": 6676,
+        "original_polygons": 11052,
+        "retained_vertices": 12114,
+        "active_polygons": 4376
+      }
+    },
+    "protected_rest_position_sha256": {
+      "Scholar Brown tweed blocking": "9979f52a55e4b53e750a518ef968a0a86ec41133ee790bf7002b88013d2f9d60",
+      "Scholar Forest wool waistcoat": "b974bb323e56c7d1afff5a6426a62cf150e204aeabe41014e4edb28654ab392b",
+      "Scholar Grey hair underlayer": "7f94a5d6153b77a0e645b4e8fd4d89920449a6f3c3aae1ab232c5f8134b3e4cf",
+      "Scholar Grey strand 0": "c850e0fd6c11463e822bbcfb070baa935ab2e16b9d7a4413d07ee247831baa3d",
+      "Scholar Grey strand 1": "8a4ea51aacf862625802e8f0ea6da10e32df83239bc248a6a80d0352c6590421",
+      "Scholar Grey strand 2": "01fc78fc46cda3921b18f0c37e800e1df34e223b51d2eaf5cc6430450077a5c4",
+      "Scholar Grey strand 3": "1964adb51e712e6ea43875c3ad276ade7363ce7951ef0adad7729f767fcdaba7",
+      "Scholar Grey strand 4": "af256117aeb181a73cc43b6b829869d9968be346493d26e5037574b0e3d9eda9",
+      "Scholar Ivory shirt": "c1458da9283ba8d313bc3ea3cb84bebd6f2e58dda5c82a07ce93432899756ba2",
+      "Scholar Muted patterned tie blocking": "6c5a5d05f27e50b39b93b6c4bcaeff486ee7c5c119d00be9d5602948ac1a7650",
+      "Scholar Natural eye whites": "ff43e012960d50ed23d656221f09a0a6747d6065a51b8a91360b1f6aefe587e4",
+      "Scholar Neutral aged skin blockout": "bd8a821a61f8c7ff6118f0aed7912872233dcc34d84ca834a41f736e47173843",
+      "Scholar Pupils": "65afe9f075d906a4383509daa98ba40bfee742c1aca3f4b0fd82e72906bafdf2",
+      "Scholar Slate blue grey iris": "b33aca8c570bbcc0ca4bf9dcef049a0621846e9e2b07d1c75e6cfe96c673efe6",
+      "Scholar Thin dark bronze spectacle rims": "9bdb61da9b0d7b8f9324cdd86e429c4fe071cf21fa2bd861dd2826e78b3e3f1e",
+      "Scholar Fitted silver facial groom": "20b124d525c71c6364e42586ed66c4591c5394cb40e9d5b698c93cd5c2c37616"
+    },
+    "protected_morph_weight_sha256": {
+      "Scholar Brown tweed blocking": "9e755d0bddae6cd7abf95f37e7b1316fab6803839f4fa31f60e2f25b1954e7eb",
+      "Scholar Forest wool waistcoat": "b18ac38962ec95825c278e77dfb8b5d5dc7ba09b31fa5f441b08af778e44d6f9",
+      "Scholar Grey hair underlayer": "742281de2adc23fbee62102530cc13b4374cff24c2ca4e1ba6552af42979af50",
+      "Scholar Grey strand 0": "63bbb35c1736012b412d22700d43691a9d32e2d4b6572673b344232818ba9757",
+      "Scholar Grey strand 1": "50754d64ff99f0bef2c3d7ac67d36c6773cd6a3c04e6f05571d5ed2fce7c74e8",
+      "Scholar Grey strand 2": "59f7608b30941e6e0409188df5dfa66d5f76737ed2305b3472f0a839544a37ee",
+      "Scholar Grey strand 3": "e9645c88e2dbfdc23884e5fdf9d6dea3d2891de610523528ecf4a78eb1192824",
+      "Scholar Grey strand 4": "bd5118fd83811807abd6910d14cb0e39674abe26696229cc64cd92bcbd75bdb9",
+      "Scholar Ivory shirt": "9443d22c74a749edaa2f3821cc21e650f1f0dc46ff81748ea0803fc0abb58f20",
+      "Scholar Muted patterned tie blocking": "a9010122c447feaff61edd180e0583a231e896e38d4fbd1e9f2551ae982f5705",
+      "Scholar Natural eye whites": "5f260e78e04ce7cb8ab50b16b08df463e16d42c6ed78694fd15988a24373fe84",
+      "Scholar Neutral aged skin blockout": "388f49b88838e5d3075df0c619966be696a80ec151829356d6e0a7680d1b173a",
+      "Scholar Pupils": "f8ee8a20f6c01f269423a86a8cef856a8a062062d19a59a51d55d98f01952d3a",
+      "Scholar Slate blue grey iris": "5f260e78e04ce7cb8ab50b16b08df463e16d42c6ed78694fd15988a24373fe84",
+      "Scholar Thin dark bronze spectacle rims": "6d0e0575d835aef69ad25ea78e395fbd1396296230fcc33ed319b57fe2a420c9",
+      "Scholar Fitted silver facial groom": "3d970b9e71a586cd7221b6a2052af8a6678b5b6421b79270895e7149a4236c53"
+    },
+    "existing_rest_positions_unchanged": true,
+    "cap_geometry_retained_in_source": true,
+    "alpha_preserved_max_error": 0.0,
+    "albedo_path": "assets/character-production/hair-materials/short02-silver-albedo.png",
+    "albedo_sha256": "8141773bc04d9c5d1268d95548f9229027dcf9994dfc3e07eeb2cc48d5eb3813",
+    "silver_transform": "0.34+0.48*sqrt(source diffuse luminance), RGB multipliers0.96/0.98/1.0; source alpha retained",
+    "roughness": 0.8,
+    "blender_specular_ior_level": 0.15,
+    "gltf_specular_factor": 0.3,
+    "normal_strength": 0.4,
+    "normal_caveat": "Source MHMAT normal False; supplied purple map explicitly trialled as tangent-space with actual UVs and reviewed after GLB export; no claim of original source intent",
+    "maximum_nearest_head_distance_m": 0.022787608206272125,
+    "proximal_contact_proxy_vertex_count": 600,
+    "proximal_contact_proxy_threshold_m": 0.004,
+    "contact_fit": {
+      "neutral": {
+        "minimum_nearest_head_distance_m": 9.98322207124147e-07,
+        "maximum_nearest_head_distance_m": 0.003984540700912476,
+        "minimum_triangle_signed_offset_m": -0.0022644602286163718,
+        "triangle_inward_sign_count": 26
+      },
+      "-10": {
+        "minimum_nearest_head_distance_m": 9.873355111267301e-07,
+        "maximum_nearest_head_distance_m": 0.004002155736088753,
+        "minimum_triangle_signed_offset_m": -0.0022644677774223965,
+        "triangle_inward_sign_count": 26
+      },
+      "10": {
+        "minimum_nearest_head_distance_m": 9.96402036435029e-07,
+        "maximum_nearest_head_distance_m": 0.004008163698017597,
+        "minimum_triangle_signed_offset_m": -0.0022644147684331983,
+        "triangle_inward_sign_count": 26
+      }
+    },
+    "head_attachment": {
+      "-10": {
+        "maximum_rigid_head_correspondence_error_m": 2.4027400458748785e-07
+      },
+      "10": {
+        "maximum_rigid_head_correspondence_error_m": 2.4027580952365167e-07
+      }
+    },
+    "limitations": [
+      "Dense swept quiff remains a development likeness, not final loose premium hair.",
+      "Contact proxy uses nearby geometry vertices, not artist-authored follicle roots; signed triangle values are recorded without claiming watertight coverage or zero intersections.",
+      "Only crown polygons of original grey guides retire; all original guide vertex positions, morph data and weights remain in editable source."
+    ]
+  },
+  "negative_head_turn_max_delta_m": 0.023602554403740497,
+  "combined_pose_max_delta_m": 0.023602554403740497,
   "mouth_preview_limits": {
     "mouthPucker": 0.25,
     "lipPress": 0.25,
     "mouthSmile": 0.2
   },
-  "restored_max_error_m": 1.2737006692050962e-07,
+  "restored_max_error_m": 0.0,
   "head_turn_degrees": 10,
   "limitations": [
     "Head/neck binding proof only; eye gaze, jaw bone, shoulders and combined extreme poses are not approved.",

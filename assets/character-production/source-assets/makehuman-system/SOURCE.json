@@ -1,0 +1,46 @@
+{
+  "url": "https://files2.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip",
+  "archive_bytes": 280737770,
+  "etag": "\"10bbb7ea-6160e7c0d7996\"",
+  "retrieval": "Selected ZIP ranges only; no full-archive SHA claimed",
+  "inventory_url": "https://static.makehumancommunity.org/assets/assetpacks/makehuman_system_assets.html",
+  "license": "CC0-1.0",
+  "license_evidence": "Individual OBJ/MHCLO/MHMAT headers explicitly release these core assets as CC0 in September2020; source PNG references resolve within those asset folders.",
+  "files": [
+    {
+      "path": "hair/short02/short02.obj",
+      "bytes": 139742,
+      "sha256": "48f979114adfa712165a69cc55c45a70831af1fb3cba8e2a89120f0c87407b64"
+    },
+    {
+      "path": "hair/short02/short02.mhclo",
+      "bytes": 119240,
+      "sha256": "625736cdb73e6d094df6e5a2df18f371781f1d2cd37b0ae15795c5d7051c3ec2"
+    },
+    {
+      "path": "hair/short02/short02.mhmat",
+      "bytes": 1323,
+      "sha256": "2ed04c8aad9c1a35d858ca72091525d32b1da3b61b5a031634dd528fd8530f6d"
+    },
+    {
+      "path": "hair/short02/short02_diffuse.png",
+      "bytes": 3553543,
+      "sha256": "47fe33831a3929567c733356dd66243116e05df2ace1f884ddca0080b728229f"
+    },
+    {
+      "path": "hair/short02/short02_normal.png",
+      "bytes": 1626745,
+      "sha256": "2cfac7619f8eec77dd90df979d912415058f4f0fc16940cba40a8eb1ae6d74b5"
+    },
+    {
+      "path": "skins/old_caucasian_male/old_caucasian_male.mhmat",
+      "bytes": 1449,
+      "sha256": "001eccec34180d4eb7369933360116a7ea1022c72674c1b012b988af65002600"
+    },
+    {
+      "path": "skins/old_caucasian_male/old_lightskinned_male_diffuse.png",
+      "bytes": 4306141,
+      "sha256": "dfb2310ed3e0ad024ea7a3ad321215e2e9e2994cca64043d9f3d07c6543ec847"
+    }
+  ]
+}

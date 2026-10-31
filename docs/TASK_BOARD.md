@@ -15,7 +15,8 @@ Updated October 30, 2026. Lead/integrator owns this board. Status reflects commi
 | P1 | Listener integration — `feature/listener` | Recorded review defects fixed; authenticated detective-speaking mic suppression passes local backend/client/build/browser suites. Next: remote CI and main Work review of speaking-state contract; do not merge before combined integration sign-off |
 | Completed foundation | Bounded public replay cache | Four entries/32MiB/15-minute reuse lifetime; actual local cold12.107s/warm0.005724s, one worker |
 | Completed foundation | Restrained iris material | Supported512px slate-grey texture on actualUV1; preserved eye anatomy; final eyes/likeness unfinished |
-| Done this increment | Portrait head comparison | Same approved image cropped in Face close-up; full bust/reset preserved; new hair experiment rejected |
+| Completed foundation | Portrait head comparison | Same approved image cropped in Face close-up; full bust/reset preserved; new hair experiment rejected |
+| Done this increment | Core hair and skin refinement | Actual source-fitted textured silver hair and masked color bake; final likeness still open |
 | Protected baseline | Playable Blackthorn case | Approved portrait/live Lewis, private roles, recovery and existing modes preserved |
 
 November4 is the animated-character readiness gate; November10 remains integration deadline. See SCHOLAR_QUALITY_REVIEW.md for concrete visual priorities. Historical milestone records follow.
@@ -246,3 +247,25 @@ Completed restrained512px radial iris albedo and supportedUV1 binding on the sep
 Delivered display-only approved-portrait head crop synchronized with Faceclose-up; desktop/phone review and Reset/model restoration covered. Rejected two procedural tube-clump crown passes: helmet line/wire loops remained despite valid weights/attachment. Public rig/source unchanged; no new hair shipped. See reviews/HAIR_REFINEMENT_REVIEW.md.
 
 Next P0: inspect/license/hash and visually assess an existing swept-hair asset, then fit actual Scholar geometry and validate exported materials/attachment. Official MakeHuman inventories are source leads only; no hair asset selected/downloaded. Likeness/lids/tailoring/oral/perceived-speech quality and November4/10 risk remain. ListenerPR2 remains reviewed/green/unmerged.
+
+## October30 core hair/skin increment
+
+Accepted bounded development improvement: real MHCLO-fitted short02silver hair and45%masked skin-color blend. Seven images embed; canonical studies, face/eyes/controls and defaultgame portrait/liveLewis retained. Excluded mixed-header community candidates and eye-obstructing short03. 317backend tests pass (3Windows skips); no finalhair/skin/likeness claim. NextP0: facial/eyelid proportions, shapedfacialgroom, tailoring/oral and loosehair refinement; November4gate/November10 risk unchanged.
+
+ListenerPR2 advanced toddf2778 with speaking-state signaling; priorapproval0b2e809 doesnotcovernewhead. Freshreview finds guestdevice read-aloud bypasses local mic suppression. Keepunmerged pendingrepair/combinedchecks.
+
+Finalvalidation: main6de53db CI41061277059 green;317backend/3Windows skips,21client/build,20browser pass. Combinedlistener generalchecks374+28client+28browser pass, but targetedguest-device-narration testfails (mictracklive); no PR2approval/merge. Resolve localaudio suppression and docs/PROGRESS conflict before integration.
+
+## October30 listener repair and character experiments
+
+Completed: reviewed/published local narration capture fix4646c5c to the existing listenerPR2;28client/build and30fullbrowser scenarios pass, including two new real fake-microphone regressions. Backend rerun/remoteCI follow. PR is still unmerged; current-main reconciliation and device acceptance remain.
+
+Character: rejected wider alpha-card facial groom after actual browser review (patch-like appearance despite valid weights/deformations). Retained a modest localized eyelid preview for guarded future integration; not in publicsource/GLB. See reviews/SCHOLAR_EYELID_GROOM_REVIEW.md. Next: integrate declared eyelid offsets before groom with strict original-head guards, then natural facial-groom/tailoring/oral work and perceived speech review. Existing approved portrait/liveLewis1.05 remains the game default. November4/10 risk persists; no new casting decision or spending needed.
+
+## October 30 eyelid integration and disconnect reliability
+
+- Done: reviewed eyelid adjustment integrated before skin baking/groom fitting, with 419 explicit offsets and strict exported-head preservation. Source/GLB/maps rebuilt; actual app neutral/blink, Lewis pace/pitch and Stop verified.
+- Local validation: 317 backend tests (three Windows skips), 16 asset checks, 21 client checks, build and 20 browser scenarios pass. Main CI 41125253884 passed.
+- Listener PR2: reproduced disconnect cancellation race repaired on 2c6ecde. Cleanup precedes awaiting; recovery notification shielded for at most two seconds. Regression fails before repair and passes afterward. Branch backend: 368 pass/three skips. Combined current-main: 370 backend pass/three skips, 28 client checks/build; all 30 browser scenarios and branch CI 41125090564 pass. Sole conflict: progress document. PR unmerged.
+- Next: natural facial groom, portrait likeness, tailoring/oral detail, perceived speech review and controlled listener integration with verified local startup/database recovery.
+- Risk: November 4 character readiness and November 10 finished-avatar quality. Approved portrait/live Lewis at 1.05 remains the stable playable baseline. No new user input or purchase needed.

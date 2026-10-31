@@ -152,8 +152,13 @@ for obj in objects:
 neutral={obj.name:positions(obj) for obj in objects}
 report['binding_neutral_max_error_m']=max((a-b).length for name in rest for a,b in zip(rest[name],neutral[name]))
 if report['binding_neutral_max_error_m']>0.00001:raise RuntimeError('Binding changed neutral geometry')
-# Bake source skin detail into explicit maps supported by the browser's glTF material.
+# Explicitly declared localized neutral edit; preserve original binding proof above.
 import importlib.util
+eyelid_spec=importlib.util.spec_from_file_location('scholar_eyelid_refinement',ROOT/'scripts/refine-scholar-eyelids.py')
+eyelid_module=importlib.util.module_from_spec(eyelid_spec);eyelid_spec.loader.exec_module(eyelid_module)
+report['eyelids']=eyelid_module.refine_eyelids(head_mesh,source,ROOT,rig)
+rest[head_mesh.name]=positions(head_mesh)
+# Bake source skin detail into explicit maps supported by the browser's glTF material.
 skin_spec=importlib.util.spec_from_file_location('scholar_skin_bake',ROOT/'scripts/bake-scholar-skin.py')
 skin_module=importlib.util.module_from_spec(skin_spec);skin_spec.loader.exec_module(skin_module)
 report['skin_materials']=skin_module.bake_skin_materials(head_mesh,ROOT)
@@ -182,6 +187,29 @@ report['meshes'][groom.name]={'vertices':len(groom.data.vertices),'weighted_vert
 eyes_spec=importlib.util.spec_from_file_location('scholar_eye_refinement',ROOT/'scripts/refine-scholar-eyes.py')
 eyes_module=importlib.util.module_from_spec(eyes_spec);eyes_spec.loader.exec_module(eyes_module)
 report['eye_materials']=eyes_module.refine_eyes(objects,ROOT)
+
+# Reviewed color-only skin atlas, retaining existing normal/roughness and facial geometry.
+skin_color_spec=importlib.util.spec_from_file_location('scholar_skin_color',ROOT/'scripts/refine-scholar-skin-color.py')
+skin_color_module=importlib.util.module_from_spec(skin_color_spec);skin_color_spec.loader.exec_module(skin_color_module)
+report['skin_color']=skin_color_module.refine_skin_color(head_mesh,ROOT)
+report['skin_materials']=json.loads((ROOT/'assets/character-production/skin-material-validation.json').read_text(encoding='utf-8'))
+
+# Reviewed real CC0 short02 asset replaces the exported cap/loose crown presentation.
+hair_spec=importlib.util.spec_from_file_location('scholar_hair_asset',ROOT/'scripts/fit-scholar-hair-asset.py')
+hair_module=importlib.util.module_from_spec(hair_spec);hair_spec.loader.exec_module(hair_module)
+hair,retired_cap,report['hair_asset']=hair_module.fit_hair_asset(head_mesh,source,objects,rig,ROOT)
+objects=[obj for obj in objects if obj!=retired_cap]
+rest.pop(retired_cap.name);report['meshes'].pop(retired_cap.name)
+report['crown']['active_in_export']=False
+report['crown']['replacement_object']=hair.name
+for obj in objects:
+    rest[obj.name]=positions(obj)
+    report['meshes'][obj.name]['active_polygons']=len(obj.data.polygons)
+objects.append(hair);rest[hair.name]=positions(hair)
+report['meshes'][hair.name]={'vertices':len(hair.data.vertices),'weighted_vertices':len(hair.data.vertices),
+ 'method':'rigid head','min_weight_sum':1.0,'max_weight_sum':1.0,'max_nearest_source_distance_m':report['hair_asset']['maximum_nearest_head_distance_m'],
+ 'active_polygons':len(hair.data.polygons)}
+hair_module.render_hair_comparison(ROOT)
 
 
 head=rig.pose.bones['mixamorig:Head'];head.rotation_mode='XYZ';head.rotation_euler=(0,math.radians(10),0)

@@ -50,6 +50,8 @@ type Inventory = {
   skinnedMeshes: number;
   skinMaps: number;
   irisMapInfo: string;
+  hairMaps: number;
+  hairAlphaMode: string;
   morphs: string[];
   meshNames: string[];
   bytes: number;
@@ -382,7 +384,9 @@ export default function CharacterLab() {
           joints = 0,
           skinnedMeshes = 0,
           skinMaps = 0,
-          irisMapInfo = "";
+          irisMapInfo = "",
+          hairMaps = 0,
+          hairAlphaMode = "";
         const morphs = new Set<string>(),
           meshNames: string[] = [];
         gltf.scene.traverse((object) => {
@@ -402,6 +406,13 @@ export default function CharacterLab() {
                 if (texture && image?.width && image?.height && texture.colorSpace === THREE.SRGBColorSpace) {
                   irisMapInfo = `${image.width}x${image.height}/uv${texture.channel}/srgb`;
                 }
+              }
+              if (material instanceof THREE.MeshStandardMaterial && material.name === "Scholar short02 silver hair") {
+                hairMaps = [material.map, material.normalMap].filter(texture => {
+                  const image = texture?.image as {width?: number; height?: number} | undefined;
+                  return texture instanceof THREE.Texture && image?.width === 2048 && image?.height === 2048;
+                }).length;
+                hairAlphaMode = material.transparent ? "blend" : material.alphaTest > 0 ? "mask" : "opaque";
               }
             }
             meshNames.push(object.name || `Mesh ${meshes}`);
@@ -516,6 +527,8 @@ export default function CharacterLab() {
           skinnedMeshes,
           skinMaps,
           irisMapInfo,
+          hairMaps,
+          hairAlphaMode,
           morphs: [...morphs].sort(),
           meshNames,
           bytes: bytes.byteLength,
@@ -704,6 +717,8 @@ export default function CharacterLab() {
               data-morph-max="0"
               data-skin-map-count={inventory?.skinMaps || 0}
               data-iris-map-info={inventory?.irisMapInfo || ""}
+              data-hair-map-count={inventory?.hairMaps || 0}
+              data-hair-alpha-mode={inventory?.hairAlphaMode || ""}
               data-mesh-count={inventory?.meshes || 0}
               data-joint-count={inventory?.joints || 0}
               data-morph-count={inventory?.morphs.length || 0}

@@ -79,3 +79,13 @@ Before/after front/profile views are under `docs/assets/crown-*`. Visible scalp 
 ## October30 hair quality gate
 
 The rounded crown-tube prototype is rejected and not called by the builder. Technical root/Head-weight checks passed, but helmet hairline and exposed loops failed the visual target. Evidence/next source leads:reviews/HAIR_REFINEMENT_REVIEW.md and its JSON/renders. The current weighted rig remains unchanged. In the lab, Faceclose-up now also crops the original portrait for closer comparison (display-onlySVG, complete hair/ears/chin); Reset/model changes restore the original full-bust reference.
+
+## Core hair and restrained skin color
+
+After iris refinement, the builder calls refine-scholar-skin-color.py, refreshes skin-material-validation.json, then fit-scholar-hair-asset.py before pose checks/export. Source files are under source-assets/makehuman-system with exact hashes; no network fetch is needed to rebuild these included assets. The original procedural color stays as input_color and skin-age-blend-color.png is the active1kmap; original normal/roughness and iris maps are unchanged. Hair uses supported2kRGBA/normal with actualUV0 and existingHead weights. Old cap remains editable but unexported; historical crown-fit JSON is no longer certification of an active cap. See reviews/SCHOLAR_CORE_ASSETS_REVIEW.md for recipe, exclusions and deformation/material limitations.
+
+## Localized neutral eyelid correction
+
+The bound-study builder now calls scripts/refine-scholar-eyelids.py after verifying original binding-neutral identity and before baking/fitting. It adds the reviewed eye-local0.20 contribution from pinned MPFB eye-height targets, changing419headvertices by at most0.560045mm. The same realized offset is applied to all11keys; original relative deformation deltas,UVs,weights,eyes and rig are preserved. The canonical static/face-only sources remain unchanged.
+
+Explicit before/after coordinates in eyelid-neutral-offsets.json replace only the declared support in the original exported head point-multiset test. All undeclared points retain the existing six-decimal comparison; seam/material multiplicities remain. Manifest SHA uses UTF-8 with LF normalization for portable checkout. eyelid-validation.json records source/protected hashes and face-integrity limits. Skin normal/refinedcolor maps are rebaked for the changed surface. The existing groom is refitted; rejected wider cards are not included. Actual8018neutral/closedblink reviewed, real localLewis remains1.05 with pitchpreservation and Stopneutral/noaudio. Not final likeness, corneal collision, fullvisemes or premium groom approval.

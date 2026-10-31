@@ -1,0 +1,73 @@
+{
+  "status": "Restrained CC0 diffuse color blend for development Scholar; not clean/de-lit scan or finished likeness",
+  "source": {
+    "path": "assets/character-production/source-assets/makehuman-system/skins/old_caucasian_male/old_lightskinned_male_diffuse.png",
+    "sha256": "dfb2310ed3e0ad024ea7a3ad321215e2e9e2994cca64043d9f3d07c6543ec847",
+    "width": 2048,
+    "height": 2048,
+    "license": "CC0-1.0",
+    "material_path": "assets/character-production/source-assets/makehuman-system/skins/old_caucasian_male/old_caucasian_male.mhmat",
+    "material_sha256": "001eccec34180d4eb7369933360116a7ea1022c72674c1b012b988af65002600",
+    "license_evidence": "MHMat explicitly released as CC0 in September2020"
+  },
+  "material_name": "Neutral aged skin blockout",
+  "head_object": "Scholar Neutral aged skin blockout",
+  "input_color": {
+    "path": "assets/character-production/skin-materials/skin-base-color.png",
+    "sha256": "a35c286218bbf8a6eed2296833e511371b49c76055f0c9697f56662a3b724ff4",
+    "bytes": 40676,
+    "width": 1024,
+    "height": 1024,
+    "colorspace": "sRGB"
+  },
+  "texture": {
+    "path": "assets/character-production/skin-materials/skin-age-blend-color.png",
+    "sha256": "30e7354afb825bf16dd264ab2f6adeab63a9f9c347c55934e5c667dcd6825eaa",
+    "bytes": 345382,
+    "width": 1024,
+    "height": 1024,
+    "colorspace": "sRGB"
+  },
+  "uv_layer": "UVMap",
+  "uv_index": 0,
+  "recipe": {
+    "source_mix_weight": 0.45,
+    "source_tint_linear": [
+      0.78,
+      0.82,
+      0.9
+    ],
+    "mask_coordinate_space": "Geometry Position world meters at rest; baked into UV0",
+    "rear_y_transition_m": [
+      -0.075,
+      -0.045
+    ],
+    "below_z_transition_m": [
+      1.63,
+      1.67
+    ],
+    "mask_interpolation": "SMOOTHSTEP",
+    "weight_formula": ".45*(1-rearY*belowZ)"
+  },
+  "bake": {
+    "type": "DIFFUSE COLOR only",
+    "engine": "Cycles CPU",
+    "samples": 8,
+    "margin_pixels": 8,
+    "resolution": 1024,
+    "additional_lighting_baked": false
+  },
+  "geometry_uv_weights_morph_sha256_before": "de01359eff1d6e2a9bc4c74e2666269d5f8cbbfb70f8e11ba47c320001eac326",
+  "geometry_uv_weights_morph_sha256_after": "de01359eff1d6e2a9bc4c74e2666269d5f8cbbfb70f8e11ba47c320001eac326",
+  "geometry_unchanged": true,
+  "uv_mapping_unchanged": true,
+  "weights_morphs_material_assignments_unchanged": true,
+  "source_image_unchanged": true,
+  "procedural_input_preserved": true,
+  "normal_roughness_preserved": true,
+  "limitations": [
+    "Existing diffuse appearance retained; no clean/de-lit scan claim and original MHMat litsphere/emission/subsurface behavior not recreated.",
+    "Adds color variation only; does not sculpt age anatomy or finish portrait likeness, eyelids, groom or skin artistry.",
+    "Normal/roughness and oral material assignments unchanged; only the active supported base-color image is replaced."
+  ]
+}

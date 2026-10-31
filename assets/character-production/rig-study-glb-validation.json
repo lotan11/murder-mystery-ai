@@ -1,9 +1,9 @@
 {
   "file": "scholar-rig-study.glb",
-  "bytes": 13424544,
+  "bytes": 13709032,
   "mesh_count": 16,
-  "vertices": 119835,
-  "triangles": 177239,
+  "vertices": 66767,
+  "triangles": 88423,
   "skin_count": 1,
   "joint_count": 64,
   "morph_target_count": 11,
@@ -116,69 +116,62 @@
       },
       {
         "index": 5,
-        "name": "Grey hair underlayer",
-        "base_color_texture": null,
-        "normal_texture": null,
-        "metallic_roughness_texture": null
-      },
-      {
-        "index": 6,
         "name": "Grey strand 0",
         "base_color_texture": null,
         "normal_texture": null,
         "metallic_roughness_texture": null
       },
       {
-        "index": 7,
+        "index": 6,
         "name": "Grey strand 1",
         "base_color_texture": null,
         "normal_texture": null,
         "metallic_roughness_texture": null
       },
       {
-        "index": 8,
+        "index": 7,
         "name": "Grey strand 2",
         "base_color_texture": null,
         "normal_texture": null,
         "metallic_roughness_texture": null
       },
       {
-        "index": 9,
+        "index": 8,
         "name": "Grey strand 3",
         "base_color_texture": null,
         "normal_texture": null,
         "metallic_roughness_texture": null
       },
       {
-        "index": 10,
+        "index": 9,
         "name": "Grey strand 4",
         "base_color_texture": null,
         "normal_texture": null,
         "metallic_roughness_texture": null
       },
       {
-        "index": 11,
+        "index": 10,
         "name": "Ivory shirt",
         "base_color_texture": null,
         "normal_texture": null,
         "metallic_roughness_texture": null
       },
       {
-        "index": 12,
+        "index": 11,
         "name": "Muted patterned tie blocking",
         "base_color_texture": null,
         "normal_texture": null,
         "metallic_roughness_texture": null
       },
       {
-        "index": 13,
+        "index": 12,
         "name": "Natural eye whites",
         "base_color_texture": null,
         "normal_texture": null,
         "metallic_roughness_texture": null
       },
       {
-        "index": 14,
+        "index": 13,
         "name": "Neutral aged skin blockout",
         "base_color_texture": {
           "texture_index": 2,
@@ -197,21 +190,21 @@
         }
       },
       {
-        "index": 15,
+        "index": 14,
         "name": "Scholar anatomical oral lining study",
         "base_color_texture": null,
         "normal_texture": null,
         "metallic_roughness_texture": null
       },
       {
-        "index": 16,
+        "index": 15,
         "name": "Pupils",
         "base_color_texture": null,
         "normal_texture": null,
         "metallic_roughness_texture": null
       },
       {
-        "index": 17,
+        "index": 16,
         "name": "Slate blue grey iris",
         "base_color_texture": {
           "texture_index": 4,
@@ -222,10 +215,25 @@
         "metallic_roughness_texture": null
       },
       {
-        "index": 18,
+        "index": 17,
         "name": "Thin dark bronze spectacle rims",
         "base_color_texture": null,
         "normal_texture": null,
+        "metallic_roughness_texture": null
+      },
+      {
+        "index": 18,
+        "name": "Scholar short02 silver hair",
+        "base_color_texture": {
+          "texture_index": 6,
+          "image_index": 6,
+          "tex_coord": 0
+        },
+        "normal_texture": {
+          "texture_index": 5,
+          "image_index": 5,
+          "tex_coord": 0
+        },
         "metallic_roughness_texture": null
       }
     ],
@@ -256,11 +264,11 @@
       },
       {
         "index": 2,
-        "name": "skin-base-color",
+        "name": "skin-age-blend-color",
         "mime_type": "image/png",
         "embedded": true,
-        "bytes": 40676,
-        "sha256": "a35c286218bbf8a6eed2296833e511371b49c76055f0c9697f56662a3b724ff4",
+        "bytes": 345370,
+        "sha256": "a1e8f76db269d7a1115b2198b962832531bfddf607014845da5e63fbb4fc2b11",
         "width": 1024,
         "height": 1024,
         "bit_depth": 8,
@@ -289,9 +297,33 @@
         "height": 512,
         "bit_depth": 8,
         "color_type": 2
+      },
+      {
+        "index": 5,
+        "name": "short02_normal",
+        "mime_type": "image/png",
+        "embedded": true,
+        "bytes": 1626745,
+        "sha256": "2cfac7619f8eec77dd90df979d912415058f4f0fc16940cba40a8eb1ae6d74b5",
+        "width": 2048,
+        "height": 2048,
+        "bit_depth": 8,
+        "color_type": 2
+      },
+      {
+        "index": 6,
+        "name": "short02-silver-albedo",
+        "mime_type": "image/png",
+        "embedded": true,
+        "bytes": 2727086,
+        "sha256": "8141773bc04d9c5d1268d95548f9229027dcf9994dfc3e07eeb2cc48d5eb3813",
+        "width": 2048,
+        "height": 2048,
+        "bit_depth": 8,
+        "color_type": 6
       }
     ],
-    "texture_count": 5
+    "texture_count": 7
   },
   "mesh_inventory": [
     {
@@ -362,20 +394,6 @@
     {
       "index": 3,
       "node_names": [
-        "Scholar Grey hair underlayer"
-      ],
-      "materials": [
-        "Grey hair underlayer"
-      ],
-      "name": "Anatomical scalp shell",
-      "primitive_count": 1,
-      "vertices": 9113,
-      "triangles": 17664,
-      "morph_deformations": {}
-    },
-    {
-      "index": 4,
-      "node_names": [
         "Scholar Grey strand 0"
       ],
       "materials": [
@@ -383,21 +401,21 @@
       ],
       "name": "Grey swept hair guide 005",
       "primitive_count": 1,
-      "vertices": 13867,
-      "triangles": 21528,
+      "vertices": 6738,
+      "triangles": 9918,
       "morph_deformations": {
         "jawOpen": {
-          "affected_vertices": 4549,
+          "affected_vertices": 4545,
           "max_displacement": 0.017924411380834702,
           "primitive_count": 1
         },
         "browInnerUp": {
-          "affected_vertices": 702,
+          "affected_vertices": 486,
           "max_displacement": 0.004737986872236147,
           "primitive_count": 1
         },
         "browOuterUpLeft": {
-          "affected_vertices": 393,
+          "affected_vertices": 176,
           "max_displacement": 0.00247420424918951,
           "primitive_count": 1
         },
@@ -434,7 +452,7 @@
       }
     },
     {
-      "index": 5,
+      "index": 4,
       "node_names": [
         "Scholar Grey strand 1"
       ],
@@ -443,8 +461,8 @@
       ],
       "name": "Grey swept hair guide 000",
       "primitive_count": 1,
-      "vertices": 19691,
-      "triangles": 30888,
+      "vertices": 7532,
+      "triangles": 11112,
       "morph_deformations": {
         "jawOpen": {
           "affected_vertices": 5677,
@@ -452,17 +470,17 @@
           "primitive_count": 1
         },
         "browInnerUp": {
-          "affected_vertices": 661,
+          "affected_vertices": 402,
           "max_displacement": 0.004781288832334086,
           "primitive_count": 1
         },
         "browOuterUpLeft": {
-          "affected_vertices": 170,
+          "affected_vertices": 126,
           "max_displacement": 0.007109349817692071,
           "primitive_count": 1
         },
         "browOuterUpRight": {
-          "affected_vertices": 266,
+          "affected_vertices": 203,
           "max_displacement": 0.00717239046346712,
           "primitive_count": 1
         },
@@ -494,7 +512,7 @@
       }
     },
     {
-      "index": 6,
+      "index": 5,
       "node_names": [
         "Scholar Grey strand 2"
       ],
@@ -503,8 +521,8 @@
       ],
       "name": "Grey swept hair guide 015",
       "primitive_count": 1,
-      "vertices": 16254,
-      "triangles": 25344,
+      "vertices": 7450,
+      "triangles": 10998,
       "morph_deformations": {
         "jawOpen": {
           "affected_vertices": 5022,
@@ -512,12 +530,12 @@
           "primitive_count": 1
         },
         "browInnerUp": {
-          "affected_vertices": 441,
+          "affected_vertices": 329,
           "max_displacement": 0.004722116674729103,
           "primitive_count": 1
         },
         "browOuterUpLeft": {
-          "affected_vertices": 433,
+          "affected_vertices": 331,
           "max_displacement": 0.007446104639530312,
           "primitive_count": 1
         },
@@ -554,7 +572,7 @@
       }
     },
     {
-      "index": 7,
+      "index": 6,
       "node_names": [
         "Scholar Grey strand 3"
       ],
@@ -563,21 +581,21 @@
       ],
       "name": "Grey swept hair guide 003",
       "primitive_count": 1,
-      "vertices": 16422,
-      "triangles": 25632,
+      "vertices": 6949,
+      "triangles": 10220,
       "morph_deformations": {
         "jawOpen": {
-          "affected_vertices": 4796,
+          "affected_vertices": 4789,
           "max_displacement": 0.017617280098033122,
           "primitive_count": 1
         },
         "browInnerUp": {
-          "affected_vertices": 750,
+          "affected_vertices": 556,
           "max_displacement": 0.004792091961735549,
           "primitive_count": 1
         },
         "browOuterUpLeft": {
-          "affected_vertices": 392,
+          "affected_vertices": 294,
           "max_displacement": 0.007405412655503317,
           "primitive_count": 1
         },
@@ -614,7 +632,7 @@
       }
     },
     {
-      "index": 8,
+      "index": 7,
       "node_names": [
         "Scholar Grey strand 4"
       ],
@@ -623,8 +641,8 @@
       ],
       "name": "Grey swept hair guide 008",
       "primitive_count": 1,
-      "vertices": 14133,
-      "triangles": 22104,
+      "vertices": 5949,
+      "triangles": 8752,
       "morph_deformations": {
         "jawOpen": {
           "affected_vertices": 4183,
@@ -632,7 +650,7 @@
           "primitive_count": 1
         },
         "browInnerUp": {
-          "affected_vertices": 340,
+          "affected_vertices": 271,
           "max_displacement": 0.004791218907380683,
           "primitive_count": 1
         },
@@ -642,7 +660,7 @@
           "primitive_count": 1
         },
         "browOuterUpRight": {
-          "affected_vertices": 267,
+          "affected_vertices": 232,
           "max_displacement": 0.007382455023198762,
           "primitive_count": 1
         },
@@ -674,7 +692,7 @@
       }
     },
     {
-      "index": 9,
+      "index": 8,
       "node_names": [
         "Scholar Ivory shirt"
       ],
@@ -688,7 +706,7 @@
       "morph_deformations": {}
     },
     {
-      "index": 10,
+      "index": 9,
       "node_names": [
         "Scholar Muted patterned tie blocking"
       ],
@@ -702,7 +720,7 @@
       "morph_deformations": {}
     },
     {
-      "index": 11,
+      "index": 10,
       "node_names": [
         "Scholar Natural eye whites"
       ],
@@ -716,7 +734,7 @@
       "morph_deformations": {}
     },
     {
-      "index": 12,
+      "index": 11,
       "node_names": [
         "Scholar Neutral aged skin blockout"
       ],
@@ -787,7 +805,7 @@
       }
     },
     {
-      "index": 13,
+      "index": 12,
       "node_names": [
         "Scholar Pupils"
       ],
@@ -801,7 +819,7 @@
       "morph_deformations": {}
     },
     {
-      "index": 14,
+      "index": 13,
       "node_names": [
         "Scholar Slate blue grey iris"
       ],
@@ -815,7 +833,7 @@
       "morph_deformations": {}
     },
     {
-      "index": 15,
+      "index": 14,
       "node_names": [
         "Scholar Thin dark bronze spectacle rims"
       ],
@@ -827,11 +845,25 @@
       "vertices": 2774,
       "triangles": 4608,
       "morph_deformations": {}
+    },
+    {
+      "index": 15,
+      "node_names": [
+        "Scholar short02 silver hair"
+      ],
+      "materials": [
+        "Scholar short02 silver hair"
+      ],
+      "name": "short02",
+      "primitive_count": 1,
+      "vertices": 1794,
+      "triangles": 3344,
+      "morph_deformations": {}
     }
   ],
   "morph_deformations": {
     "jawOpen": {
-      "affected_vertices": 38273,
+      "affected_vertices": 38262,
       "max_displacement": 0.01795706955374988,
       "primitive_count": 10
     },
@@ -851,17 +883,17 @@
       "primitive_count": 10
     },
     "browInnerUp": {
-      "affected_vertices": 2974,
+      "affected_vertices": 2124,
       "max_displacement": 0.005154604408660352,
       "primitive_count": 7
     },
     "browOuterUpLeft": {
-      "affected_vertices": 1552,
+      "affected_vertices": 1091,
       "max_displacement": 0.008538120474753028,
       "primitive_count": 7
     },
     "browOuterUpRight": {
-      "affected_vertices": 1213,
+      "affected_vertices": 1115,
       "max_displacement": 0.008538120474753028,
       "primitive_count": 7
     },

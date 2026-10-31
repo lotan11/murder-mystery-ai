@@ -48,3 +48,7 @@ A project-authored512px slate-grey radial albedo replaces the weighted study's u
 ## October30 rejected crown prototype
 
 Two rounded clump passes increased silver coverage and raised front volume, but still looked like a combed helmet with wire loops. Rejected for public integration; valid attachment and larger geometry are not visual readiness. Existing public rig unchanged. Next: assess reusable hair geometry/material against the actual portrait before fit/export. Full front/profile evidence and source leads are recorded in reviews/HAIR_REFINEMENT_REVIEW.md. New display-only portrait head crop makes the likeness gap easier to judge without replacing the approved image.
+
+## October30 core hair/skin follow-up
+
+Accepted a bounded improvement after actualGLB review: real short02mesh replaces the cap/wires with textured silver mass, feathered hairline and clear ears. It remains dense/smooth rather than loose portraitwaves. Restrainedmasked skincolor adds subtle age variation while avoiding source nape stubble, without changing geometry/normal/roughness/eyes. This is development quality, not finalcharacterapproval. Core source/hash/license and negative scalp-contact evidence are recorded in reviews/SCHOLAR_CORE_ASSETS_REVIEW.md. Face/lids, shaped facial groom, tailoring/oral and perceived fullspeech remain.

@@ -80,7 +80,8 @@ def test_bound_study_exports_real_normalized_skin_weights_and_joint_references()
                 assert all(0<=value<=1 for value in values)
                 assert abs(sum(values)-1)<0.00001
                 assert all(0<=index<len(skin['joints']) for index,value in zip(indices,values) if value>0)
-    assert vertices>100000
+    # Retiring dense legacy crown guides reduces vertices; every active vertex still needs valid skinning.
+    assert vertices>0
     report=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb',measure=True)
     assert report['missing_bones']==[] and report['morph_target_count']==11
     assert report['external_resources']==[] and not report['talkinghead_inventory_complete']
@@ -177,7 +178,7 @@ def test_baked_skin_maps_are_really_embedded_and_bound_to_the_runtime_material()
     report=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')
     inventory=report['material_inventory']
     skin=next(material for material in inventory['materials'] if material['name']=='Neutral aged skin blockout')
-    assert inventory['texture_count']==5 and len(inventory['images'])==5
+    assert inventory['texture_count']==7 and len(inventory['images'])==7
     for slot in ['base_color_texture','normal_texture','metallic_roughness_texture']:
         reference=skin[slot]
         assert reference is not None and reference['tex_coord']==0
@@ -203,7 +204,7 @@ def test_baked_skin_maps_are_really_embedded_and_bound_to_the_runtime_material()
     assert report['external_resources']==[] and report['joint_count']==64 and report['morph_target_count']==11
 
 
-def test_weighted_study_preserves_original_head_rest_positions_across_material_splits():
+def test_weighted_study_preserves_head_except_declared_local_eyelid_offsets():
     import json
     def head_points(path):
         data=path.read_bytes();offset=12;document=None;binary=None
@@ -222,7 +223,37 @@ def test_weighted_study_preserves_original_head_rest_positions_across_material_s
             start=view.get('byteOffset',0)+accessor.get('byteOffset',0);stride=view.get('byteStride',12)
             points.extend(tuple(round(value,6) for value in struct.unpack_from('<3f',binary,start+i*stride)) for i in range(accessor['count']))
         return sorted(points)
-    assert head_points(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')==head_points(ROOT/'frontend/public/character-lab/scholar-face-study.glb')
+    import hashlib, math
+    evidence_path=ROOT/'assets/character-production/eyelid-neutral-offsets.json'
+    evidence=json.loads(evidence_path.read_text())
+    original_path=ROOT/'frontend/public/character-lab/scholar-face-study.glb'
+    assert hashlib.sha256(original_path.read_bytes()).hexdigest()=='ef250f6058f241032327bd77105de35f313ca494e4e0b7ad82c5895ef7e6013b'
+    validation=json.loads((ROOT/'assets/character-production/eyelid-validation.json').read_text())
+    # JSON may be checked out with CRLF on Windows; the authoring manifest uses LF.
+    assert hashlib.sha256(evidence_path.read_bytes().replace(b'\r\n',b'\n')).hexdigest()==validation['neutral_offset_manifest']['sha256']
+    assert validation['changed_vertices']==419 and validation['morph_count']==11
+    assert validation['protected_data_before']==validation['protected_data_after']
+    assert validation['protected_lower_nose_lips_delta_m']==0
+    assert validation['other_mesh_geometry_unchanged']
+    assert validation['triangle_min_normal_dot']>.99
+    assert validation['neutral_offset_manifest']['six_decimal_mapping_ambiguities']==0
+    offsets=evidence['offsets']
+    assert len(offsets)==419
+    declared={}
+    for item in offsets:
+        before=tuple(round(value,6) for value in item['gltf_world_before'])
+        after=tuple(round(value,6) for value in item['gltf_world_after'])
+        assert before not in declared, 'Ambiguous neutral-offset coordinate mapping'
+        declared[before]=after
+        x,y,z=item['world_before']
+        assert .018<abs(x)<.046 and 1.602<z<1.642
+        delta=item['local_delta_float32']
+        assert 0<math.sqrt(sum(value*value for value in delta))<.000561
+    original=head_points(original_path)
+    # Preserve duplicates at UV seams/material splits, and every undeclared point.
+    assert set(declared)<=set(original)
+    expected=sorted(declared.get(point,point) for point in original)
+    assert head_points(ROOT/'frontend/public/character-lab/scholar-rig-study.glb')==expected
 
 
 def test_fitted_facial_groom_has_actual_weighted_geometry_and_nonzero_mouth_targets():
@@ -266,11 +297,15 @@ def test_crown_repair_preserves_topology_and_reports_sharp_edge_limits():
         assert len(fit['triangle_vs_interpolated_normal_ambiguous_world_positions'])==fit['triangle_vs_interpolated_normal_ambiguity_count']
     report=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb',measure=True)
     original=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-face-study.glb',measure=True)
-    cap=next(item for item in report['mesh_inventory'] if item['name']=='Anatomical scalp shell')
+    assert not any(item['name']=='Anatomical scalp shell' for item in report['mesh_inventory'])
     baseline=next(item for item in original['mesh_inventory'] if item['name']=='Anatomical scalp shell')
-    assert cap['vertices']==baseline['vertices']==evidence['referenced_vertices']
-    assert cap['triangles']==baseline['triangles'] and cap['materials']==baseline['materials']
-    assert not cap['morph_deformations']
+    assert baseline['vertices']==evidence['referenced_vertices']
+    hair=json.loads((ROOT/'assets/character-production/hair-asset-validation.json').read_text(encoding='utf-8'))
+    assert hair['cap_geometry_retained_in_source']
+    assert hair['retained_editable_cap_vertices']==evidence['referenced_vertices']+evidence['unused_loose_vertices_ignored']
+    assert evidence['object'] in hair['retired_node_names']
+    rig=json.loads((ROOT/'assets/character-production/rig-study-validation.json').read_text(encoding='utf-8'))
+    assert rig['crown']['active_in_export'] is False and rig['crown']['replacement_object']==hair['object']
 
 
 def test_iris_detail_is_embedded_on_actual_second_uv_without_changing_eyes():
@@ -305,6 +340,7 @@ def test_iris_detail_is_embedded_on_actual_second_uv_without_changing_eyes():
             index=next(i for i,item in enumerate(document['materials']) if item.get('name')==name)
             points=[]
             for mesh_index,mesh in enumerate(document['meshes']):
+                if not any(primitive.get('material')==index for primitive in mesh['primitives']):continue
                 node_index=next(i for i,node in enumerate(document['nodes']) if node.get('mesh')==mesh_index)
                 translation=[0.,0.,0.]
                 while True:
@@ -340,3 +376,59 @@ def test_iris_detail_is_embedded_on_actual_second_uv_without_changing_eyes():
             cell=key(point)
             candidates=(old for offset in itertools.product((-1,0,1),repeat=3) for old in bins[tuple(a+b for a,b in zip(cell,offset))])
             assert any(sum((a-b)**2 for a,b in zip(point,old))<tolerance**2 for old in candidates)
+
+
+def test_real_hair_asset_has_supported_maps_and_no_invented_rig_controls():
+    import hashlib,json
+    evidence=json.loads((ROOT/'assets/character-production/hair-asset-validation.json').read_text(encoding='utf-8'))
+    assert evidence['vertices']==1755 and evidence['polygons']==1672
+    assert evidence['new_bones']==evidence['new_morphs']==0
+    assert evidence['min_weight_sum']==evidence['max_weight_sum']==1
+    assert evidence['existing_rest_positions_unchanged'] and evidence['cap_geometry_retained_in_source']
+    assert evidence['alpha_preserved_max_error']==0
+    for path,digest in evidence['source_hashes'].items():
+        data=(ROOT/path).read_bytes();assert hashlib.sha256(data).hexdigest()==digest
+        if path.endswith(('.obj','.mhclo','.mhmat')):assert 'released as cc0 in september 2020' in data.decode('utf-8').lower()
+    for pose in evidence['head_attachment'].values():assert pose['maximum_rigid_head_correspondence_error_m']<.000001
+    for pose in evidence['contact_fit'].values():
+        assert pose['maximum_nearest_head_distance_m']<.005
+        assert -.005<pose['minimum_triangle_signed_offset_m']<0 and pose['triangle_inward_sign_count']>0
+    report=inspector.inspect(ROOT/'frontend/public/character-lab/scholar-rig-study.glb',measure=True)
+    mesh=next(item for item in report['mesh_inventory'] if evidence['object'] in item['node_names'])
+    assert mesh['vertices']>=evidence['vertices'] and not mesh['morph_deformations']
+    inventory=report['material_inventory'];mat=next(m for m in inventory['materials'] if m['name']==evidence['material'])
+    image=inventory['images'][mat['base_color_texture']['image_index']]
+    assert image['width']==image['height']==2048 and image['embedded'] and image['sha256']==evidence['albedo_sha256']
+    assert hashlib.sha256((ROOT/evidence['albedo_path']).read_bytes()).hexdigest()==image['sha256']
+    normal=inventory['images'][mat['normal_texture']['image_index']]
+    assert normal['width']==normal['height']==2048 and normal['embedded']
+    assert normal['sha256']==next(value for name,value in evidence['source_hashes'].items() if name.endswith('short02_normal.png'))
+    raw=(ROOT/'frontend/public/character-lab/scholar-rig-study.glb').read_bytes();length=struct.unpack_from('<I',raw,12)[0];document=json.loads(raw[20:20+length])
+    runtime=next(m for m in document['materials'] if m.get('name')==evidence['material'])
+    assert runtime['alphaMode']=='BLEND' and runtime['doubleSided']
+    assert runtime['normalTexture']['scale']==pytest.approx(.4) and runtime['pbrMetallicRoughness']['roughnessFactor']==pytest.approx(.8)
+    assert runtime['extensions']['KHR_materials_specular']['specularFactor']==pytest.approx(.3)
+
+
+def test_skin_age_blend_retains_inputs_and_binds_the_actual_color_bake():
+    import hashlib,json
+    evidence=json.loads((ROOT/'assets/character-production/skin-color-validation.json').read_text(encoding='utf-8'))
+    assert evidence['geometry_unchanged'] and evidence['uv_mapping_unchanged']
+    assert evidence['weights_morphs_material_assignments_unchanged'] and evidence['normal_roughness_preserved']
+    assert evidence['source_image_unchanged'] and evidence['procedural_input_preserved']
+    assert evidence['geometry_uv_weights_morph_sha256_before']==evidence['geometry_uv_weights_morph_sha256_after']
+    assert evidence['uv_index']==0 and evidence['recipe']['source_mix_weight']==.45
+    assert evidence['recipe']['source_tint_linear']==[.78,.82,.9]
+    assert evidence['source']['license']=='CC0-1.0' and evidence['source']['width']==evidence['source']['height']==2048
+    assert 'released as cc0 in september 2020' in (ROOT/evidence['source']['material_path']).read_text(encoding='utf-8').lower()
+    for item in [evidence['source'],evidence['texture'],evidence['input_color']]:
+        assert hashlib.sha256((ROOT/item['path']).read_bytes()).hexdigest()==item['sha256']
+    validation=json.loads((ROOT/'assets/character-production/skin-material-validation.json').read_text(encoding='utf-8'))
+    assert validation['maps']['base_color']['sha256']==evidence['texture']['sha256']
+    assert evidence['texture']['sha256']!=evidence['input_color']['sha256']
+    assert evidence['texture']['width']==evidence['texture']['height']==1024
+    manifest=json.loads((ROOT/'assets/character-production/source-assets/makehuman-system/SOURCE.json').read_text(encoding='utf-8'))
+    assert manifest['license']=='CC0-1.0' and len(manifest['files'])==7
+    for item in manifest['files']:
+        data=(ROOT/'assets/character-production/source-assets/makehuman-system'/item['path']).read_bytes()
+        assert len(data)==item['bytes'] and hashlib.sha256(data).hexdigest()==item['sha256']

@@ -14,7 +14,7 @@
   "source_roughness": 0.6000000238418579,
   "baked_surface_pixels_including_margin": 259045,
   "coverage_method": "White emission surface coverage bake, including eight-pixel bake margin",
-  "normal_vs_bump_disabled_rms_xy": 0.009304990820355739,
+  "normal_vs_bump_disabled_rms_xy": 0.00929474190337262,
   "normal_channel_ranges": {
     "0": [
       0.4078431725502014,
@@ -32,14 +32,15 @@
   "geometry_modified": false,
   "light_baked_into_color": false,
   "limitations": [
-    "Existing shallow procedural grain only; no authored wrinkles, pores, photographic skin scan or final likeness approval.",
-    "Subsurface response is not baked into PBR maps; final browser appearance still needs review."
+    "Procedural grain/normal proof retained; restrained CC0 diffuse blend adds color variation only, not sculpted age anatomy or final skin/likeness approval.",
+    "Existing diffuse is not established as a clean/de-lit scan; no additional light was baked by the COLOR-only pass.",
+    "Subsurface response is not baked into PBR maps; final browser appearance still requires review."
   ],
   "maps": {
     "base_color": {
-      "path": "assets/character-production/skin-materials/skin-base-color.png",
-      "sha256": "a35c286218bbf8a6eed2296833e511371b49c76055f0c9697f56662a3b724ff4",
-      "bytes": 40676,
+      "path": "assets/character-production/skin-materials/skin-age-blend-color.png",
+      "sha256": "30e7354afb825bf16dd264ab2f6adeab63a9f9c347c55934e5c667dcd6825eaa",
+      "bytes": 345382,
       "width": 1024,
       "height": 1024,
       "colorspace": "sRGB"
@@ -54,12 +55,26 @@
     },
     "normal": {
       "path": "assets/character-production/skin-materials/skin-normal.png",
-      "sha256": "37bc1a9166e9c89444d0df198d4ea599d0374f52bcf9709bfd546f99e1b494c2",
-      "bytes": 425370,
+      "sha256": "72a2ce76f44bd6a2d80def48add47773116fc99c77638b764ba609a6d9193353",
+      "bytes": 425384,
       "width": 1024,
       "height": 1024,
       "colorspace": "Non-Color"
     }
   },
-  "restored_render_samples": 20
+  "restored_render_samples": 20,
+  "input_color": {
+    "path": "assets/character-production/skin-materials/skin-base-color.png",
+    "sha256": "a35c286218bbf8a6eed2296833e511371b49c76055f0c9697f56662a3b724ff4",
+    "bytes": 40676,
+    "width": 1024,
+    "height": 1024,
+    "colorspace": "sRGB"
+  },
+  "color_refinement": {
+    "validation_path": "assets/character-production/skin-color-validation.json",
+    "source_sha256": "dfb2310ed3e0ad024ea7a3ad321215e2e9e2994cca64043d9f3d07c6543ec847",
+    "additional_lighting_baked": false,
+    "source_is_clean_scan_claimed": false
+  }
 }

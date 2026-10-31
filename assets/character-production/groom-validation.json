@@ -80,7 +80,7 @@
   ],
   "minimum_rest_lip_proxy_clearance_m": 0.002014740943908633,
   "existing_head_unchanged": true,
-  "existing_head_position_sha256": "37267eb6ede4390571636ed4ef25f194cafee861883a1d207c72a8c7405962a1",
+  "existing_head_position_sha256": "bd8a821a61f8c7ff6118f0aed7912872233dcc34d84ca834a41f736e47173843",
   "scalp_or_crown_modified": false,
   "limitations": [
     "Development facial ribbon clumps and guide accents, not production hair cards/anisotropic shading; crown remains unchanged.",
